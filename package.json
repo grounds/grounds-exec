@@ -1,0 +1,30 @@
+{
+  "name": "grounds-exec",
+  "description": "Grounds code runner.",
+  "version": "0.1.0",
+  "author": "Adrien Folie <folie.adrien@gmail.com>",
+  "maintainers": [
+    "foliadrien <folie.adrien@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/grounds/grounds-exec.git"
+  },
+  "dependencies": {
+    "commander": "2.3.x",
+    "dockerode": "2.0.x",
+    "moment": "2.8.x",
+    "socket.io": "1.1.x",
+    "socket.io-client": "1.1.x"
+  },
+  "devDependencies": {
+    "chai": "1.9.x",
+    "mocha": "1.21.x"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha -R spec"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}

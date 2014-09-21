@@ -1,0 +1,8 @@
+.git
+dockerfiles
+docs
+node_modules
+.gitignore
+.npmignore
+LICENSE
+README.md

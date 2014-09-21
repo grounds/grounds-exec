@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+var version = require('../package.json').version,
+    program = require('commander'),
+    Docker = require('dockerode'),
+    Connection = require('../lib/connection'),
+    util = require('../lib/util');
+
+program
+    .version(version)
+    .option('-e, --endpoint <url>', 'Docker API url')
+    .option('-r, --repository <name> (default: grounds)', 'Docker repository')
+    .option('-p, --port <number> (default: 8080)', 'Port to serve')
+    .parse(process.argv);
+
+if (!program.endpoint) {
+    console.log('Please specify a valid docker API url.');
+    return program.help();
+}
+
+if (!program.repository) program.repository = 'grounds';
+if (!program.port) program.port = 8080;
+
+console.log('Using docker host: %s and docker repository: %s', program.endpoint, program.repository);
+console.log('Listening on: %d', program.port);
+
+var docker = new Docker(util.formatDockerURL(program.endpoint));
+
+docker.ping(function(err, data) {
+    if (err !== null) {
+        console.log('Docker API not responding.');
+        process.exit(1);
+    }
+});
+
+docker.repository = program.repository;
+
+var io = require('socket.io').listen(program.port);
+
+io.on('connection', function (socket) {
+    console.log('New connection.');
+    new Connection(socket, docker).bindEvents();
+}).on('disconnect', function() {
+    console.log('A client has disconnected.');
+});
