@@ -1,6 +1,10 @@
 var Docker = require('dockerode'),
+    FactoryGirl = require('factory_girl'),
     expect = require('chai').expect,
     util = require('../lib/util');
+    
+FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
+FactoryGirl.findDefinitions();
 
 var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
     dockerHost  = util.formatDockerURL(dockerURL),
@@ -23,5 +27,6 @@ else
 module.exports = {
     docker: docker,
     expect: expect,
-    socketURL: socketURL
+    socketURL: socketURL,
+    FactoryGirl: FactoryGirl
 };

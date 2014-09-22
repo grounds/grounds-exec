@@ -1,5 +1,6 @@
 var expect = require('./spec_helper').expect,
     socketURL = require('./spec_helper').socketURL,
+    Factory = require('./spec_helper').FactoryGirl,
     io = require('socket.io-client');
 
 var options = {
@@ -8,6 +9,8 @@ var options = {
 };
 
 describe('Server', function() {
+    
+    var stdoutExample = Factory.create('stdoutExample');
     
     it('accepts new connection', function(done) {
         var client = io.connect(socketURL, options);
@@ -28,7 +31,7 @@ describe('Server', function() {
         var i = 0;
         client.on('connect', function(data) {
             client.on('run', function(data){
-                expect(data).to.deep.equal(output[i]);
+                expect(data).to.deep.equal(stdoutExample.output[i]);
                 ++i;
 
                 if (data.stream === 'status') {
@@ -36,7 +39,7 @@ describe('Server', function() {
                     done();
                 }
             });
-            client.emit('run', { language: 'python2', code: 'print 42' });
+            client.emit('run', stdoutExample.input);
         });
     });
     
@@ -50,8 +53,8 @@ describe('Server', function() {
                     done(); 
                 }
             });
-            client.emit('run', { language: 'python2', code: 'print 42' });
-            client.emit('run', { language: 'python2', code: 'print 42' });
+            client.emit('run', stdoutExample.input);
+            client.emit('run', stdoutExample.input);
         });
     });
 });

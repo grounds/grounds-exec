@@ -1,8 +1,12 @@
 var docker = require('./spec_helper').docker,
     expect = require('./spec_helper').expect,
+    Factory = require('./spec_helper').FactoryGirl,
     Runner = require('../lib/runner');
 
 describe('Runner', function() {
+
+    var stdoutExample = Factory.create('stdoutExample'),
+        stderrExample = Factory.create('stderrExample');
 
     describe('run', function() {
 
@@ -42,36 +46,32 @@ describe('Runner', function() {
 
             it('runs code inside a docker container and emits output', function(done) {
                 var runner = new Runner(docker);
-                var output = [
-                    { stream: 'start',  chunk: '' },
-                    { stream: 'stdout', chunk: '42\n' },
-                    { stream: 'status', chunk: 0 }
-                ];
                 var i = 0;
                 runner.on('output', function(data) {
-                    expect(data).to.deep.equal(output[i]);
+                    expect(data).to.deep.equal(stdoutExample.output[i]);
                     if (data.stream === 'status')
                         done(); 
                     ++i;
                 });
-                runner.run('python2', 'print 42');
+                runner.run(stdoutExample.language, stdoutExample.code);
             });
 
             it('runs code inside a docker container and emits also stderr', function(done) {
                 var runner = new Runner(docker);
-                var output = [
-                    { stream: 'start',  chunk: '' },
-                    { stream: 'stderr', chunk: '42\n' },
-                    { stream: 'status', chunk: 0 }
-                ];
                 var i = 0;
+                var hasOutputOnStderr = false;
+
                 runner.on('output', function(data) {
-                    expect(data).to.deep.equal(output[i]);
-                    if (data.stream === 'status')
-                        done(); 
+                    if (data.stream === 'stderr') {
+                        hasOutputOnStderr = true;
+                    }
+                    if (data.stream === 'status') {
+                        expect(hasOutputOnStderr).to.equal(true);
+                        done();
+                    }
                     ++i;
                 });
-                runner.run('ruby', '$stderr.puts 42');
+                runner.run(stderrExample.language, stderrExample.code);
             });
 
             it('removes docker container after a run', function(done) {
@@ -85,7 +85,7 @@ describe('Runner', function() {
                         done();
                     }); 
                 });
-                runner.run('python2', 'print 42');
+                runner.run(stdoutExample.language, stdoutExample.code);
             });
 
             it('timeouts if it takes too long', function(done) {
