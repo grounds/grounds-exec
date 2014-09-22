@@ -1,4 +1,5 @@
 # grounds-exec
+[ ![Codeship Status for grounds/grounds.io](https://codeship.io/projects/ad989680-2460-0132-1117-12e55c6fdf6c/status?branch=master)](https://codeship.io/projects/36826)
 
 This project is a server with real-time bidirectional event-based communication, 
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various

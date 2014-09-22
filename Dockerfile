@@ -21,8 +21,7 @@ RUN chown -R exec:exec $APP
 # Add project binaries directory to PATH.
 ENV PATH $PATH:$APP/bin
 
-
-# Gom install inside app's location.
+# Set the final working dir to the app's location.
 WORKDIR /grounds-exec
 
 # Switch to user exec.
