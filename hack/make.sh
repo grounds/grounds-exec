@@ -26,7 +26,7 @@ CONTAINER="grounds-exec"
 BUILD="docker build -t"
 CLEAN="docker rm --force $CONTAINER"
 DETACH="docker run -d --name $CONTAINER --expose $PORT"
-RUN="docker run -ti"
+RUN="docker run -t"
 
 build() {
     ${BUILD} "$IMAGE" .
