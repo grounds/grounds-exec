@@ -8,7 +8,7 @@ describe('Runner', function() {
     var stdoutExample = Factory.create('stdoutExample'),
         stderrExample = Factory.create('stderrExample');
 
-    describe('run', function() {
+    describe('#run', function() {
 
         describe('when language is empty', function() {
 
@@ -94,7 +94,7 @@ describe('Runner', function() {
         });
     });
 
-    describe('stop', function() {
+    describe('#stop', function() {
 
     });
 });
