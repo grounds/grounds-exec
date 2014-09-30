@@ -32,7 +32,7 @@ A container automatically timeouts 10 seconds after the beginning of a `run`.
 If a `run` request is sent from the same client when a previous `run` request is
 already running, this previous request will be gracefully interrupted.
 
-### First build the docker images
+### First build docker exec images
 
     make images
     
