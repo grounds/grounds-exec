@@ -10,7 +10,7 @@ describe('Runner', function() {
 
     describe('#run', function() {
 
-        describe('when language is empty', function() {
+        context('when language is empty', function() {
 
             it('emits an error', function(done) {
                 var runner = new Runner(docker);
@@ -23,7 +23,7 @@ describe('Runner', function() {
             });
         });
 
-        describe('when code is too long', function() {
+        context('when code is too long', function() {
 
             it('emits an error', function(done) {
                 var runner = new Runner(docker);
@@ -42,7 +42,7 @@ describe('Runner', function() {
             });
         });
 
-        describe('when language and code are valid', function() {
+        context('when language and code are valid', function() {
 
             it('runs code inside a docker container and emits output', function(done) {
                 var runner = new Runner(docker);

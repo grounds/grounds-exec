@@ -5,7 +5,7 @@ describe('Util', function() {
 
     describe('.formatImage', function() { 
 
-        describe('when a repository is specified', function() {
+        context('when a repository is specified', function() {
 
             it('formats image name with repository prefix', function(done) {
                 var formated = util.formatImage('grounds', 'ruby');
@@ -15,7 +15,7 @@ describe('Util', function() {
             });
         });
 
-        describe('when no repository is specified', function() {
+        context('when no repository is specified', function() {
 
             it('formats image name without repository prefix', function(done) {
                 expect(util.formatImage('', 'ruby')).to.equal('exec-ruby');
@@ -23,7 +23,7 @@ describe('Util', function() {
             });
         });
 
-        describe('when no language is specified', function() {
+        context('when no language is specified', function() {
 
             it('returns an empty string', function(done) {
                 expect(util.formatImage('grounds', '')).to.equal('');
