@@ -3,49 +3,45 @@ var expect = require('./spec_helper').expect,
 
 describe('Util', function() {
 
-    describe('.formatImage', function() { 
+    describe('.formatImage()', function() { 
 
         context('when a repository is specified', function() {
 
-            it('formats image name with repository prefix', function(done) {
+            it('formats image name with repository prefix', function() {
                 var formated = util.formatImage('grounds', 'ruby');
 
                 expect(formated).to.equal('grounds/exec-ruby');
-                done();
             });
         });
 
         context('when no repository is specified', function() {
 
-            it('formats image name without repository prefix', function(done) {
+            it('formats image name without repository prefix', function() {
                 expect(util.formatImage('', 'ruby')).to.equal('exec-ruby');
-                done();
             });
         });
 
         context('when no language is specified', function() {
 
-            it('returns an empty string', function(done) {
+            it('returns an empty string', function() {
                 expect(util.formatImage('grounds', '')).to.equal('');
-                done();
             });
         });
     });
 
-    describe('.formatCmd', function() {
+    describe('.formatCmd()', function() {
 
-        it('returns an escaped string', function(done) {
+        it('returns an escaped string', function() {
             var code     = 'puts "Hello world\\n\\r\\t"\r\n\t',
-		expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
+		        expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
 
             expect(util.formatCmd(code)).to.equal(expected);
-            done();
         });
     });
 
-    describe('.formatStatus', function() {
+    describe('.formatStatus()', function() {
 
-        it('returns a signed integer (range -128 to 127)', function(done) {
+        it('returns a signed integer (range -128 to 127)', function() {
             var statusTable     = [0, 1, 128, 254, 255],
                 statusExpected  = [0, 1, -128, -2, -1];
 
@@ -55,18 +51,16 @@ describe('Util', function() {
 
                 expect(formated).to.equal(expected);
             }
-            done();
         });
     });
 
-    describe('.formatDockerURL', function() {
+    describe('.formatDockerURL()', function() {
 
-        it('returns an hash with host and port splitted', function(done) {
+        it('returns an object with host and port splitted', function() {
             var formated = util.formatDockerURL('http://127.0.0.1:2375'),
                 expected = { host: 'http://127.0.0.1', port: 2375 };
 
             expect(formated).to.deep.equal(expected);
-            done();
         });
     });
 });
