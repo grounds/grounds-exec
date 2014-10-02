@@ -6,15 +6,19 @@ var docker = require('./spec_helper').docker,
 describe('Runner', function() {
 
     var stdoutExample = Factory.create('stdoutExample'),
-        stderrExample = Factory.create('stderrExample');
+        stderrExample = Factory.create('stderrExample'),
+        sleepExample  = Factory.create('sleepExample'),
+        examples = Factory.create('examples');
 
-    describe('#run', function() {
+    beforeEach(function(){
+        runner = new Runner(docker);
+    });
 
-        describe('when language is empty', function() {
+    describe('#run()', function() {
+
+        context('when language is empty', function() {
 
             it('emits an error', function(done) {
-                var runner = new Runner(docker);
-
                 runner.on('output', function(data) {
                     expect(data.stream).to.equal('error');
                     done();
@@ -23,11 +27,9 @@ describe('Runner', function() {
             });
         });
 
-        describe('when code is too long', function() {
+        context('when code is too long', function() {
 
             it('emits an error', function(done) {
-                var runner = new Runner(docker);
-
                 runner.on('output', function(data) {
                     expect(data.stream).to.equal('error');
                     done();
@@ -42,10 +44,9 @@ describe('Runner', function() {
             });
         });
 
-        describe('when language and code are valid', function() {
+        context('when language and code are valid', function() {
 
             it('runs code inside a docker container and emits output', function(done) {
-                var runner = new Runner(docker);
                 var i = 0;
                 runner.on('output', function(data) {
                     expect(data).to.deep.equal(stdoutExample.output[i]);
@@ -57,7 +58,6 @@ describe('Runner', function() {
             });
 
             it('runs code inside a docker container and emits also stderr', function(done) {
-                var runner = new Runner(docker);
                 var i = 0;
                 var hasOutputOnStderr = false;
 
@@ -74,27 +74,71 @@ describe('Runner', function() {
                 runner.run(stderrExample.language, stderrExample.code);
             });
 
-            it('removes docker container after a run', function(done) {
-                var runner = new Runner(docker);
-
+            it('removes its docker container after a run', function(done) {
                 runner.on('output', function(data) {
                     if (data.stream !== 'status') return;
 
-                    runner._container.remove(function(err, data) {
-                        expect(err).not.to.equal(null);
+                    //sleep(1000);
+                    runner._container.inspect(function(err, data){
+                        var finished = err !== null || 
+                                       data.State.FinishedAt !== null;
+
+                        expect(finished).to.equal(true);
                         done();
-                    }); 
+                    });
                 });
                 runner.run(stdoutExample.language, stdoutExample.code);
             });
 
-            it('timeouts if it takes too long', function(done) {
-                done();
-            }); 
+            context('when it takes too long', function() {
+
+                it('timeouts', function(done) {
+                    runner._runTimeout = 1;
+
+                    runner.on('output', function(data) {
+                        if (data.stream !== 'error') return;
+
+                        done();
+                    });
+                    runner.run(sleepExample.language, sleepExample.code);
+                });
+            });
+        });
+        
+        it('has different languages examples to run', function() {
+            expect(examples.list.length).to.be.above(0);
+        });
+        
+        context('with different languages examples', function() {
+            for (var i in examples.list) {
+                var example = examples.list[i];
+
+                it('runs '+ example.language +' code', function(done) {
+                    var output = '';
+
+                    runner.on('output', function(data) {
+                        if (data.stream === 'stdout')
+                            output += data.chunk; 
+                        if (data.stream !== 'status') return;
+                        
+                        expect(output).to.equal(example.output);
+                        done();
+                    });
+                    runner.run(example.language, example.code);
+                });
+            }
         });
     });
 
-    describe('#stop', function() {
-
+    describe('#stop()', function() {
+        it('stops a running container', function(done) {
+            runner.on('output', function(data) {
+                if (data.stream === 'start') runner.stop();
+                if (data.stream !== 'status') return;
+                            
+                done();
+            });
+            runner.run(sleepExample.language, sleepExample.code);
+        });
     });
 });

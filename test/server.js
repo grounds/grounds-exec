@@ -12,9 +12,11 @@ describe('Server', function() {
     
     var stdoutExample = Factory.create('stdoutExample');
     
+    beforeEach(function(){
+        client = io.connect(socketURL, options);
+    });
+    
     it('accepts new connection', function(done) {
-        var client = io.connect(socketURL, options);
-
         client.on('connect', function(data) {
             client.disconnect();
             done();
@@ -22,7 +24,6 @@ describe('Server', function() {
     });
     
     it('accepts run request and replies with output', function(done) {
-        var client = io.connect(socketURL, options);
         var output = [
             { stream: 'start',  chunk: '' },
             { stream: 'stdout', chunk: '42\n' },
@@ -44,7 +45,6 @@ describe('Server', function() {
     });
     
     it('prevents run request spam', function(done) {
-        var client = io.connect(socketURL, options);
         var i = 0;
         client.on('connect', function(data) {
             client.on('run', function(data){

@@ -3,9 +3,9 @@ var expect = require('./spec_helper').expect,
 
 describe('WritableStream', function() {
 
-    describe('#write', function() {
+    describe('#write()', function() {
 
-        it('emits string from written message', function(done) {
+        it('emits written message', function(done) {
             var writer = new stream.WritableStream(),
                 msg    = 'test';
 
