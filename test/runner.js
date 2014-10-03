@@ -110,8 +110,7 @@ describe('Runner', function() {
         });
         
         context('with different languages examples', function() {
-            for (var i in examples.list) {
-                var example = examples.list[i];
+            examples.list.forEach(function(example) {
 
                 it('runs '+ example.language +' code', function(done) {
                     var output = '';
@@ -126,7 +125,7 @@ describe('Runner', function() {
                     });
                     runner.run(example.language, example.code);
                 });
-            }
+            });
         });
     });
 
