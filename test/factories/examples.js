@@ -2,7 +2,16 @@ var fs = require('fs'),
     path = require('path'),
     FactoryGirl = require('factory_girl');
 
-var languages = ['c', 'cpp', 'csharp', 'golang', 'python2', 'python3', 'ruby'];
+var languages = [
+                    'c',
+                    'cpp',
+                    'csharp',
+                    'golang',
+                    'php',
+                    'python2',
+                    'python3',
+                    'ruby'
+                ];
 
 function loadExamples() {
     var examples = [],
