@@ -21,12 +21,12 @@ function loadExamples() {
     var dirPath = path.resolve(__dirname, '../../examples/output'),
         files   = fs.readdirSync(dirPath);
 
-    for (var i in files) {
-        var filePath = path.resolve(dirPath, files[i]),
+    files.forEach(function(file) {
+        var filePath = path.resolve(dirPath, file),
             output   = fs.readFileSync(filePath).toString();
         
         outputs.push(output);
-    }
+    });
     
     // Read code files
     languages.forEach(function(language) {
@@ -34,9 +34,8 @@ function loadExamples() {
         files   = fs.readdirSync(dirPath);
 
         for (var i in files) {
-            filePath = path.resolve(dirPath, files[i]);
-
-            var code = fs.readFileSync(filePath).toString(),
+            var filePath = path.resolve(dirPath, files[i]),
+                code = fs.readFileSync(filePath).toString(),
                 example = { language: language, code: code, output: outputs[i]};
 
             examples.push(example);
