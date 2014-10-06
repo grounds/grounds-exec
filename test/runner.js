@@ -113,6 +113,8 @@ describe('Runner', function() {
             examples.list.forEach(function(example) {
 
                 it('runs '+ example.language +' code', function(done) {
+                    this.timeout(3000);
+
                     var output = '';
 
                     runner.on('output', function(data) {
