@@ -22,7 +22,7 @@ compatible image.
 All you need is `docker` and `make` to run your own server.
 
 This project is using [socket.io](http://socket.io). This adds the ability 
-to run arbitrary code in real-time from any web browser.
+to run arbitrary code in real-time from a web browser.
 
 Each `run` is executed inside a `docker` container, which is destroyed at the end
 of the `run`.
