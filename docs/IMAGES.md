@@ -42,6 +42,7 @@ Add a `Dockerfile` and a shell script inside this directory:
 
     touch dockerfiles/exec-c/Dockerfile
     touch dockerfiles/exec-c/run.sh
+    chmod u+x dockerfiles/exec-c/run.sh
 
 ### Inside the Dockerfile:
 
