@@ -2,6 +2,6 @@
 
 int main()
 {
-    printf("Hello world\n");
+    fprintf(stderr, "Hello stderr\n");
     return 0;
 }

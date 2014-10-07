@@ -27,6 +27,7 @@ BUILD="docker build -t"
 CLEAN="docker rm --force $CONTAINER"
 DETACH="docker run -d --name $CONTAINER --expose $PORT"
 RUN="docker run -t"
+SERVER="server -e $DOCKER_URL -p $PORT -r $REPOSITORY"
 
 build() {
     ${BUILD} "$IMAGE" .
@@ -39,15 +40,15 @@ clean() {
 }
 
 detach() {
-    ${DETACH} "$IMAGE" server -e "$DOCKER_URL" -p "$PORT" -r "$REPOSITORY"
+    ${DETACH} "$IMAGE" $SERVER
 }
 
 run() {
-    ${RUN} -p $PORT:$PORT "$IMAGE" server -e "$DOCKER_URL" -p "$PORT" -r "$REPOSITORY"
+    ${RUN} -p "$PORT":"$PORT" "$IMAGE" $SERVER
 }
 
 test() {
-    ${RUN} -e "DOCKER_URL=$DOCKER_URL" --link $CONTAINER:$CONTAINER "$IMAGE" npm test
+    ${RUN} -e "DOCKER_URL=$DOCKER_URL" --link "$CONTAINER":"$CONTAINER" "$IMAGE" npm test
 }
 
 container_created() {

@@ -12,12 +12,3 @@ FactoryGirl.define('stdoutExample', function() {
     ];
 })
 
-FactoryGirl.define('stderrExample', function() {
-    this.language = 'python2';
-    this.code = 'a'; // Will produce an error from the python2 interpreter
-})
-
-FactoryGirl.define('sleepExample', function() {
-    this.language = 'ruby';
-    this.code = '3.times { puts "lol" sleep 5 }';
-})

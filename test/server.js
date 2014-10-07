@@ -9,7 +9,6 @@ var options = {
 };
 
 describe('Server', function() {
-    
     var stdoutExample = Factory.create('stdoutExample');
     
     beforeEach(function(){
