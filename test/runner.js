@@ -94,6 +94,23 @@ describe('Runner', function() {
                 runner.on('output', function(data) {
                     if (data.stream !== 'error') return;
 
+                    expect(runner.state).to.equal('timeout');
+                    done();
+                });
+                runner.run(sleepExample.language, sleepExample.code);
+            });
+
+            it("doesn't return its container status code", function(done) {
+                runner._runTimeout = 1;
+
+                var statusCode = null;
+                runner.on('output', function(data) {
+                    if (data.stream === 'status')
+                        statusCode = data.chunk;
+
+                    if (data.stream !== 'error') return;
+
+                    expect(statusCode).to.equal(null);
                     done();
                 });
                 runner.run(sleepExample.language, sleepExample.code);
@@ -106,7 +123,8 @@ describe('Runner', function() {
             runner.on('output', function(data) {
                 if (data.stream === 'start') runner.stop();
                 if (data.stream !== 'status') return;
-                            
+                
+                expect(runner.state).to.equal('finished'); 
                 done();
             });
             runner.run(sleepExample.language, sleepExample.code);
