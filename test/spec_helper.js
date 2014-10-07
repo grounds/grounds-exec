@@ -13,7 +13,7 @@ var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
 docker.repository = 'grounds';
 
 docker.ping(function(err, data) {
-    if (err !== null) {
+    if (err) {
         console.log('Docker API not responding with docker url: %s:%s', dockerHost.host, dockerHost.port);
         process.exit(1);
     }

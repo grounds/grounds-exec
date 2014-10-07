@@ -30,7 +30,7 @@ console.log('Listening on: %d', program.port);
 var docker = new Docker(util.formatDockerURL(program.endpoint));
 
 docker.ping(function(err, data) {
-    if (err !== null) {
+    if (err) {
         console.log('Docker API not responding.');
         process.exit(1);
     }
