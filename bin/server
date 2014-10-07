@@ -21,7 +21,10 @@ if (!program.endpoint) {
 if (!program.repository) program.repository = 'grounds';
 if (!program.port) program.port = 8080;
 
-console.log('Using docker host: %s and docker repository: %s', program.endpoint, program.repository);
+console.log('Using docker host: %s and docker repository: %s', 
+            program.endpoint, 
+            program.repository);
+
 console.log('Listening on: %d', program.port);
 
 var docker = new Docker(util.formatDockerURL(program.endpoint));

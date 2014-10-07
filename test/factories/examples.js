@@ -25,7 +25,7 @@ function loadExamples() {
         var filePath = path.resolve(dirPath, file),
             output   = fs.readFileSync(filePath).toString();
         
-        outputs.push(output);
+        outputs[file] = output;
     });
     
     // Read code files
@@ -33,17 +33,27 @@ function loadExamples() {
         dirPath = path.resolve(__dirname, '../../examples/code', language);
         files   = fs.readdirSync(dirPath);
 
-        for (var i in files) {
-            var filePath = path.resolve(dirPath, files[i]),
+        files.forEach(function(file) {
+            var filePath = path.resolve(dirPath, file),
                 code = fs.readFileSync(filePath).toString(),
-                example = { language: language, code: code, output: outputs[i]};
+                key = file.substring(0, file.lastIndexOf('.')),
+                example = { 
+                            title: file, 
+                            language: language, 
+                            code: code, output: outputs[key]
+                          };
 
             examples.push(example);
-        }
+        });
     });
     return examples;
 }
 
 FactoryGirl.define('examples', function() {
     this.list = loadExamples();
+});
+
+FactoryGirl.define('sleepExample', function() {
+    this.language = 'ruby';
+    this.code = '3.times { puts "lol" sleep 5 }';
 });

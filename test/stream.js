@@ -2,9 +2,7 @@ var expect = require('./spec_helper').expect,
     stream = require('../lib/stream');
 
 describe('WritableStream', function() {
-
     describe('#write()', function() {
-
         it('emits written message', function(done) {
             var writer = new stream.WritableStream(),
                 msg    = 'test';
