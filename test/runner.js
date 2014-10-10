@@ -89,7 +89,7 @@ describe('Runner', function() {
 
         context('when it takes too long', function() {
             it('timeouts and emits an error', function(done) {
-                runner._runTimeout = 1;
+                runner.runTimeout = 1;
 
                 runner.on('output', function(data) {
                     if (data.stream !== 'error') return;
@@ -101,13 +101,13 @@ describe('Runner', function() {
             });
 
             it("doesn't return its container status code", function(done) {
-                runner._runTimeout = 1;
+                runner.runTimeout = 1;
 
                 var statusCode = null;
+
                 runner.on('output', function(data) {
                     if (data.stream === 'status')
                         statusCode = data.chunk;
-
                     if (data.stream !== 'error') return;
 
                     expect(statusCode).to.equal(null);

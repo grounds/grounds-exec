@@ -1,5 +1,5 @@
 var expect = require('./spec_helper').expect,
-    util = require('../lib/util');
+    util = require('../lib/utils');
 
 describe('Util', function() {
     describe('.formatImage()', function() { 
