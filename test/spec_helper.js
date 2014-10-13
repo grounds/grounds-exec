@@ -1,13 +1,13 @@
 var Docker = require('dockerode'),
     FactoryGirl = require('factory_girl'),
     expect = require('chai').expect,
-    util = require('../lib/util');
+    utils = require('../lib/utils');
     
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
 var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
-    dockerHost  = util.formatDockerURL(dockerURL),
+    dockerHost  = utils.formatDockerURL(dockerURL),
     docker      = new Docker(dockerHost);
 
 docker.repository = 'grounds';

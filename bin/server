@@ -4,7 +4,7 @@ var version = require('../package.json').version,
     program = require('commander'),
     Docker = require('dockerode'),
     Connection = require('../lib/connection'),
-    util = require('../lib/util');
+    utils = require('../lib/utils');
 
 program
     .version(version)
@@ -27,7 +27,7 @@ console.log('Using docker host: %s and docker repository: %s',
 
 console.log('Listening on: %d', program.port);
 
-var docker = new Docker(util.formatDockerURL(program.endpoint));
+var docker = new Docker(utils.formatDockerURL(program.endpoint));
 
 docker.ping(function(err, data) {
     if (err) {
