@@ -19,7 +19,8 @@ compatible image.
 
 ## Server
 
-All you need is `docker` and `make` to run your own server.
+All you need is `docker` and `make` to run this project inside
+`docker` containers with the same environment as in production.
 
 This project is using [socket.io](http://socket.io). This adds the ability 
 to run arbitrary code in real-time from a web browser.
@@ -86,7 +87,7 @@ If this is the case, you will receive for each ignored request:
 ### Tests
 
 Tests will also run inside `docker` containers with the same environment
-used by the CI server.
+as the CI server.
 
 If you want to run the test suite, you need to specify a docker remote API url
 to connect with.
