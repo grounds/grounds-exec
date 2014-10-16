@@ -13,7 +13,7 @@ for other languages.
 There is one `docker` image for each language stack supported.
 
 Checkout images
-[documentation](https://github.com/grounds/grounds-exec/blob/master/docs/IMAGES.md)
+[documentation](/docs/IMAGES.md)
 to have more informations about how they are built and how to create your own
 compatible image.
 
@@ -99,7 +99,7 @@ eg: If you're using `boot2docker` on `darwin`:
 ## Contributing
 
 Before sending a pull request, please checkout the contributing
-[guidelines](https://github.com/grounds/grounds-exec/blob/master/docs/CONTRIBUTING.md).
+[guidelines](/docs/CONTRIBUTING.md).
 
 ## Licensing
 
