@@ -18,16 +18,10 @@ if (!program.endpoint) {
     return program.help();
 }
 
-if (!program.repository) program.repository = 'grounds';
-if (!program.port) program.port = 8080;
-
-console.log('Using docker host: %s and docker repository: %s', 
-            program.endpoint, 
-            program.repository);
-
-console.log('Listening on: %d', program.port);
-
-var docker = new Docker(utils.formatDockerURL(program.endpoint));
+var repository = program.repository || 'grounds',
+    port       = program.port || 8080,
+    dockerHost = utils.formatDockerHost(program.endpoint),
+    docker     = new Docker(dockerHost);
 
 docker.ping(function(err, data) {
     if (err) {
@@ -36,9 +30,13 @@ docker.ping(function(err, data) {
     }
 });
 
-docker.repository = program.repository;
+docker.repository = repository;
 
-var io = require('socket.io').listen(program.port);
+console.log('Using docker host: ', dockerHost);
+console.log('Using docker repository: %s', repository);
+console.log('Listening on: %d', port);
+
+var io = require('socket.io').listen(port);
 
 io.on('connection', function (socket) {
     console.log('New connection.');

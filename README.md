@@ -49,7 +49,12 @@ If you want to push this images to your own repository:
 
 You need to specify a docker remote API url to connect with.
 
-    DOCKER_URL="http://127.0.0.1:2375" make run
+    DOCKER_URL="https://127.0.0.1:2375" make run
+
+Nb: If your are using docker API through `https`, your `DOCKER_CERT_PATH` will be
+mount has a volume inside the container.
+
+Be careful: `boot2docker` enforces tls verification since version 1.3.
 
 ### Connect to the server
 
@@ -94,7 +99,12 @@ to connect with.
 
 eg: If you're using `boot2docker` on `darwin`:
 
-    DOCKER_URL="http://192.168.59.103:2375" make test
+    DOCKER_URL="https://192.168.59.103:2375" make test
+
+Nb: If your are using docker API through `https`, your `DOCKER_CERT_PATH` will be
+mount has a volume inside the container.
+
+Be careful: `boot2docker` enforces tls verification since version 1.3.
 
 ## Contributing
 
