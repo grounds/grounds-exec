@@ -27,7 +27,7 @@ describe('Util', function() {
     describe('.formatCmd()', function() {
         it('returns an escaped string', function() {
             var code     = 'puts "Hello world\\n\\r\\t"\r\n\t',
-		expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
+                expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
 
             expect(util.formatCmd(code)).to.equal(expected);
         });

@@ -40,10 +40,10 @@ describe('Runner', function() {
             runner.on('output', function(data) {
                 if (data.stream !== 'status') return;
                 
-                expect(data.chunk).to.equal(1);
+                expect(data.chunk).to.equal(-1);
                 done();
             });
-            runner.run('ruby', 'exit 1');
+            runner.run('ruby', 'exit -1');
         });
 
         it('removes its container after a run', function(done) {

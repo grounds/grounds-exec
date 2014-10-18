@@ -9,17 +9,19 @@ var options = {
 };
 
 describe('Server', function() {
-    var stdoutExample = Factory.create('stdoutExample');
+    var sleepExample  = Factory.create('sleepExample'),
+        stdoutExample = Factory.create('stdoutExample');
     
     beforeEach(function(){
         client = io.connect(socketURL, options);
     });
     
+    afterEach(function(){
+        client.disconnect();
+    });
+    
     it('accepts new connection', function(done) {
-        client.on('connect', function(data) {
-            client.disconnect();
-            done();
-        });
+        client.on('connect', function(data) { done(); });
     });
     
     it('accepts run request and replies with output', function(done) {
@@ -34,26 +36,46 @@ describe('Server', function() {
                 expect(data).to.deep.equal(stdoutExample.output[i]);
                 ++i;
 
-                if (data.stream === 'status') {
-                    client.disconnect();
-                    done();
-                }
+                if (data.stream === 'status') done();
             });
             client.emit('run', stdoutExample.input);
         });
     });
     
-    it('prevents run request spam', function(done) {
-        var i = 0;
+    it('stops previous run request when running a new run', function(done) {
         client.on('connect', function(data) {
             client.on('run', function(data){
-                if (data.stream === 'ignored') {
-                    client.disconnect();
-                    done(); 
-                }
+                if (data.stream === 'status') done();
+            });
+            client.emit('run', sleepExample.input);
+            setTimeout(function() {
+                client.emit('run', stdoutExample.input);
+            }, 600);
+        });
+    });
+    
+    it('prevents run request spam', function(done) {
+        client.on('connect', function(data) {
+            client.on('run', function(data){
+                if (data.stream === 'ignored') done();
             });
             client.emit('run', stdoutExample.input);
             client.emit('run', stdoutExample.input);
         });
     });
+    
+    context('when run request is empty', function() {
+        it('responds with a bad request error', function(done) {
+            client.on('connect', function(data) {
+                client.on('run', function(data){
+                    if (data.stream === 'error') {
+                        expect(data.chunk).to.eq('Bad request.');
+                        done();
+                    }
+                });
+                client.emit('run', {});
+            });
+        });
+    });
+    
 });
