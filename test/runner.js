@@ -19,9 +19,7 @@ describe('Runner', function() {
         examples.list.forEach(function(example) {
             var title = 'runs '+ example.language +' example: '+ example.title;
 
-            it(title, function(done) {
-                this.timeout(3000);
-
+            it(title, function(done) { 
                 var output = '';
 
                 runner.on('output', function(data) {

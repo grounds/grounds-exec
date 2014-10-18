@@ -47,12 +47,31 @@ describe('Util', function() {
         });
     });
 
-    describe('.formatDockerURL()', function() {
-        it('returns an object with host and port splitted', function() {
-            var formated = util.formatDockerURL('http://127.0.0.1:2375'),
-                expected = { host: 'http://127.0.0.1', port: 2375 };
+    describe('.formatDockerHost()', function() {
+        context('when using docker api through http', function() {
+            it('returns a valid http docker host', function() {
+                var dockerHost = util.formatDockerHost('http://127.0.0.1:2375'),
+                    expected   = { protocol: 'http', host: '127.0.0.1', port: 2375 };
 
-            expect(formated).to.deep.equal(expected);
+                expect(dockerHost).to.deep.equal(expected);
+            });
+        });
+
+        context('when using docker api through https', function() {
+            it('returns a valid https docker host', function(){
+                var dockerHost = util.formatDockerHost('https://127.0.0.1:2376');
+
+                expect(dockerHost).to.satisfy(validate_https);
+            });
+
+            function validate_https(dockerHost) {
+                return dockerHost.protocol === 'https' &&
+                       dockerHost.host     === '127.0.0.1' &&
+                       dockerHost.port     === 2376 &&
+                       !!dockerHost.key &&
+                       !!dockerHost.cert &&
+                       !!dockerHost.ca;
+            }
         });
     });
 });

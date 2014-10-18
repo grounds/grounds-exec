@@ -17,38 +17,37 @@ if [ -z $PORT ]; then
     PORT="8080"
 fi
 
-
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 IMAGE="$REPOSITORY/grounds-exec:$GIT_BRANCH"
 CONTAINER="grounds-exec"
 
-BUILD="docker build -t"
-CLEAN="docker rm --force $CONTAINER"
-DETACH="docker run -d --name $CONTAINER --expose $PORT"
-RUN="docker run -t"
-SERVER="server -e $DOCKER_URL -p $PORT -r $REPOSITORY"
+if [ $DOCKER_TLS_VERIFY ]; then
+    volume="-v $DOCKER_CERT_PATH:/home/.docker"
+fi
+
+server="server -e $DOCKER_URL -p $PORT -r $REPOSITORY"
 
 build() {
-    ${BUILD} "$IMAGE" .
+    docker build -t "$IMAGE" .
 }
 
 clean() {
     if [ $(container_created) ]; then
-        ${CLEAN}
+        docker rm --force "$CONTAINER"
     fi
 }
 
 detach() {
-    ${DETACH} "$IMAGE" $SERVER
+    docker run -d $volume --expose "$PORT" --name "$CONTAINER" "$IMAGE" $server
 }
 
 run() {
-    ${RUN} -p "$PORT":"$PORT" "$IMAGE" $SERVER
+    docker run -ti $volume -p "$PORT":"$PORT" "$IMAGE" $server
 }
 
 test() {
-    ${RUN} -e "DOCKER_URL=$DOCKER_URL" --link "$CONTAINER":"$CONTAINER" "$IMAGE" npm test
+    docker run -t $volume -e "DOCKER_URL=$DOCKER_URL" --link "$CONTAINER":"$CONTAINER" "$IMAGE" npm test
 }
 
 container_created() {
