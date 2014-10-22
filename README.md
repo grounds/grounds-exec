@@ -91,12 +91,16 @@ In this case, you will receive for each ignored request:
 
     { stream: 'ignored',  chunk: '' }
 
+If an error occured during a `run`, you will receive:
+
+    { stream: 'error', chunk: 'Error message' }
+
 ### Tests
 
 Tests will also run inside `docker` containers with the same environment
 as the CI server.
 
-Then:
+To run the test suite:
 
     make test
 
