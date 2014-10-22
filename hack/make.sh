@@ -39,15 +39,25 @@ clean() {
 }
 
 detach() {
-    docker run -d $volume --expose "$PORT" --name "$CONTAINER" "$IMAGE" $server
+    docker run -d $volume \
+               --expose "$PORT" \
+               --name "$CONTAINER" \
+               "$IMAGE" $server
 }
 
 run() {
-    docker run -ti $volume -p "$PORT":"$PORT" "$IMAGE" $server
+    docker run -ti $volume \
+                -p "$PORT":"$PORT" \
+                "$IMAGE" $server
 }
 
 test() {
-    docker run -t $volume -e "DOCKER_URL=$DOCKER_URL" --link "$CONTAINER":"$CONTAINER" "$IMAGE" npm test
+    docker run -t $volume  \
+               -e "DOCKER_URL=$DOCKER_URL" \
+               -e "REPOSITORY=$REPOSITORY" \
+               -e "TEST_OPTS=$TEST_OPTS" \
+               --link "$CONTAINER":"$CONTAINER" \
+               "$IMAGE" npm test 
 }
 
 container_created() {
