@@ -44,17 +44,19 @@ The first build takes a lot of time. If you want you can also pull official imag
 If you want to push this images to your own repository:
     
     REPOSITORY="<you repository>" make images-push
-    
-### Launch you own server
 
 You need to specify a docker remote API url to connect with.
 
-    DOCKER_URL="https://127.0.0.1:2375" make run
+    export DOCKER_URL="https://127.0.0.1:2375"
 
 Nb: If your are using docker API through `https`, your `DOCKER_CERT_PATH` will be
-mount has a volume inside the container.
+mounted has a volume inside the container.
 
 Be careful: `boot2docker` enforces tls verification since version 1.3.
+   
+### Launch you own server
+
+    make run
 
 ### Connect to the server
 
@@ -85,7 +87,7 @@ Typicall response:
 The server has a spam prevention against each `run` request. The minimum 
 delay between two run request is fixed to 0.5 seconds.
 
-If this is the case, you will receive for each ignored request:
+In this case, you will receive for each ignored request:
 
     { stream: 'ignored',  chunk: '' }
 
@@ -94,17 +96,13 @@ If this is the case, you will receive for each ignored request:
 Tests will also run inside `docker` containers with the same environment
 as the CI server.
 
-If you want to run the test suite, you need to specify a docker remote API url
-to connect with.
+Then:
 
-eg: If you're using `boot2docker` on `darwin`:
+    make test
 
-    DOCKER_URL="https://192.168.59.103:2375" make test
-
-Nb: If your are using docker API through `https`, your `DOCKER_CERT_PATH` will be
-mount has a volume inside the container.
-
-Be careful: `boot2docker` enforces tls verification since version 1.3.
+To run specific test files or add a flag for `mocha` you can specify `TEST_OPTS`:
+    
+    TEST_OPTS="test/utils.js" make test
 
 ## Contributing
 
