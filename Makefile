@@ -1,23 +1,17 @@
-.PHONY: build clean detach run test deploy images images-push images-pull
+.PHONY: build clean run test deploy images images-push images-pull
 
-PORT 	   := $(if $(PORT),$(PORT),8080)
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
 
-RUN_OPTS   := "-e $(DOCKER_URL) -p $(PORT) -r $(REPOSITORY)"
-
 build:
-	fig build image
+	fig -p groundsexec build image
 
 clean:
 	fig kill
-
-detach: build
-	fig run -d server $(RUN_OPTS)
 	
 run: build
-	fig run server $(RUN_OPTS)	
+	fig up server
 
-test: detach
+test: build
 	fig run test
 
 deploy: build
