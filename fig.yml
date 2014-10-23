@@ -3,7 +3,7 @@ image:
 
 server:
   image: groundsexec_image
-  command: hack/run.sh
+  command: hack/server.sh
   ports:
     - 8080:8080
   volumes:
