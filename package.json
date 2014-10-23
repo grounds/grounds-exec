@@ -17,13 +17,15 @@
     "socket.io": "1.1.x"
   },
   "devDependencies": {
-    "chai": "1.9.x",
-    "factory_girl": "0.2.x",
     "mocha": "1.21.x",
+    "chai": "1.9.x",
+    "sinon": "1.10.x",
+    "rewire": "2.1.x",
+    "factory_girl": "0.2.x",
     "socket.io-client": "1.1.x"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -R spec"
+    "test": "./node_modules/mocha/bin/mocha $TEST_OPTS"
   },
   "engines": {
     "node": "0.10.x"

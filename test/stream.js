@@ -1,4 +1,4 @@
-var expect = require('./spec_helper').expect,
+var expect = require('chai').expect,
     stream = require('../lib/stream');
 
 describe('WritableStream', function() {

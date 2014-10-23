@@ -1,6 +1,6 @@
-var expect = require('./spec_helper').expect,
-    socketURL = require('./spec_helper').socketURL,
+var expect = require('chai').expect,
     Factory = require('./spec_helper').FactoryGirl,
+    socketURL = require('./spec_helper').socketURL,
     io = require('socket.io-client');
 
 var options = {

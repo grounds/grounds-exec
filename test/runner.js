@@ -1,7 +1,15 @@
-var docker = require('./spec_helper').docker,
-    expect = require('./spec_helper').expect,
+var rewire  = require('rewire'),
+    sinon = require('sinon'),
+    expect = require('chai').expect,
+    docker = require('./spec_helper').docker,
     Factory = require('./spec_helper').FactoryGirl,
-    Runner = require('../lib/runner');
+    Runner = rewire('../lib/runner');
+
+var dockerRunStub = {
+    run: function(img, cmd, streams, opts, callback) {
+        callback('error', {}, {});
+    }
+};
 
 describe('Runner', function() {
     var sleepExample  = Factory.create('sleepExample'),
@@ -75,20 +83,29 @@ describe('Runner', function() {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-
-                var tooLongCode = '';
-
-                for (var i = 0; i <= Runner.maxSizeProgram; ++i) {
-                    tooLongCode += '0';
-                }
-                runner.run('ruby', tooLongCode); 
+                revert = Runner.__set__('maxSizeProgram', 0)
+                runner.run('ruby', '');
+                revert();
             });
         });
 
-        context('when it takes too long', function() {
-            it('timeouts and emits an error', function(done) {
-                runner.runTimeout = 1;
+        /*context('when docker failed to run a new container', function() {*/
+            //it('emits an error', function(done) {
+                //runner.on('output', function(data) {
+                    //expect(data.stream).to.equal('error');
+                    //done();
+                //});
+                //runner.docker = new dockerRunStub();
+                //runner.run('ruby', 'puts 42');
+            //});
+        /*});*/
 
+        context('when it takes too long', function() {
+            before(function(){
+                revert = Runner.__set__('runTimeout', 1);
+            });
+
+            it('timeouts and emits an error', function(done) {
                 runner.on('output', function(data) {
                     if (data.stream !== 'error') return;
 
@@ -99,8 +116,6 @@ describe('Runner', function() {
             });
 
             it("doesn't return its container status code", function(done) {
-                runner.runTimeout = 1;
-
                 var statusCode = null;
 
                 runner.on('output', function(data) {
@@ -112,6 +127,10 @@ describe('Runner', function() {
                     done();
                 });
                 runner.run(sleepExample.language, sleepExample.code);
+            });
+
+            after(function(){
+                revert();
             });
         }); 
     });

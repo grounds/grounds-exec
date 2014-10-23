@@ -1,8 +1,7 @@
 var Docker = require('dockerode'),
     FactoryGirl = require('factory_girl'),
-    expect = require('chai').expect,
     utils = require('../lib/utils');
-    
+        
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
@@ -10,7 +9,7 @@ var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
     dockerHost  = utils.formatDockerHost(dockerURL),
     docker      = new Docker(dockerHost);
 
-docker.repository = 'grounds';
+docker.repository = process.env.REPOSITORY || 'grounds';
 
 docker.ping(function(err, data) {
     if (err) {
@@ -20,14 +19,13 @@ docker.ping(function(err, data) {
 });
 
 // If test suite runs inside containers
-if (!!process.env.GROUNDS_EXEC_PORT)
-    var socketURL = process.env.GROUNDS_EXEC_PORT.replace('tcp', 'http');
+if (!!process.env.SERVER_1_PORT_8080_TCP)
+    var socketURL = process.env.SERVER_1_PORT_8080_TCP.replace('tcp', 'http');
 else
     var socketURL = 'http://localhost:8080';
 
 module.exports = {
-    docker: docker,
-    expect: expect,
     socketURL: socketURL,
+    docker: docker,
     FactoryGirl: FactoryGirl
 };
