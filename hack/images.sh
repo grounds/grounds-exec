@@ -2,17 +2,15 @@
 
 set -e
 
-# Set default docker repository if none exist in env
-if [ -z $REPOSITORY ]; then
-    REPOSITORY="grounds"
-fi
+command="$1"
+repository="$2"
 
 get_images_dirs() {
     echo $(find dockerfiles -maxdepth 1 -type d | grep dockerfiles/)
 }
 
 get_image_name() {
-    echo "$REPOSITORY/$(echo $1 | cut -f2 -d "/")"
+    echo "$repository/$(echo $1 | cut -f2 -d "/")"
 }
 
 # Build local images
@@ -32,15 +30,15 @@ pull() {
 
 images() {
     # If first parameter from CLI is missing or empty
-    if [ -z $1 ]; then
-        echo "usage: images [build|push|pull]"
+    if [ -z $command ] || [ -z $repository ]; then
+        echo "usage: images [build|push|pull] REPOSITORY"
         return
     fi
     # For every images
-    for dir in $(get_images_dirs); do
+    for image_dir in $(get_images_dirs); do
         # Launch function corresponding to first parameter from CLI
-        eval $1 "$dir"
+        eval $command "$image_dir"
     done
 }
 
-images "$1"
+images

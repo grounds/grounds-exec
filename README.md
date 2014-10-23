@@ -19,7 +19,7 @@ compatible image.
 
 ## Server
 
-All you need is `docker` and `make` to run this project inside
+All you need is `docker >= 1.3`, `fig >= 1.0` and `make` to run this project inside
 `docker` containers with the same environment as in production.
 
 This project is using [socket.io](http://socket.io). This adds the ability 

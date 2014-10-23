@@ -19,8 +19,8 @@ docker.ping(function(err, data) {
 });
 
 // If test suite runs inside containers
-if (!!process.env.GROUNDS_EXEC_PORT)
-    var socketURL = process.env.GROUNDS_EXEC_PORT.replace('tcp', 'http');
+if (!!process.env.SERVER_1_PORT_8080_TCP)
+    var socketURL = process.env.SERVER_1_PORT_8080_TCP.replace('tcp', 'http');
 else
     var socketURL = 'http://localhost:8080';
 

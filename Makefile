@@ -1,28 +1,35 @@
-.PHONY: build clean detach run test images images-push images-pull
+.PHONY: build clean detach run test deploy images images-push images-pull
+
+PORT 	   := $(if $(PORT),$(PORT),8080)
+REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
+
+RUN_OPTS   := "-e $(DOCKER_URL) -p $(PORT) -r $(REPOSITORY)"
 
 build:
-	hack/make.sh build
+	fig build image
 
 clean:
-	hack/make.sh clean
+	fig kill
 
-detach: build clean
-	hack/make.sh detach
+detach: build
+	fig run -d server $(RUN_OPTS)
 	
 run: build
-	hack/make.sh run
-	
+	fig run server $(RUN_OPTS)	
+
 test: detach
-	hack/make.sh test
-	hack/make.sh clean
+	fig run test
+
+deploy: build
+	hack/deploy.sh
 
 images:
-	hack/images.sh build
+	hack/images.sh build $(REPOSITORY)
 
 images-push: images
-	hack/images.sh push
+	hack/images.sh push $(REPOSITORY)
 
 images-pull:
-	hack/images.sh pull
+	hack/images.sh pull $(REPOSITORY)
 
 

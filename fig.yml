@@ -1,0 +1,21 @@
+image:
+  build: .
+
+server:
+  image: groundsexec_image
+  entrypoint: server
+  ports:
+    - $PORT:$PORT
+  volumes:
+    - $DOCKER_CERT_PATH:/home/.docker
+
+test:
+  image: groundsexec_image
+  command: npm test
+  links:
+    - server
+  volumes:
+    - $DOCKER_CERT_PATH:/home/.docker
+  environment:
+    - DOCKER_URL
+    - TEST_OPTS
