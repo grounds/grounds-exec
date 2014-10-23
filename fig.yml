@@ -3,11 +3,14 @@ image:
 
 server:
   image: groundsexec_image
-  entrypoint: server
+  command: hack/run.sh
   ports:
-    - $PORT:$PORT
+    - 8080:8080
   volumes:
     - $DOCKER_CERT_PATH:/home/.docker
+  environment:
+    - DOCKER_URL
+    - REPOSITORY
 
 test:
   image: groundsexec_image
