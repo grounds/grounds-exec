@@ -1,6 +1,7 @@
-.PHONY: build clean run test deploy images images-push images-pull
+.PHONY: build clean run test push images images-push images-pull
 
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
+TAG 	   := $(if $(TAG),$(TAG),'latest')
 
 build:
 	fig -p groundsexec build image
@@ -14,8 +15,8 @@ run: build
 test: build
 	fig run test
 
-deploy: build
-	hack/deploy.sh
+push: build
+	hack/push.sh $(REPOSITORY) $(TAG)
 
 images:
 	hack/images.sh build $(REPOSITORY)
