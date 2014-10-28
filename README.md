@@ -8,14 +8,23 @@ languages inside `docker` containers.
 `grounds-exec` support many languages and make it really trivial to add support
 for other languages.
 
-## Docker images
+## Languages
 
 There is one `docker` image for each language stack supported.
 
-Checkout images
-[documentation](/docs/IMAGES.md)
-to have more informations about how they are built and how to create your own
-compatible image.
+Checkout this
+[documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
+to get more informations about how to add support for a new language stack.
+
+grounds-exec currently supports latest version of:
+
+- C
+- C++
+- C#
+- Go
+- PHP
+- Python 2 and 3 
+- Ruby
 
 ## Server
 
@@ -41,7 +50,7 @@ The first build takes a lot of time. If you want you can also pull official imag
 
     make images-pull
     
-If you want to push this images to your own repository:
+If you want to push these images to your own repository:
     
     REPOSITORY="<you repository>" make images-push
 

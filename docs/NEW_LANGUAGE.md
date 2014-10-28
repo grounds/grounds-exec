@@ -1,8 +1,9 @@
-# Images
+# Add a new language stack
 
-Images are referring to `docker` images used to execute code inside a `docker` container.
+Each language stack has its own Docker image used to execute code inside
+a Docker container.
 
-They can be found inside the `dockerfiles` directory:
+These images can be found inside the `dockerfiles` directory:
 
 ```
 dockerfiles
@@ -24,7 +25,7 @@ Inside this directory there is two files:
 - A shell script `run.sh` that must be copied inside the image.
 
 
-Images are built has an executable `docker` image. This allow us to do:
+Images are built has an executable Docker image. This allow us to do:
 
     $ docker run grounds/exec-ruby "puts 42"
     42
@@ -46,37 +47,38 @@ Add a `Dockerfile` and a shell script inside this directory:
 
 ### Inside the Dockerfile:
 
-Base the image on the official ubuntu image:
+1. Base the image on the official ubuntu image:
 
-    FROM ubuntu:14.04
+        FROM ubuntu:14.04
 
-Update ubuntu package manager:
+2. Update ubuntu package manager:
 
-    RUN apt-get update -qq
+        RUN apt-get update -qq
 
-Install dependencies required to compile C code (e.g `gcc`)
+3. Install dependencies required to compile C code (e.g `gcc`)
 
-    RUN apt-get -qy install \
-        build-essential \
-        gcc
+        RUN apt-get -qy install \
+            build-essential \
+            gcc
 
-Copy the script `run.sh` inside the `/home/dev` directory:
+4. Copy the script `run.sh` inside the `/home/dev` directory:
 
-    COPY run.sh /home/dev/run.sh
+        COPY run.sh /home/dev/run.sh
 
-Add a user and give him access to `/home/dev`
+5. Add a user and give him access to `/home/dev`
 
-    RUN useradd dev
-    RUN chown -R dev: /home/dev
+        RUN useradd dev
+        RUN chown -R dev: /home/dev
 
-Add:
+6. Switch user and working directory:
 
-    WORKDIR /home/dev
-    USER dev
+        USER dev
+        WORKDIR /home/dev
 
-    ENTRYPOINT ["/home/dev/run.sh"]
+        ENTRYPOINT ["/home/dev/run.sh"]
 
-When you run a `docker` container with this image:
+When you run a Docker container with this image:
+
 - The default `pwd` of this container will be `/home/dev`.
 - The user of this container will be `dev`
 - This container will run `run.sh` and takes as parameter a string whith arbitrary code inside.
@@ -100,27 +102,27 @@ If this is the case, just inherit from the latest tag of the official image:
 
 ### Inside the shell script:
 
-First make it a shell script:
+1. Add sh shebang line:
 
-    #!/bin/sh
+        #!/bin/sh
 
-Echo first parameter from CLI to a file runnable by the language compiler/interpreter:
+2. Echo first parameter from CLI to a file runnable by the language compiler/interpreter:
 
-    echo "$1" > prog.c
+         echo "$1" > prog.c
     
-Please don't forget to surround `$1` with quotation marks, to avoid unexpected behaviors.
-    
-Compile and/or run the program:
+    Please don't forget to surround `$1` with quotation marks, to avoid unexpected behaviors.
 
-    gcc -o prog prog.c
-    
-    if [ -f "prog" ]
-    then
-      ./prog
-    fi
+3. Compile and/or run the program:
+
+        gcc -o prog prog.c
+        
+        if [ -f "prog" ]
+        then
+          ./prog
+        fi
     
 ### Build the image
 
-Build the image like you usually do with `docker`:
+Build the image like you usually do with Docker:
 
     $ docker build -t grounds/exec-c dockerfiles/exec-c
