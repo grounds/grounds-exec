@@ -8,12 +8,13 @@ build:
 
 clean:
 	fig kill
+	fig rm --force
 	
 run: build
 	fig up server
 
-test: build
-	fig run test
+test: clean build
+	fig up test
 
 push: build
 	hack/push.sh $(REPOSITORY) $(TAG)

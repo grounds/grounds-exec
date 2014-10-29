@@ -101,15 +101,17 @@ describe('Runner', function() {
         /*});*/
 
         context('when it takes too long', function() {
-            before(function(){
-                revert = Runner.__set__('runTimeout', 1);
+            beforeEach(function(){
+                revert = Runner.__set__('runTimeout', 1); 
             });
 
             it('timeouts and emits an error', function(done) {
                 runner.on('output', function(data) {
                     if (data.stream !== 'error') return;
 
-                    expect(runner.state).to.equal('timeout');
+                    console.log("error:", data.chunk);
+
+                    expect(this.state).to.equal('timeout');
                     done();
                 });
                 runner.run(sleepExample.language, sleepExample.code);
@@ -129,7 +131,7 @@ describe('Runner', function() {
                 runner.run(sleepExample.language, sleepExample.code);
             });
 
-            after(function(){
+            afterEach(function(){
                 revert();
             });
         }); 
@@ -138,13 +140,21 @@ describe('Runner', function() {
     describe('#stop()', function() {
         it('stops a running container', function(done) {
             runner.on('output', function(data) {
-                if (data.stream === 'start') runner.stop();
+                if (data.stream === 'start')
+                    this.stop();
                 if (data.stream !== 'status') return;
                 
-                expect(runner.state).to.equal('finished'); 
+                expect(this.state).to.equal('finished'); 
                 done();
             });
             runner.run(sleepExample.language, sleepExample.code);
+        });
+
+        context('when runner has no container', function() {
+            it("doesn't stop anything", function() {
+                runner._container = null;
+                runner.stop();
+            });
         });
     });
 });

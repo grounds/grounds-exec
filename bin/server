@@ -11,6 +11,8 @@ program
 .option('-e, --endpoint [url]', 'Docker API url')
 .option('-r, --repository [name])', 'Docker repository', 'grounds')
 .option('-p, --port [number]', 'Port to serve', 8080)
+.option('-c, --certs [path]', 'Path to ssl certificates', '/home/.docker')
+
 .parse(process.argv);
 
 if (!program.endpoint) {
@@ -18,7 +20,7 @@ if (!program.endpoint) {
     return program.help();
 }
 
-var dockerHost = utils.formatDockerHost(program.endpoint),
+var dockerHost = utils.formatDockerHost(program.endpoint, program.certs),
     docker     = new Docker(dockerHost);
 
 docker.ping(function(err, data) {

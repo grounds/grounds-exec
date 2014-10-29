@@ -53,17 +53,7 @@ describe('Server', function() {
             }, 600);
         });
     });
-    
-    it('prevents run request spam', function(done) {
-        client.on('connect', function(data) {
-            client.on('run', function(data){
-                if (data.stream === 'ignored') done();
-            });
-            client.emit('run', stdoutExample.input);
-            client.emit('run', stdoutExample.input);
-        });
-    });
-    
+
     context('when run request is empty', function() {
         it('responds with a bad request error', function(done) {
             client.on('connect', function(data) {
@@ -78,4 +68,13 @@ describe('Server', function() {
         });
     });
     
+    it('prevents run request spam', function(done) {
+        client.on('connect', function(data) {
+            client.on('run', function(data){
+                if (data.stream === 'ignored') done();
+            });
+            client.emit('run', stdoutExample.input);
+            client.emit('run', stdoutExample.input);
+        });
+    });
 });

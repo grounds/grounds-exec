@@ -1,6 +1,7 @@
 var rewire = require('rewire'),
     expect = require('chai').expect,
-    utils = rewire('../lib/utils');
+    utils = rewire('../lib/utils'),
+    dockerCerts = require('./spec_helper').dockerCerts;
 
 var fsStub = {
     readFileSync: function(path) { return path; }
@@ -66,7 +67,8 @@ describe('Utils', function() {
 
         context('when using docker api through https', function() {
             it('returns a valid https docker host', function(){
-                var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376');
+                var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376', 
+                                                        dockerCerts);
 
                 expect(dockerHost).to.satisfy(validate_https);
             });
