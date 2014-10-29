@@ -6,7 +6,8 @@ FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
 var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
-    dockerHost  = utils.formatDockerHost(dockerURL),
+    dockerCerts = process.env.DOCKER_CERT_PATH || '/home/.docker',
+    dockerHost  = utils.formatDockerHost(dockerURL, dockerCerts),
     docker      = new Docker(dockerHost);
 
 docker.repository = process.env.REPOSITORY || 'grounds';
@@ -27,5 +28,6 @@ else
 module.exports = {
     socketURL: socketURL,
     docker: docker,
+    dockerCerts: dockerCerts,
     FactoryGirl: FactoryGirl
 };

@@ -3,14 +3,14 @@
 
 This project is a server with real-time bidirectional event-based communication, 
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
-languages inside `docker` containers.
+languages inside Docker containers.
 
 `grounds-exec` support many languages and make it really trivial to add support
 for other languages.
 
 ## Languages
 
-There is one `docker` image for each language stack supported.
+There is one Docker image for each language stack supported.
 
 Checkout this
 [documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
@@ -29,12 +29,12 @@ grounds-exec currently supports latest version of:
 ## Server
 
 All you need is `docker >= 1.3`, `fig >= 1.0` and `make` to run this project inside
-`docker` containers with the same environment as in production.
+Docker containers with the same environment as in production.
 
 This project is using [socket.io](http://socket.io). This adds the ability 
 to run arbitrary code in real-time from a web browser.
 
-Each `run` is executed inside a `docker` container, which is destroyed at the end
+Each `run` is executed inside a Docker container, which is destroyed at the end
 of the `run`.
 
 A container automatically timeouts 10 seconds after the beginning of a `run`.
@@ -42,7 +42,7 @@ A container automatically timeouts 10 seconds after the beginning of a `run`.
 If a `run` request is sent from the same client when a previous `run` request is
 already running, this previous request will be gracefully interrupted.
 
-### First build docker exec images
+### First build language stack images
 
     make images
     
