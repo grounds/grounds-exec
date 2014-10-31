@@ -47,6 +47,13 @@ Add a `Dockerfile` and a shell script inside this directory:
 
 ### Inside the Dockerfile:
 
+Checkout first [here](https://github.com/docker-library). If there is an official image for the language
+stack you are trying to add, just inherit from the latest tag of the official image and skip to step 4:
+
+    FROM python:latest
+    
+If there is no official image for this language stack:
+
 1. Base the image on the official ubuntu image:
 
         FROM ubuntu:14.04
@@ -83,23 +90,6 @@ When you run a Docker container with this image:
 - The user of this container will be `dev`
 - This container will run `run.sh` and takes as parameter a string whith arbitrary code inside.
 
-Nb: Checkout first [here](https://github.com/docker-library) if there is an official image for the language
-stack you are trying to add.
-
-If this is the case, just inherit from the latest tag of the official image:
-
-    FROM python:latest
-
-    COPY run.sh /home/dev/run.sh
-
-    RUN useradd dev
-    RUN chown -R dev: /home/dev
-
-    WORKDIR /home/dev
-    USER dev
-
-    ENTRYPOINT ["/home/dev/run.sh"]
-
 ### Inside the shell script:
 
 1. Add sh shebang line:
@@ -126,3 +116,27 @@ If this is the case, just inherit from the latest tag of the official image:
 Build the image like you usually do with Docker:
 
     $ docker build -t grounds/exec-c dockerfiles/exec-c
+
+### Tests
+
+To add this language to the test suite:
+
+1. Create a directory with the language code inside `examples/code`
+
+    e.g. For PHP:
+    
+        mkdir examples/code/php
+    
+2. In this directory add two files with the appropriate file extension:
+
+    * A code example who writes `"Hello world\n"` on `stdout`.
+    * A code example who writes `"Hello stderr\n"` on `stderr`.
+
+3. Add this language code in `test/factories/examples.js`:
+        
+        var languages = ['c', 'cpp', 'php'];
+
+4. Run the test suite
+
+
+**Thanks for your contribution!**
