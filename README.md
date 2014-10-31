@@ -5,16 +5,15 @@ This project is a server with real-time bidirectional event-based communication,
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
 languages inside Docker containers.
 
-`grounds-exec` support many languages and make it really trivial to add support
+grounds-exec support many languages and make it really trivial to add support
 for other languages.
 
+All you need is [Docker 1.3+](https://docker.com/), [Fig 1.0+](http://www.fig.sh/)
+and [make](http://www.gnu.org/software/make/) to run this project inside Docker
+containers with the same environment as in production.
+
 ## Languages
-
 There is one Docker image for each language stack supported.
-
-Checkout this
-[documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
-to get more informations about how to add support for a new language stack.
 
 grounds-exec currently supports latest version of:
 
@@ -26,12 +25,12 @@ grounds-exec currently supports latest version of:
 - Python 2 and 3 
 - Ruby
 
+Checkout this
+[documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
+to get more informations about how to add support for a new language stack.
+
 ## Server
-
-All you need is `docker >= 1.3`, `fig >= 1.0` and `make` to run this project inside
-Docker containers with the same environment as in production.
-
-This project is using [socket.io](http://socket.io). This adds the ability 
+grounds-exec is using [socket.io](http://socket.io). This adds the ability 
 to run arbitrary code in real-time from a web browser.
 
 Each `run` is executed inside a Docker container, which is destroyed at the end
@@ -46,7 +45,8 @@ already running, this previous request will be gracefully interrupted.
 
     make images
     
-The first build takes a lot of time. If you want you can also pull official images:
+The first build takes a lot of time. If you want you can also pull official
+images:
 
     make images-pull
     
@@ -56,12 +56,12 @@ If you want to push these images to your own repository:
 
 You need to specify a docker remote API url to connect with.
 
-    export DOCKER_URL="https://127.0.0.1:2375"
+    export DOCKER_URL="http://127.0.0.1:2375"
 
-Nb: If your are using docker API through `https`, your `DOCKER_CERT_PATH` will be
+Nb: If your are using Docker API through `https`, your `DOCKER_CERT_PATH` will be
 mounted has a volume inside the container.
 
-Be careful: `boot2docker` enforces tls verification since version 1.3.
+Be careful: boot2docker enforces tls verification since version 1.3.
    
 ### Launch you own server
 
@@ -106,14 +106,15 @@ If an error occured during a `run`, you will receive:
 
 ### Tests
 
-Tests will also run inside `docker` containers with the same environment
+Tests will also run inside Docker containers with the same environment
 as the CI server.
 
 To run the test suite:
 
     make test
 
-To run specific test files or add a flag for `mocha` you can specify `TEST_OPTS`:
+To run specific test files or add a flag for [mocha](http://mochajs.org/) you
+can specify `TEST_OPTS`:
     
     TEST_OPTS="test/utils.js" make test
 
@@ -122,7 +123,11 @@ To run specific test files or add a flag for `mocha` you can specify `TEST_OPTS`
 Before sending a pull request, please checkout the contributing
 [guidelines](/docs/CONTRIBUTING.md).
 
+## Authors
+
+See [authors](/docs/AUTHORS.md) file.
+
 ## Licensing
 
-`grounds-exec` is licensed under the MIT License. See `LICENSE` for full license
-text.
+grounds-exec is licensed under the MIT License. See [LICENSE](LICENSE) for
+full license text.
