@@ -22,6 +22,7 @@ grounds-exec currently supports latest version of:
 - C#
 - Go
 - Java
+- Node.js
 - PHP
 - Python 2 and 3
 - Ruby
