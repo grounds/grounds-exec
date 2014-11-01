@@ -1,7 +1,7 @@
 # grounds-exec
 [ ![Codeship Status for grounds/grounds-exec](https://codeship.io/projects/8bd7b600-2357-0132-4e4e-7e9ae55fd39f/status?branch=master)](https://codeship.io/projects/36679)
 
-This project is a server with real-time bidirectional event-based communication, 
+This project is a server with real-time bidirectional event-based communication,
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
 languages inside Docker containers.
 
@@ -21,8 +21,10 @@ grounds-exec currently supports latest version of:
 - C++
 - C#
 - Go
+- Java
+- Node.js
 - PHP
-- Python 2 and 3 
+- Python 2 and 3
 - Ruby
 
 Checkout this
@@ -30,7 +32,7 @@ Checkout this
 to get more informations about how to add support for a new language stack.
 
 ## Server
-grounds-exec is using [socket.io](http://socket.io). This adds the ability 
+grounds-exec is using [socket.io](http://socket.io). This adds the ability
 to run arbitrary code in real-time from a web browser.
 
 Each `run` is executed inside a Docker container, which is destroyed at the end
@@ -44,14 +46,14 @@ already running, this previous request will be gracefully interrupted.
 ### First build language stack images
 
     make images
-    
+
 The first build takes a lot of time. If you want you can also pull official
 images:
 
     make images-pull
-    
+
 If you want to push these images to your own repository:
-    
+
     REPOSITORY="<you repository>" make images-push
 
 You need to specify a docker remote API url to connect with.
@@ -62,7 +64,7 @@ Nb: If your are using Docker API through `https`, your `DOCKER_CERT_PATH` will b
 mounted has a volume inside the container.
 
 Be careful: boot2docker enforces tls verification since version 1.3.
-   
+
 ### Launch you own server
 
     make run
@@ -79,13 +81,13 @@ Be careful: boot2docker enforces tls verification since version 1.3.
         });
         client.emit('run', { language: 'python2', code: 'print 42' });
     });
-    
+
 ### Run response
 
 Format:
 
     { stream: 'stream', chunk: 'chunk' }
-    
+
 Typicall response:
 
     { stream: 'start',  chunk: '' }
@@ -115,7 +117,7 @@ To run the test suite:
 
 To run specific test files or add a flag for [mocha](http://mochajs.org/) you
 can specify `TEST_OPTS`:
-    
+
     TEST_OPTS="test/utils.js" make test
 
 ## Contributing

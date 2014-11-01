@@ -7,6 +7,8 @@ var languages = [
                     'cpp',
                     'csharp',
                     'golang',
+                    'java',
+                    'node',
                     'php',
                     'python2',
                     'python3',
