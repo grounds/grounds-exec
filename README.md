@@ -26,6 +26,7 @@ grounds-exec currently supports latest version of:
 - PHP
 - Python 2 and 3
 - Ruby
+- Rust
 
 Checkout this
 [documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)

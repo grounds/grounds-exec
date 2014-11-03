@@ -4,6 +4,7 @@
 
 ### Special thanks to:
 
+* [Gaetan Gueraud](https://github.com/exadeci) - For Rust support addition.
 * [Docker Team](https://docker.com/) - For their awesome work on containerization.
 * [Fig Team](http://fig.sh) - For their great orchestration tool.
 

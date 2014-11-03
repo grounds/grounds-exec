@@ -24,12 +24,11 @@ Inside this directory there is two files:
 - A `Dockerfile` to build the image.
 - A shell script `run.sh` that must be copied inside the image.
 
-
 Images are built has an executable Docker image. This allow us to do:
 
     $ docker run grounds/exec-ruby "puts 42"
     42
-    
+
 ## Create an image
 
 Creating an image for a new language is really trivial.
@@ -38,7 +37,7 @@ Take a look at this example for the C language:
 Create the directory:
 
     mkdir dockerfiles/exec-c
-    
+
 Add a `Dockerfile` and a shell script inside this directory:
 
     touch dockerfiles/exec-c/Dockerfile
@@ -51,7 +50,7 @@ Checkout first [here](https://github.com/docker-library). If there is an officia
 stack you are trying to add, just inherit from the latest tag of the official image and skip to step 4:
 
     FROM python:latest
-    
+
 If there is no official image for this language stack:
 
 1. Base the image on the official ubuntu image:
@@ -99,18 +98,18 @@ When you run a Docker container with this image:
 2. Echo first parameter from CLI to a file runnable by the language compiler/interpreter:
 
          echo "$1" > prog.c
-    
+
     Please don't forget to surround `$1` with quotation marks, to avoid unexpected behaviors.
 
 3. Compile and/or run the program:
 
         gcc -o prog prog.c
-        
+
         if [ -f "prog" ]
         then
           ./prog
         fi
-    
+
 ### Build the image
 
 Build the image like you usually do with Docker:
@@ -124,19 +123,21 @@ To add this language to the test suite:
 1. Create a directory with the language code inside `examples/code`
 
     e.g. For PHP:
-    
+
         mkdir examples/code/php
-    
+
 2. In this directory add two files with the appropriate file extension:
 
     * A code example who writes `"Hello world\n"` on `stdout`.
     * A code example who writes `"Hello stderr\n"` on `stderr`.
 
+You can find great examples on
+[Rosetta code](http://rosettacode.org/wiki/Hello_world).
+
 3. Add this language code in `test/factories/examples.js`:
-        
+
         var languages = ['c', 'cpp', 'php'];
 
 4. Run the test suite
-
 
 **Thanks for your contribution!**
