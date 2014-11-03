@@ -12,7 +12,8 @@ var languages = [
                     'php',
                     'python2',
                     'python3',
-                    'ruby'
+                    'ruby',
+                    'rust'
                 ];
 
 function loadExamples() {
