@@ -4,7 +4,8 @@ var version = require('../package.json').version,
     program = require('commander'),
     Docker = require('dockerode'),
     Connection = require('../lib/connection'),
-    utils = require('../lib/utils');
+    utils = require('../lib/utils'),
+    logger = require('../lib/logger');
 
 program
 .version(version)
@@ -34,13 +35,13 @@ docker.repository = program.repository;
 
 console.log('Using docker host: ', dockerHost);
 console.log('Using docker repository: %s', program.repository);
-console.log('Listening on: %d', program.port);
+logger.log('Listening on:', program.port);
 
 var io = require('socket.io').listen(program.port);
 
 io.on('connection', function (socket) {
-    console.log('New connection.');
+    logger.log('New connection.');
     new Connection(socket, docker).bindEvents();
 }).on('disconnect', function() {
-    console.log('A client has disconnected.');
+    logger.log('A client has disconnected.');
 });
