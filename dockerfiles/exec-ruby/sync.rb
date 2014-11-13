@@ -1,17 +1,17 @@
 # Output should be flushed immediately to the underlying operating system
-# and is not buffered internally.
+# and not buffered internally.
 #
-# e.g.
+# e.g. With this code:
 #
 # 5.times do
 #   putc('.')
 #   sleep(2)
 # end
 #
-# Per default, output will get nothing for the first 10 seconds, then have
-# five dots in one shot.
+# Per default, this will get nothing on the output for the first 10 seconds,
+# then have five dots in one shot.
 #
-# We want that output will get a dot after every two seconds.
-
+# We want to get a dot after every two seconds, we need to capture output
+# in real time with:
 $stdout.sync = true
 $stderr.sync = true
