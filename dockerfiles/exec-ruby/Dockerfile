@@ -1,4 +1,6 @@
-FROM ruby:latest 
+FROM ruby:latest
+
+RUN gem install rails --version 4.1.7
 
 COPY run.sh /home/dev/run.sh
 
