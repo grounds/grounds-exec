@@ -8,4 +8,6 @@ RUN chown -R dev: /home/dev
 USER dev
 WORKDIR /home/dev
 
+ENV RUBYOPT "-r /home/dev/sync.rb"
+
 ENTRYPOINT ["/home/dev/run.sh"]
