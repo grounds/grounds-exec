@@ -11,12 +11,15 @@ describe('WritableStream', function() {
                 expect(data).to.equal(msg);
                 done();
             });
-
+            writer.write(message());
+        });
+        
+        function message() {
             var bytes = [];
             for (var i = 0; i < msg.length; ++i) {
                 bytes.push(msg.charCodeAt(i));
             }
-            writer.write(bytes);
-        });
+            return bytes;
+        }
     });
 });
