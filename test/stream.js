@@ -11,10 +11,10 @@ describe('WritableStream', function() {
                 expect(data).to.equal(msg);
                 done();
             });
-            writer.write(message());
+            writer.write(messageBytes(msg));
         });
         
-        function message() {
+        function messageBytes(msg) {
             var bytes = [];
             for (var i = 0; i < msg.length; ++i) {
                 bytes.push(msg.charCodeAt(i));
