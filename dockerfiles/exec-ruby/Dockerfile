@@ -2,15 +2,17 @@ FROM ruby:latest
 
 RUN gem install rails --version 4.1.7
 
-# We also need sync.rb file to capture output in real time
-COPY . /home/dev/
+ENV DEV /home/dev
 
-ENV RUBYOPT -r /home/dev/sync.rb
+# We also need sync.rb file to capture output in real time
+COPY . $DEV
+
+ENV RUBYOPT -r $DEV/sync.rb
 
 RUN useradd dev
-RUN chown -R dev: /home/dev
+RUN chown -R dev: $DEV
 
 USER dev
-WORKDIR /home/dev
+WORKDIR $DEV
 
-ENTRYPOINT ["/home/dev/run.sh"]
+ENTRYPOINT ["./run.sh"]

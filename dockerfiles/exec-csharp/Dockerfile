@@ -4,12 +4,14 @@ RUN apt-get update -q && \
     apt-get -qy install \
     mono-mcs
 
-COPY run.sh /home/dev/run.sh
+ENV DEV /home/dev
+
+COPY run.sh $DEV/run.sh
 
 RUN useradd dev
-RUN chown -R dev: /home/dev
+RUN chown -R dev: $DEV
 
 USER dev
-WORKDIR /home/dev
+WORKDIR $DEV
 
-ENTRYPOINT ["/home/dev/run.sh"]
+ENTRYPOINT ["./run.sh"]
