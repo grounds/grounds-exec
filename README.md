@@ -32,7 +32,7 @@ Checkout this
 [documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
 to get more informations about how to add support for a new language stack.
 
-## Server
+## Prerequisite
 grounds-exec is using [socket.io](http://socket.io). This adds the ability
 to run arbitrary code in real-time from a web browser.
 
@@ -44,7 +44,7 @@ A container automatically timeouts 10 seconds after the beginning of a `run`.
 If a `run` request is sent from the same client when a previous `run` request is
 already running, this previous request will be gracefully interrupted.
 
-### First build language stack images
+### Build language stack images
 
     make images
 
@@ -57,16 +57,20 @@ If you want to push these images to your own repository:
 
     REPOSITORY="<you repository>" make images-push
 
+### Set Docker remote API url
+
 You need to specify a docker remote API url to connect with.
 
     export DOCKER_URL="http://127.0.0.1:2375"
 
-Nb: If your are using Docker API through `https`, your `DOCKER_CERT_PATH` will be
+If your are using Docker API through `https`, your `DOCKER_CERT_PATH` will be
 mounted has a volume inside the container.
 
-Be careful: boot2docker enforces tls verification since version 1.3.
+>Be careful: boot2docker enforces tls verification since version 1.3.
 
-### Launch you own server
+## Socket.io server
+
+### Start the server
 
     make run
 
@@ -85,16 +89,16 @@ Be careful: boot2docker enforces tls verification since version 1.3.
 
 ### Run response
 
-Format:
+* Format:
 
-    { stream: 'stream', chunk: 'chunk' }
+        { stream: 'stream', chunk: 'chunk' }
 
-Typicall response:
+* Typical response:
 
-    { stream: 'start',  chunk: '' }
-    { stream: 'stdout', chunk: '42\n' }
-    { stream: 'stderr', chunk: 'Error!\n' }
-    { stream: 'status', chunk: 0 }
+        { stream: 'start',  chunk: '' }
+        { stream: 'stdout', chunk: '42\n' }
+        { stream: 'stderr', chunk: 'Error!\n' }
+        { stream: 'status', chunk: 0 }
 
 The server has a spam prevention against each `run` request. The minimum 
 delay between two run request is fixed to 0.5 seconds.
@@ -107,7 +111,7 @@ If an error occured during a `run`, you will receive:
 
     { stream: 'error', chunk: 'Error message' }
 
-### Tests
+## Tests
 
 Tests will also run inside Docker containers with the same environment
 as the CI server.

@@ -67,21 +67,30 @@ If there is no official image for this language stack:
             build-essential \
             gcc
 
-4. Copy the script `run.sh` inside the `/home/dev` directory:
+4. Set development directory in env:
 
-        COPY run.sh /home/dev/run.sh
+        ENV DEV /home/dev
 
-5. Add a user and give him access to `/home/dev`
+5. Copy the script `run.sh` inside the development directory:
+
+        COPY run.sh $DEV/run.sh
+
+6. Add a user and give him access to the development directory:
 
         RUN useradd dev
-        RUN chown -R dev: /home/dev
+        RUN chown -R dev: $DEV
 
-6. Switch user and working directory:
+7. Switch to this user:
 
         USER dev
-        WORKDIR /home/dev
 
-        ENTRYPOINT ["/home/dev/run.sh"]
+8. Set working directory:
+
+        WORKDIR $DEV
+
+9. Configure this image as an executable:
+
+        ENTRYPOINT ["./run.sh"]
 
 When you run a Docker container with this image:
 
