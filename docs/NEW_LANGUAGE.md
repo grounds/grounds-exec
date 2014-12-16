@@ -8,21 +8,25 @@ These images can be found inside the `dockerfiles` directory:
 ```
 dockerfiles
 │
-├───exec-ruby
+├───ruby
 │   │   Dockerfile
 │   │   run.sh
 │
 │
-└───exec-golang
+└───golang
     │   Dockerfile
     │   run.sh
 ```
 
-Each image has a directory called `exec-$language`.
+Each image has a directory named with its language code.
 Inside this directory there is two files:
 
 - A `Dockerfile` to build the image.
 - A shell script `run.sh` that must be copied inside the image.
+
+Images are following this naming convention:
+
+    $REPOSITORY/exec-$LANGUAGE
 
 Images are built has an executable Docker image. This allow us to do:
 

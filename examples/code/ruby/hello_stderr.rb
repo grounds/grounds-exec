@@ -1,1 +1,1 @@
-$stderr.puts "Hello stderr"
+$stderr.puts 'Hello stderr'
