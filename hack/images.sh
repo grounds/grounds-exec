@@ -4,13 +4,14 @@ set -e
 
 command="$1"
 repository="$2"
+directory="dockerfiles"
 
 get_images_dirs() {
-    echo $(find dockerfiles -maxdepth 1 -type d | grep dockerfiles/)
+    echo $(find $directory -maxdepth 1 -type d | grep $directory/)
 }
 
 get_image_name() {
-    echo "$repository/$(echo $1 | cut -f2 -d "/")"
+    echo "$repository/exec-$(echo $1 | cut -f2 -d "/")"
 }
 
 # Build local images
