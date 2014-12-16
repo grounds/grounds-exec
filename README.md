@@ -20,6 +20,7 @@ grounds-exec currently supports latest version of:
 - C
 - C++
 - C#
+- Elixir
 - Go
 - Java
 - Node.js
