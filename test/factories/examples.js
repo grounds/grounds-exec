@@ -6,6 +6,7 @@ var languages = [
                     'c',
                     'cpp',
                     'csharp',
+                    'elixir',
                     'golang',
                     'java',
                     'node',
@@ -27,10 +28,10 @@ function loadExamples() {
     files.forEach(function(file) {
         var filePath = path.resolve(dirPath, file),
             output   = fs.readFileSync(filePath).toString();
-        
+
         outputs[file] = output;
     });
-    
+
     // Read code files
     languages.forEach(function(language) {
         dirPath = path.resolve(__dirname, '../../examples/code', language);
@@ -40,9 +41,9 @@ function loadExamples() {
             var filePath = path.resolve(dirPath, file),
                 code = fs.readFileSync(filePath).toString(),
                 key = file.substring(0, file.lastIndexOf('.')),
-                example = { 
-                            title: file, 
-                            language: language, 
+                example = {
+                            title: file,
+                            language: language,
                             code: code, output: outputs[key]
                           };
 
