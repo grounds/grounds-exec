@@ -1,9 +1,9 @@
 var rewire  = require('rewire'),
     sinon = require('sinon'),
     expect = require('chai').expect,
-    docker = require('./spec_helper').docker,
-    Factory = require('./spec_helper').FactoryGirl,
-    Runner = rewire('../lib/runner');
+    docker = require('../spec_helper').docker,
+    Factory = require('../spec_helper').FactoryGirl,
+    Runner = rewire('../../lib/runner');
 
 var dockerRunStub = {
     run: function(img, cmd, streams, opts, callback) {
@@ -12,40 +12,17 @@ var dockerRunStub = {
 };
 
 describe('Runner', function() {
-    var sleepExample  = Factory.create('sleepExample'),
-        examples      = Factory.create('examples');
+    var sleepExample  = Factory.create('sleepExample');
 
     beforeEach(function(){
         runner = new Runner(docker);
     });
 
     describe('#run()', function() {
-        it('has different examples to run', function() {
-            expect(examples.list.length).to.be.above(0);
-        });
-       
-        examples.list.forEach(function(example) {
-            var title = 'runs '+ example.language +' example: '+ example.title;
-
-            it(title, function(done) { 
-                var output = '';
-
-                runner.on('output', function(data) {
-                    if (data.stream === 'stdout' || data.stream === 'stderr')
-                        output += data.chunk; 
-                    if (data.stream !== 'status') return;
-                    
-                    expect(output).to.equal(example.output);
-                    done();
-                });
-                runner.run(example.language, example.code);
-            });
-        });
-
         it('returns its container status code', function(done) {
             runner.on('output', function(data) {
                 if (data.stream !== 'status') return;
-                
+
                 expect(data.chunk).to.equal(-1);
                 done();
             });
@@ -57,7 +34,7 @@ describe('Runner', function() {
                 if (data.stream !== 'status') return;
 
                 runner._container.inspect(function(err, data){
-                    var finished = err !== null || 
+                    var finished = err !== null ||
                         data.State.FinishedAt !== null;
 
                     expect(finished).to.equal(true);
@@ -73,7 +50,7 @@ describe('Runner', function() {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-                runner.run('', 'puts 42'); 
+                runner.run('', 'puts 42');
             });
         });
 
@@ -102,7 +79,7 @@ describe('Runner', function() {
 
         context('when it takes too long', function() {
             beforeEach(function(){
-                revert = Runner.__set__('runTimeout', 1); 
+                revert = Runner.__set__('runTimeout', 1);
             });
 
             it('timeouts and emits an error', function(done) {
@@ -134,7 +111,7 @@ describe('Runner', function() {
             afterEach(function(){
                 revert();
             });
-        }); 
+        });
     });
 
     describe('#stop()', function() {
@@ -143,8 +120,8 @@ describe('Runner', function() {
                 if (data.stream === 'start')
                     this.stop();
                 if (data.stream !== 'status') return;
-                
-                expect(this.state).to.equal('finished'); 
+
+                expect(this.state).to.equal('finished');
                 done();
             });
             runner.run(sleepExample.language, sleepExample.code);

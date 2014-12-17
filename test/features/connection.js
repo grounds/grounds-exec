@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
-    Factory = require('./spec_helper').FactoryGirl,
-    socketURL = require('./spec_helper').socketURL,
+    Factory = require('../spec_helper').FactoryGirl,
+    socketURL = require('../spec_helper').socketURL,
     io = require('socket.io-client');
 
 var options = {
@@ -8,22 +8,22 @@ var options = {
   'force new connection': true
 };
 
-describe('Server', function() {
+describe('Connection', function() {
     var sleepExample  = Factory.create('sleepExample'),
         stdoutExample = Factory.create('stdoutExample');
-    
+
     beforeEach(function(){
         client = io.connect(socketURL, options);
     });
-    
+
     afterEach(function(){
         client.disconnect();
     });
-    
-    it('accepts new connection', function(done) {
+
+    it('can be establisehd', function(done) {
         client.on('connect', function(data) { done(); });
     });
-    
+
     it('accepts run request and replies with output', function(done) {
         var output = [
             { stream: 'start',  chunk: '' },
@@ -41,7 +41,7 @@ describe('Server', function() {
             client.emit('run', stdoutExample.input);
         });
     });
-    
+
     it('stops previous run request when running a new run', function(done) {
         client.on('connect', function(data) {
             client.on('run', function(data){
@@ -67,7 +67,7 @@ describe('Server', function() {
             });
         });
     });
-    
+
     it('prevents run request spam', function(done) {
         client.on('connect', function(data) {
             client.on('run', function(data){
