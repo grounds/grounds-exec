@@ -8,6 +8,7 @@ var languages = [
                     'csharp',
                     'elixir',
                     'golang',
+                    'haxe',
                     'java',
                     'node',
                     'php',

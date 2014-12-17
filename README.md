@@ -22,6 +22,7 @@ grounds-exec currently supports latest version of:
 - C#
 - Elixir
 - Go
+- Haxe
 - Java
 - Node.js
 - PHP
@@ -101,7 +102,7 @@ mounted has a volume inside the container.
         { stream: 'stderr', chunk: 'Error!\n' }
         { stream: 'status', chunk: 0 }
 
-The server has a spam prevention against each `run` request. The minimum 
+The server has a spam prevention against each `run` request. The minimum
 delay between two run request is fixed to 0.5 seconds.
 
 In this case, you will receive for each ignored request:

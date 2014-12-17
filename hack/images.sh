@@ -11,7 +11,7 @@ get_images_dirs() {
 }
 
 get_image_name() {
-    echo "$repository/exec-$(echo $1 | cut -f2 -d "/")"
+    echo "$repository/$(echo $1 | cut -f2 -d "/")"
 }
 
 # Build local images

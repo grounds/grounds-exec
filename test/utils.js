@@ -15,13 +15,13 @@ describe('Utils', function() {
             it('formats image name with repository prefix', function() {
                 var formated = utils.formatImage('grounds', 'ruby');
 
-                expect(formated).to.equal('grounds/exec-ruby');
+                expect(formated).to.equal('grounds/ruby');
             });
         });
 
         context('when no repository is specified', function() {
             it('formats image name without repository prefix', function() {
-                expect(utils.formatImage('', 'ruby')).to.equal('exec-ruby');
+                expect(utils.formatImage('', 'ruby')).to.equal('ruby');
             });
         });
 
