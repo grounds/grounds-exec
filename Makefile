@@ -2,7 +2,6 @@
 
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
 TAG 	   := $(if $(TAG),$(TAG),'latest')
-TEST_OPTS := $(if $(TEST_OPTS),$(TEST_OPTS),'--recursive')
 
 all: run
 
@@ -22,7 +21,7 @@ run: build
 # therefore test should be run within its own
 # service.
 test: clean build
-	TEST_OPTS=$(TEST_OPTS) fig up test
+	fig up test
 
 push: build
 	hack/push.sh $(REPOSITORY) $(TAG)
