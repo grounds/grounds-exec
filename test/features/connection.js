@@ -9,8 +9,8 @@ var options = {
 };
 
 describe('Connection', function() {
-    var sleepExample  = Factory.create('sleepExample'),
-        stdoutExample = Factory.create('stdoutExample');
+    var sleepCode  = Factory.create('sleepCode'),
+        stdoutCode = Factory.create('stdoutCode');
 
     beforeEach(function(){
         client = io.connect(socketURL, options);
@@ -25,20 +25,15 @@ describe('Connection', function() {
     });
 
     it('accepts run request and replies with output', function(done) {
-        var output = [
-            { stream: 'start',  chunk: '' },
-            { stream: 'stdout', chunk: '42\n' },
-            { stream: 'status', chunk: 0 }
-        ];
         var i = 0;
         client.on('connect', function(data) {
             client.on('run', function(data){
-                expect(data).to.deep.equal(stdoutExample.output[i]);
+                expect(data).to.deep.equal(stdoutCode.output[i]);
                 ++i;
 
                 if (data.stream === 'status') done();
             });
-            client.emit('run', stdoutExample.input);
+            client.emit('run', stdoutCode.input);
         });
     });
 
@@ -47,23 +42,30 @@ describe('Connection', function() {
             client.on('run', function(data){
                 if (data.stream === 'status') done();
             });
-            client.emit('run', sleepExample.input);
+            client.emit('run', sleepCode.input);
             setTimeout(function() {
-                client.emit('run', stdoutExample.input);
+                client.emit('run', stdoutCode.input);
             }, 600);
         });
     });
 
     context('when run request is empty', function() {
-        it('responds with a bad request error', function(done) {
+        var params = null;
+        itRespondsWithBadRequestError(params);
+    });
+
+    context('when language code is empty', function() {
+        var params = { code: 'puts "lol"' };
+        itRespondsWithBadRequestError(params);
+    });
+
+    context('when code is empty', function() {
+        it('accepts run request', function(done) {
             client.on('connect', function(data) {
                 client.on('run', function(data){
-                    if (data.stream === 'error') {
-                        expect(data.chunk).to.eq('Bad request.');
-                        done();
-                    }
+                    if (data.stream === 'status') done();
                 });
-                client.emit('run', {});
+                client.emit('run', { language: 'ruby' });
             });
         });
     });
@@ -73,8 +75,22 @@ describe('Connection', function() {
             client.on('run', function(data){
                 if (data.stream === 'ignored') done();
             });
-            client.emit('run', stdoutExample.input);
-            client.emit('run', stdoutExample.input);
+            client.emit('run', stdoutCode.input);
+            client.emit('run', stdoutCode.input);
         });
     });
+
+    function itRespondsWithBadRequestError(params) {
+        it('responds with a bad request error', function(done) {
+            client.on('connect', function(data) {
+                client.on('run', function(data){
+                    if (data.stream === 'error') {
+                        expect(data.chunk).to.eq('Bad request.');
+                        done();
+                    }
+                });
+                client.emit('run', params);
+            });
+        });
+    }
 });

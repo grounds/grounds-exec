@@ -11,14 +11,21 @@ var dockerRunStub = {
     }
 };
 
+// Remove Docker API dependency (all unit tests should be independant)
+
 describe('Runner', function() {
-    var sleepExample  = Factory.create('sleepExample');
+    var sleepCode  = Factory.create('sleepCode');
 
     beforeEach(function(){
         runner = new Runner(docker);
     });
 
     describe('#run()', function() {
+        it('returns its output', function(done) {
+            //if possible test both stdout and stderr at the same time
+            done();
+        });
+
         it('returns its container status code', function(done) {
             runner.on('output', function(data) {
                 if (data.stream !== 'status') return;
@@ -91,7 +98,7 @@ describe('Runner', function() {
                     expect(this.state).to.equal('timeout');
                     done();
                 });
-                runner.run(sleepExample.language, sleepExample.code);
+                runner.run(sleepCode.language, sleepCode.code);
             });
 
             it("doesn't return its container status code", function(done) {
@@ -105,7 +112,7 @@ describe('Runner', function() {
                     expect(statusCode).to.equal(null);
                     done();
                 });
-                runner.run(sleepExample.language, sleepExample.code);
+                runner.run(sleepCode.language, sleepCode.code);
             });
 
             afterEach(function(){
@@ -124,7 +131,7 @@ describe('Runner', function() {
                 expect(this.state).to.equal('finished');
                 done();
             });
-            runner.run(sleepExample.language, sleepExample.code);
+            runner.run(sleepCode.language, sleepCode.code);
         });
 
         context('when runner has no container', function() {
