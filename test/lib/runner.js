@@ -5,11 +5,22 @@ var rewire  = require('rewire'),
     Factory = require('../spec_helper').FactoryGirl,
     Runner = rewire('../../lib/runner');
 
-var dockerRunStub = {
+var fakeDocker = {
     run: function(img, cmd, streams, opts, callback) {
-        callback('error', {}, {});
-    }
+        callback(new Error(), {}, {});
+        return { on: function(event, callback) {} }
+    },
 };
+
+function dockerRunWithError(img, cmd, streams, opts, callback) {
+    callback(new Error(), {}, {});
+    return { on: function(event, callback) {} };
+}
+
+function dockerRun(img, cmd, streams, opts, callback) {
+    callback(null, { StatusCode: -1 }, { remove: function(callback) {} });
+    return { on: function(event, callback) {} };
+}
 
 // Remove Docker API dependency (all unit tests should be independant)
 
@@ -27,13 +38,17 @@ describe('Runner', function() {
         });
 
         it('returns its container status code', function(done) {
+            var run = runner.docker.run;
+
             runner.on('output', function(data) {
                 if (data.stream !== 'status') return;
 
                 expect(data.chunk).to.equal(-1);
+                runner.docker.run = run;
                 done();
             });
-            runner.run('ruby', 'exit -1');
+            runner.docker.run = dockerRun;
+            runner.run('ruby', '');
         });
 
         it('removes its container after a run', function(done) {
@@ -41,8 +56,7 @@ describe('Runner', function() {
                 if (data.stream !== 'status') return;
 
                 runner._container.inspect(function(err, data){
-                    var finished = err !== null ||
-                        data.State.FinishedAt !== null;
+                    var finished = !!err || !!data.State.FinishedAt;
 
                     expect(finished).to.equal(true);
                     done();
@@ -73,16 +87,16 @@ describe('Runner', function() {
             });
         });
 
-        /*context('when docker failed to run a new container', function() {*/
-            //it('emits an error', function(done) {
-                //runner.on('output', function(data) {
-                    //expect(data.stream).to.equal('error');
-                    //done();
-                //});
-                //runner.docker = new dockerRunStub();
-                //runner.run('ruby', 'puts 42');
-            //});
-        /*});*/
+        context('when docker failed to run a new container', function() {
+            it('emits an error', function(done) {
+                runner.on('output', function(data) {
+                    expect(data.stream).to.equal('error');
+                    done();
+                });
+                runner.docker = fakeDocker;
+                runner.run('ruby', 'puts 42');
+            });
+        });
 
         context('when it takes too long', function() {
             beforeEach(function(){
@@ -135,7 +149,7 @@ describe('Runner', function() {
         });
 
         context('when runner has no container', function() {
-            it("doesn't stop anything", function() {
+            it("doesn't fail", function() {
                 runner._container = null;
                 runner.stop();
             });
