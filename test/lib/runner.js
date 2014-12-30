@@ -5,25 +5,6 @@ var rewire  = require('rewire'),
     Factory = require('../spec_helper').FactoryGirl,
     Runner = rewire('../../lib/runner');
 
-var fakeDocker = {
-    run: function(img, cmd, streams, opts, callback) {
-        callback(new Error(), {}, {});
-        return { on: function(event, callback) {} }
-    },
-};
-
-function dockerRunWithError(img, cmd, streams, opts, callback) {
-    callback(new Error(), {}, {});
-    return { on: function(event, callback) {} };
-}
-
-function dockerRun(img, cmd, streams, opts, callback) {
-    callback(null, { StatusCode: -1 }, { remove: function(callback) {} });
-    return { on: function(event, callback) {} };
-}
-
-// Remove Docker API dependency (all unit tests should be independant)
-
 describe('Runner', function() {
     var sleepCode  = Factory.create('sleepCode');
 
@@ -32,22 +13,33 @@ describe('Runner', function() {
     });
 
     describe('#run()', function() {
-        it('returns its output', function(done) {
-            //if possible test both stdout and stderr at the same time
-            done();
+        it('runs input code and write on stdout', function(done) {
+            expectOutputOn('stdout', done);
         });
 
-        it('returns its container status code', function(done) {
-            var run = runner.docker.run;
+        it('runs input code and write on stderr', function(done) {
+            expectOutputOn('stderr', done);
+        });
 
+        function expectOutputOn(stream, done) {
+            var output = 'hello world';
+
+            runner.on('output', function(data) {
+                if (data.stream !== stream) return;
+
+                expect(data.chunk.replace('\n', '')).to.equal(output);
+                done();
+            });
+            runner.run('ruby', '$'+stream+'.puts "'+output+'"');
+        }
+
+        it('returns its container status code', function(done) {
             runner.on('output', function(data) {
                 if (data.stream !== 'status') return;
 
-                expect(data.chunk).to.equal(-1);
-                runner.docker.run = run;
+                expect(data.chunk).to.equal(0);
                 done();
             });
-            runner.docker.run = dockerRun;
             runner.run('ruby', '');
         });
 
@@ -93,8 +85,7 @@ describe('Runner', function() {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-                runner.docker = fakeDocker;
-                runner.run('ruby', 'puts 42');
+                runner.run('unknown', '');
             });
         });
 
@@ -138,8 +129,7 @@ describe('Runner', function() {
     describe('#stop()', function() {
         it('stops a running container', function(done) {
             runner.on('output', function(data) {
-                if (data.stream === 'start')
-                    this.stop();
+                if (data.stream === 'start') this.stop();
                 if (data.stream !== 'status') return;
 
                 expect(this.state).to.equal('finished');
