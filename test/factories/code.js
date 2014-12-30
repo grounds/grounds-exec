@@ -1,6 +1,11 @@
 var FactoryGirl = require('factory_girl');
 
-FactoryGirl.define('stdoutExample', function() {
+FactoryGirl.define('sleepCode', function() {
+    this.language = 'ruby';
+    this.code = '3.times { puts "lol" sleep 5 }';
+});
+
+FactoryGirl.define('stdoutCode', function() {
     this.language = 'python2';
     this.code = 'print 42';
 
@@ -10,5 +15,4 @@ FactoryGirl.define('stdoutExample', function() {
         { stream: 'stdout', chunk: '42\n' },
         { stream: 'status', chunk: 0 }
     ];
-})
-
+});
