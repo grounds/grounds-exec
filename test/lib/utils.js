@@ -70,10 +70,10 @@ describe('Utils', function() {
                 var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376',
                                                         dockerCerts);
 
-                expect(dockerHost).to.satisfy(validate_https);
+                expect(dockerHost).to.satisfy(validateHTTPS);
             });
 
-            function validate_https(dockerHost) {
+            function validateHTTPS(dockerHost) {
                 return dockerHost.protocol === 'https' &&
                        dockerHost.host     === '127.0.0.1' &&
                        dockerHost.port     === 2376 &&
