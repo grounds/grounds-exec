@@ -1,6 +1,6 @@
 FROM ruby:latest
 
-RUN gem install rails --version 4.1.7
+RUN gem install rails --version 4.2
 
 ENV DEV /home/dev
 
