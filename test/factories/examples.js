@@ -57,8 +57,3 @@ function loadExamples() {
 FactoryGirl.define('examples', function() {
     this.list = loadExamples();
 });
-
-FactoryGirl.define('sleepExample', function() {
-    this.language = 'ruby';
-    this.code = '3.times { puts "lol" sleep 5 }';
-});

@@ -1,7 +1,7 @@
 var rewire = require('rewire'),
     expect = require('chai').expect,
-    utils = rewire('../lib/utils'),
-    dockerCerts = require('./spec_helper').dockerCerts;
+    utils = rewire('../../lib/utils'),
+    dockerCerts = require('../spec_helper').dockerCerts;
 
 var fsStub = {
     readFileSync: function(path) { return path; }
@@ -10,7 +10,7 @@ var fsStub = {
 utils.__set__('fs', fsStub);
 
 describe('Utils', function() {
-    describe('.formatImage()', function() { 
+    describe('.formatImage()', function() {
         context('when a repository is specified', function() {
             it('formats image name with repository prefix', function() {
                 var formated = utils.formatImage('grounds', 'ruby');
@@ -67,13 +67,13 @@ describe('Utils', function() {
 
         context('when using docker api through https', function() {
             it('returns a valid https docker host', function(){
-                var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376', 
+                var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376',
                                                         dockerCerts);
 
-                expect(dockerHost).to.satisfy(validate_https);
+                expect(dockerHost).to.satisfy(validateHTTPS);
             });
 
-            function validate_https(dockerHost) {
+            function validateHTTPS(dockerHost) {
                 return dockerHost.protocol === 'https' &&
                        dockerHost.host     === '127.0.0.1' &&
                        dockerHost.port     === 2376 &&

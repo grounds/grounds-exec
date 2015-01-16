@@ -78,7 +78,10 @@ mounted has a volume inside the container.
 
 ### Connect to the server
 
-    var client = io.connect('http://localhost:8080');
+You need to use a [socket.io](http://socket.io/docs/client-api/) client to
+connect with this server.
+
+    var client = io.connect('http:<docker host ip>:8080');
 
 ### Send a run request
 
