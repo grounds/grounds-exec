@@ -3,9 +3,9 @@ FROM ubuntu:14.04
 RUN apt-get update -q && \
     apt-get -qy install wget
 
-RUN wget http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux64.tar.gz
-RUN tar xf haxe-3.1.3-linux64.tar.gz
-RUN cp haxe-3.1.3/haxe /usr/bin/
+ENV VERSION 3.1.3
+
+RUN wget http://haxe.org/download/file/$VERSION/haxe-$VERSION-linux64.tar.gz
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
