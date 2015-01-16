@@ -4,4 +4,4 @@ var cli = require('../lib/cli')(process.argv),
     docker = require('../lib/docker')(cli.endpoint, cli.certs, cli.repository),
     handler = require('../lib/handler');
 
-handler.listen(cli.port);
+handler.listen(cli.port, docker);
