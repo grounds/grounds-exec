@@ -1,23 +1,14 @@
 var Docker = require('dockerode'),
     FactoryGirl = require('factory_girl'),
     utils = require('../lib/utils');
-        
+
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
-var dockerURL   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
-    dockerCerts = process.env.DOCKER_CERT_PATH || '/home/.docker',
-    dockerHost  = utils.formatDockerHost(dockerURL, dockerCerts),
-    docker      = new Docker(dockerHost);
-
-docker.repository = process.env.REPOSITORY || 'grounds';
-
-docker.ping(function(err, data) {
-    if (err) {
-        console.log('Docker API not responding with docker host: ', dockerHost);
-        process.exit(1);
-    }
-});
+var endpoint   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
+    certs = process.env.DOCKER_CERT_PATH || '/home/.docker',
+    repository = process.env.REPOSITORY || 'grounds';
+    docker = require('../lib/docker')(endpoint, certs, repository);
 
 // If test suite runs inside containers
 if (!!process.env.SERVER_PORT)
@@ -28,6 +19,6 @@ else
 module.exports = {
     socketURL: socketURL,
     docker: docker,
-    dockerCerts: dockerCerts,
+    dockerCerts: certs,
     FactoryGirl: FactoryGirl
 };
