@@ -151,6 +151,12 @@ You can find great examples on
 
         var languages = ['c', 'cpp', 'php'];
 
-4. Run the test suite
+4. Run the examples test suite
+
+        TESTS_OPTS="test/features/examples.js" make test
+
+5. If you want to test only a specific language
+
+        TESTS_OPTS="test/features/examples.js" LANGUAGE="ruby" make test
 
 **Thanks for your contribution!**
