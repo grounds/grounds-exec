@@ -1,7 +1,7 @@
 var Docker = require('dockerode'),
     FactoryGirl = require('factory_girl'),
     utils = require('../lib/utils');
-        
+
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
