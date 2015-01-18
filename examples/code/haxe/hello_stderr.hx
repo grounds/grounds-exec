@@ -1,5 +1,5 @@
-class HelloStderr {
-  static public function main():Void {
-    stderr("Hello World");
+class Hello {
+  public static function main() {
+    Sys.stderr().writeString("Hello stderr\n");
   }
 }

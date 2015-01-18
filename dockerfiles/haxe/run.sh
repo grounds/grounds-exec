@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "$1" > prog.hx
-haxe -main prog.hx --interp
+echo "$1" > Hello.hx
+haxe -main Hello --interp

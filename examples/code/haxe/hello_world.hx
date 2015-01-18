@@ -1,5 +1,5 @@
-class HelloWorld {
-  static public function main():Void {
-    println("Hello World");
+class Hello {
+   public static function main() {
+    Sys.println("Hello world");
   }
 }
