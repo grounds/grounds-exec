@@ -30,7 +30,7 @@ Images are following this naming convention:
 
 Images are built has an executable Docker image. This allow us to do:
 
-    $ docker run grounds/exec-ruby "puts 42"
+    $ docker run grounds/ruby "puts 42"
     42
 
 ## Create an image
@@ -40,13 +40,13 @@ Take a look at this example for the C language:
 
 Create the directory:
 
-    mkdir dockerfiles/exec-c
+    mkdir dockerfiles/c
 
 Add a `Dockerfile` and a shell script inside this directory:
 
-    touch dockerfiles/exec-c/Dockerfile
-    touch dockerfiles/exec-c/run.sh
-    chmod u+x dockerfiles/exec-c/run.sh
+    touch dockerfiles/c/Dockerfile
+    touch dockerfiles/c/run.sh
+    chmod u+x dockerfiles/c/run.sh
 
 ### Inside the Dockerfile:
 
@@ -127,7 +127,7 @@ When you run a Docker container with this image:
 
 Build the image like you usually do with Docker:
 
-    $ docker build -t grounds/exec-c dockerfiles/exec-c
+    $ docker build -t grounds/exec-c dockerfiles/c
 
 ### Tests
 

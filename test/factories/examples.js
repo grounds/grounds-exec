@@ -9,6 +9,7 @@ var languages = !!process.env.LANGUAGE ? [process.env.LANGUAGE] :
     'csharp',
     'elixir',
     'golang',
+    'haxe',
     'java',
     'node',
     'php',
