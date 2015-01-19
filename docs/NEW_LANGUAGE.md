@@ -30,7 +30,7 @@ Images are following this naming convention:
 
 Images are built has an executable Docker image. This allow us to do:
 
-    $ docker run grounds/ruby "puts 42"
+    $ docker run grounds/exec-ruby "puts 42"
     42
 
 ## Create an image
@@ -64,6 +64,8 @@ If there is no official image for this language stack:
 2. Update ubuntu package manager:
 
         RUN apt-get update -qq
+    
+    >Use apt-get update quiet mode level 2 (with `--qq`)
 
 3. Install dependencies required to compile C code (e.g `gcc`)
 
