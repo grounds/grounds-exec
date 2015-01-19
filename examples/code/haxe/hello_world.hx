@@ -1,5 +1,5 @@
-class Hello {
-   public static function main() {
+class Main {
+  public static function main() {
     Sys.println("Hello world");
   }
 }

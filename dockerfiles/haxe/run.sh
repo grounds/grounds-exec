@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "$1" > Hello.hx
-haxe -main Hello --interp
+echo "$1" > Main.hx
+haxe -main Main --interp
