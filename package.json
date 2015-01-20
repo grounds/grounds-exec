@@ -20,6 +20,7 @@
     "mocha": "1.21.x",
     "chai": "1.9.x",
     "sinon": "1.10.x",
+    "sinon-chai": "2.6.x",
     "rewire": "2.1.x",
     "factory_girl": "0.2.x",
     "socket.io-client": "1.1.x"

@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-var cli = require('../lib/cli')(process.argv),
-    docker = require('../lib/docker')(cli.endpoint, cli.certs, cli.repository),
-    handler = require('../lib/handler');
+var cli = require('../lib/cli');
 
-handler.listen(cli.port, docker);
+cli.argv(process.argv);

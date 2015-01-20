@@ -1,48 +1,47 @@
 var rewire = require('rewire'),
     moment = require('moment'),
-    sinon  = require('sinon'),
-    expect = require('chai').expect,
+    chai = require('chai'),
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
+    expect = chai.expect,
     logger = rewire('../../lib/logger');
 
-logger.__set__({
-    console: {
-        log: sinon.stub(),
-        error: sinon.stub()
-    }
-});
+chai.use(sinonChai);
 
-var loggerConsole = logger.__get__('console'),
-    clock;
+var loggerConsole = {
+    log: sinon.stub(),
+    error: sinon.stub()
+}
+
+logger.__set__({ console: loggerConsole });
 
 describe('Logger', function() {
     before(function () {
         clock = sinon.useFakeTimers();
         date  = moment().format();
-        separator = '-';
     });
 
     after(function ()  { clock.restore(); });
 
     describe('.log()', function() {
         it('writes logs on stdout', function() {
-            var msg = 'some random logs',
-                matcher = sinon.match(date, separator, msg);
+            var msg = 'some random logs';
 
             logger.log(msg);
 
-            sinon.assert.calledWith(loggerConsole.log, date, separator, msg);
+            expect(loggerConsole.log).to.have.been.calledWith(date,
+                '-', msg);
         });
     });
 
     describe('.error()', function() {
         it('writes logs on stderr', function() {
-            var msg = 'some random error',
-                matcher = sinon.match(date, separator, msg);
+            var msg = 'some random error';
 
             logger.error(msg);
 
-            sinon.assert.calledWith(loggerConsole.error, date,
-                separator, 'Error:', msg);
+            expect(loggerConsole.error).to.have.been.calledWith(date,
+                '-', 'Error:', msg);
         });
     });
 });
