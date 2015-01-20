@@ -8,7 +8,7 @@ FactoryGirl.findDefinitions();
 var endpoint   = process.env.DOCKER_URL || 'http://127.0.0.1:2375',
     certs = process.env.DOCKER_CERT_PATH || '/home/.docker',
     repository = process.env.REPOSITORY || 'grounds';
-    docker = require('../lib/docker')(endpoint, certs, repository);
+    docker = require('../lib/docker').getClient(endpoint, certs, repository);
 
 // If test suite runs inside containers
 if (!!process.env.SERVER_PORT)
