@@ -8,12 +8,12 @@ var rewire = require('rewire'),
 
 chai.use(sinonChai);
 
-var loggerConsole = {
+var fakeConsole = {
     log: sinon.stub(),
     error: sinon.stub()
 }
 
-logger.__set__({ console: loggerConsole });
+logger.__set__('console', fakeConsole);
 
 describe('Logger', function() {
     before(function () {
@@ -29,7 +29,7 @@ describe('Logger', function() {
 
             logger.log(msg);
 
-            expect(loggerConsole.log).to.have.been.calledWith(date,
+            expect(fakeConsole.log).to.have.been.calledWith(date,
                 '-', msg);
         });
     });
@@ -40,7 +40,7 @@ describe('Logger', function() {
 
             logger.error(msg);
 
-            expect(loggerConsole.error).to.have.been.calledWith(date,
+            expect(fakeConsole.error).to.have.been.calledWith(date,
                 '-', 'Error:', msg);
         });
     });
