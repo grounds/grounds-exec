@@ -8,7 +8,7 @@ var rewire  = require('rewire'),
 describe('Runner', function() {
     var sleepCode  = Factory.create('sleepCode');
 
-    beforeEach(function(){
+    beforeEach(function() {
         runner = new Runner(docker);
     });
 
@@ -58,46 +58,42 @@ describe('Runner', function() {
         });
 
         context('when language is empty', function() {
-            it('emits an error', function(done) {
-                runner.on('output', function(data) {
-                    expect(data.stream).to.equal('error');
-                    done();
-                });
-                runner.run('', 'puts 42');
-            });
+            expectErrorWith('', 'puts 42');
         });
 
         context('when code is too long', function() {
-            beforeEach(function(){
+            beforeEach(function() {
                 revert = Runner.__set__('maxSizeProgram', 0)
             });
             
-            afterEach(function(){
+            afterEach(function() {
                 revert();
             });
             
-            it('emits an error', function(done) {
-                runner.on('output', function(data) {
-                    expect(data.stream).to.equal('error');
-                    done();
-                });
-                runner.run('ruby', '');
-            });
+            expectErrorWith('ruby', '');
         });
 
         context('when docker failed to run a new container', function() {
+            expectErrorWith('unknown', '');
+        });
+        
+        function expectErrorWith(language, code) {
             it('emits an error', function(done) {
                 runner.on('output', function(data) {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-                runner.run('unknown', '');
+                runner.run(language, code);
             });
-        });
+        }
 
         context('when it takes too long', function() {
-            beforeEach(function(){
+            beforeEach(function() {
                 revert = Runner.__set__('runTimeout', 1);
+            });
+
+            afterEach(function() {
+                revert();
             });
 
             it('timeouts and emits an error', function(done) {
@@ -124,10 +120,6 @@ describe('Runner', function() {
                     done();
                 });
                 runner.run(sleepCode.language, sleepCode.code);
-            });
-
-            afterEach(function(){
-                revert();
             });
         });
     });
