@@ -65,18 +65,18 @@ describe('Runner', function() {
             beforeEach(function() {
                 revert = Runner.__set__('maxSizeProgram', 0)
             });
-            
+
             afterEach(function() {
                 revert();
             });
-            
+
             expectErrorWith('ruby', '');
         });
 
         context('when docker failed to run a new container', function() {
             expectErrorWith('unknown', '');
         });
-        
+
         function expectErrorWith(language, code) {
             it('emits an error', function(done) {
                 runner.on('output', function(data) {
@@ -99,8 +99,6 @@ describe('Runner', function() {
             it('timeouts and emits an error', function(done) {
                 runner.on('output', function(data) {
                     if (data.stream !== 'error') return;
-
-                    console.log("error:", data.chunk);
 
                     expect(this.state).to.equal('timeout');
                     done();
