@@ -68,12 +68,20 @@ describe('Runner', function() {
         });
 
         context('when code is too long', function() {
+            beforeEach(function(){
+                revert = Runner.__set__('maxSizeProgram', 0)
+            });
+            
+            afterEach(function(){
+                revert();
+            });
+            
             it('emits an error', function(done) {
                 runner.on('output', function(data) {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-                revert = Runner.__set__('maxSizeProgram', 0)
+                
                 runner.run('ruby', '');
                 revert();
             });
