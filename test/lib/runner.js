@@ -81,9 +81,7 @@ describe('Runner', function() {
                     expect(data.stream).to.equal('error');
                     done();
                 });
-                
                 runner.run('ruby', '');
-                revert();
             });
         });
 
