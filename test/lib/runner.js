@@ -28,7 +28,11 @@ describe('Runner', function() {
                 if (data.stream !== stream || data.chunk === '\n')
                     return;
 
-                expect(data.chunk.replace('\n', '')).to.equal(output);
+                var chunk = data.chunk.replace('\n', '');
+
+                if (!chunk) return;
+
+                expect(chunk).to.equal(output);
                 done();
             });
             runner.run('ruby', '$'+stream+'.puts "'+output+'"');
