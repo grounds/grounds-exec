@@ -25,7 +25,8 @@ describe('Runner', function() {
             var output = 'hello world';
 
             runner.on('output', function(data) {
-                if (data.stream !== stream) return;
+                if (data.stream !== stream || data.chunk === '\n')
+                    return;
 
                 expect(data.chunk.replace('\n', '')).to.equal(output);
                 done();
