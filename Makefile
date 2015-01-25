@@ -12,7 +12,7 @@ clean:
 	fig rm --force
 
 build:
-	fig -p groundsexec build server
+	fig build server
 
 run: build
 	fig up server
