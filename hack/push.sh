@@ -11,5 +11,5 @@ if [ -z $repository ]; then
     return
 fi
 
-docker tag groundsexec_image $image
+docker tag groundsexec_server $image
 docker push $image
