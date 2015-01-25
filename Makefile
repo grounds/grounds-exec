@@ -12,16 +12,14 @@ clean:
 	fig rm --force
 
 build:
-	fig -p groundsexec build image
+	fig -p groundsexec build server
 
 run: build
 	fig up server
 
-# There is a bug with tests output and fig run,
-# therefore test should be run within its own
-# service.
 test: clean build
-	fig up test
+	fig up -d server
+	fig run server npm test
 
 push: build
 	hack/push.sh $(REPOSITORY) $(TAG)
