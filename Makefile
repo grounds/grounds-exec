@@ -24,13 +24,13 @@ test: clean build
 	$(compose) run server npm test
 
 push: build
-	hack/push.sh $(REPOSITORY) $(TAG)
+	scripts/push.sh $(REPOSITORY) $(TAG)
 
 images:
-	hack/images.sh build $(REPOSITORY)
+	scripts/images.sh build $(REPOSITORY)
 
 images-push: images
-	hack/images.sh push $(REPOSITORY)
+	scripts/images.sh push $(REPOSITORY)
 
 images-pull:
-	hack/images.sh pull $(REPOSITORY)
+	scripts/images.sh pull $(REPOSITORY)
