@@ -1,25 +1,27 @@
 .PHONY: all re clean build run test push images images-push images-pull
 
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
-TAG 	   := $(if $(TAG),$(TAG),'latest')
+TAG        := $(if $(TAG),$(TAG),'latest')
+
+compose := fig -p groundsexec
 
 all: run
 
 re: clean all
 
 clean:
-	fig kill
-	fig rm --force
+	$(compose) kill
+	$(compose) rm --force
 
 build:
-	fig build server
+	$(compose) build  server
 
 run: build
-	fig up server
+	$(compose) up server
 
 test: clean build
-	fig up -d server
-	fig run server npm test
+	$(compose) up -d server
+	$(compose) run server npm test
 
 push: build
 	hack/push.sh $(REPOSITORY) $(TAG)
