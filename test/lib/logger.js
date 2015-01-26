@@ -16,12 +16,12 @@ var fakeConsole = {
 logger.__set__('console', fakeConsole);
 
 describe('Logger', function() {
-    before(function () {
+    before(function() {
         clock = sinon.useFakeTimers();
         date  = moment().format();
     });
 
-    after(function ()  { clock.restore(); });
+    after(function()  { clock.restore(); });
 
     describe('.log()', function() {
         it('writes logs on stdout', function() {
