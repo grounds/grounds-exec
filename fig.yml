@@ -1,9 +1,6 @@
-image:
-  build: .
-
 server:
-  image: groundsexec_image
-  command: hack/server.sh
+  build: .
+  command: scripts/server.sh
   ports:
     - 8080:8080
   volumes:
@@ -11,14 +8,5 @@ server:
   environment:
     - DOCKER_URL
     - REPOSITORY
-
-test:
-  image: groundsexec_image
-  command: npm test
-  links:
-    - server
-  volumes:
-    - $DOCKER_CERT_PATH:/home/.docker
-  environment:
-    - DOCKER_URL
     - TEST_OPTS
+    - LANGUAGE

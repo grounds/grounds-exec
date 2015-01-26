@@ -3,10 +3,15 @@ FROM ubuntu:14.04
 RUN apt-get update -qq && \
     apt-get -qy install wget
 
-RUN wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && \
-    dpkg -i erlang-solutions_1.0_all.deb && \
-    apt-get update -qq && \
-    apt-get install -qy elixir
+ENV VERSION 3.1.3
+ENV SRSLY 3,1,3
+
+RUN mkdir /haxe
+RUN wget -O haxe.tar.gz http://haxe.org/website-content/downloads/$SRSLY/downloads/haxe-$VERSION-linux64.tar.gz &&\
+    tar xzf haxe.tar.gz --strip=1 -C "/haxe"
+
+ENV HAXE_STD_PATH /haxe/std/
+ENV PATH /haxe/:$PATH
 
 # Set the locale
 RUN locale-gen en_US.UTF-8

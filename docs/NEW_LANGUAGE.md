@@ -40,13 +40,13 @@ Take a look at this example for the C language:
 
 Create the directory:
 
-    mkdir dockerfiles/exec-c
+    mkdir dockerfiles/c
 
 Add a `Dockerfile` and a shell script inside this directory:
 
-    touch dockerfiles/exec-c/Dockerfile
-    touch dockerfiles/exec-c/run.sh
-    chmod u+x dockerfiles/exec-c/run.sh
+    touch dockerfiles/c/Dockerfile
+    touch dockerfiles/c/run.sh
+    chmod u+x dockerfiles/c/run.sh
 
 ### Inside the Dockerfile:
 
@@ -64,6 +64,8 @@ If there is no official image for this language stack:
 2. Update ubuntu package manager:
 
         RUN apt-get update -qq
+    
+    >Use apt-get update quiet mode level 2 (with `--qq`)
 
 3. Install dependencies required to compile C code (e.g `gcc`)
 
@@ -127,7 +129,7 @@ When you run a Docker container with this image:
 
 Build the image like you usually do with Docker:
 
-    $ docker build -t grounds/exec-c dockerfiles/exec-c
+    $ docker build -t grounds/exec-c dockerfiles/c
 
 ### Tests
 
@@ -151,6 +153,12 @@ You can find great examples on
 
         var languages = ['c', 'cpp', 'php'];
 
-4. Run the test suite
+4. Run the examples test suite
+
+        TESTS_OPTS="test/features/examples.js" make test
+
+5. If you want to test only a specific language
+
+        TESTS_OPTS="test/features/examples.js" LANGUAGE="ruby" make test
 
 **Thanks for your contribution!**

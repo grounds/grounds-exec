@@ -1,3 +1,4 @@
+#![allow(unstable)]
 #![allow(unused_must_use)]
 use std::io;
  

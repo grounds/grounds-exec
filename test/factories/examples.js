@@ -2,20 +2,22 @@ var fs = require('fs'),
     path = require('path'),
     FactoryGirl = require('factory_girl');
 
-var languages = [
-                    'c',
-                    'cpp',
-                    'csharp',
-                    'elixir',
-                    'golang',
-                    'java',
-                    'node',
-                    'php',
-                    'python2',
-                    'python3',
-                    'ruby',
-                    'rust'
-                ];
+var languages = !!process.env.LANGUAGE ? [process.env.LANGUAGE] :
+[
+    'c',
+    'cpp',
+    'csharp',
+    'elixir',
+    'golang',
+    'haxe',
+    'java',
+    'node',
+    'php',
+    'python2',
+    'python3',
+    'ruby',
+    'rust'
+];
 
 function loadExamples() {
     var examples = [],
