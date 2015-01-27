@@ -22,12 +22,12 @@ describe('CLI', function() {
         fakeExit = sinon.stub();
         fakeDocker.getClient = sinon.stub().returns(pingSuccess);
         fakeConsole = { error: sinon.stub() };
-        revert = cli.__set__('docker', fakeDocker);
+        revertDocker = cli.__set__('docker', fakeDocker);
         revertConsole = cli.__set__('console', fakeConsole);
     });
 
     afterEach(function() {
-        revert();
+        revertDocker();
         revertConsole();
     });
 
@@ -103,12 +103,13 @@ describe('CLI', function() {
 
     context('when docker API is not responding', function() {
         beforeEach(function() {
-            revert();
+            revertDocker();
             fakeDocker.getClient = sinon.stub().returns(pingFailure);
-            revert = cli.__set__('docker', fakeDocker);
+            revertDocker = cli.__set__('docker', fakeDocker);
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
         });
+
         expectProgramToFail();
         expectToLogError(new Error('Docker API not responding.'));
     });
