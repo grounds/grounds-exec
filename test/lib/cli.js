@@ -3,71 +3,100 @@ var chai = require('chai'),
     sinonChai = require('sinon-chai'),
     expect = chai.expect,
     rewire = require('rewire'),
-    cli = require('../../lib/cli');
+    fakeDocker = require('../../lib/docker'),
+    cli = rewire('../../lib/cli');
 
 chai.use(sinonChai);
 
-var fakeDocker = { getClient: sinon.stub() },
-    fakeExit   = sinon.stub();
+var endpointHTTP = 'http://127.0.0.1:2376',
+    certPath = '/test',
+    repository = 'test';
 
 describe('CLI', function() {
     beforeEach(function() {
-      //  revert = cli.__set__({ docker: fakeDocker});
+        fakeExit = sinon.stub();
+        fakeDocker.getClient = sinon.stub();
+        revert = cli.__set__('docker', fakeDocker);
     });
 
-/*    afterEach(function() {*/
-        //revert();
-    //});
+    afterEach(function() {
+        revert();
+    });
 
-    //context('when called with default arguments', function() {
-        //var endpoint = 'http://127.0.0.1:2375';
+    context('when called with default arguments', function() {
+        beforeEach(function() {
+            cli.argv(['node', 'server', '-e', endpointHTTP]);
+        });
 
-        //it('creates a docker client', function() {
-            //cli.argv(['node', 'server', '-e', endpoint]);
+        expectNewDockerClientWith(endpointHTTP, '/home/.docker', 'grounds');
+    });
 
-            //expect(fakeDocker.getClient).to.have.been
-                //.calledWith(endpoint, '/home/.docker', 'grounds');
-        //});
-    //});
+    context('when called with custom arguments', function() {
+        beforeEach(function() {
+            cli.argv(['node', 'server', '-e', endpointHTTP,
+                                        '--certs='+certPath,
+                                        '--repository='+repository]);
+        });
+        // This test must use an http endpoint, otherwise it will search
+        // for ssl certificates and fail.
+        expectNewDockerClientWith(endpointHTTP, certPath, repository);
+    });
 
-    //context('when called with custom arguments', function() {
-        //var endpoint = 'http://127.0.0.1:2376',
-            //certs = '/test',
-            //repo = 'test';
+    function expectNewDockerClientWith(endpoint, certs, repo) {
+        var title = 'creates a docker client with endpoint: '+
+                endpoint+', cert path: '+certs+', repository: '+repo;
 
-        //it('creates a docker client', function() {
-            //cli.argv(['node', 'server', '-e', endpoint,
-                                        //'--certs='+certs,
-                                        //'--repository='+repo]);
+        it(title, function() {
+            expect(fakeDocker.getClient).to.have.been
+                .calledWith(endpoint, certs, repo);
+        });
+    }
 
-            //expect(fakeDocker.getClient).to.have.been
-                //.calledWith(endpoint, certs, repo);
-        //});
-    //});
+    context('when called with wrong docker endpoint', function() {
+        beforeEach(function() {
+            var invalidEndpoint = endpointHTTP.replace('http', 'ftp');
 
-    //context('when called with wrong docker endpoint', function() {
-        //beforeEach(function() {
-  ////          revert();
-            //cli.argv(['node', 'server', '-e', 'azerty'], fakeExit);
-        //});
-        //expectProgramToQuit();
-    //});
+            cli.argv(['node', 'server', '-e', invalidEndpoint], fakeExit);
+        });
+        expectProgramToFail();
+    });
 
-    //context('when called with wrong certs path', function() {
-        //beforeEach(function() {
-    ////        revert();
-            //cli.argv(['node', 'server', '-e', 'http://127.0.0.1:2376', '--certs=azerty'], fakeExit);
-        //});
-        //expectProgramToQuit();
-    //});
+    context('when called with invalid docker repository', function() {
+        beforeEach(function() {
+            cli.argv(['node', 'server', '-e', endpointHTTP,
+                                        '--repository=/'], fakeExit);
+        });
+        expectProgramToFail();
+    });
 
-    //context('when called with wrong port number', function() {
+    context('when called with https docker api', function() {
+        var endpointHTTPS = endpointHTTP.replace('http', 'https');
 
-    //});
+        context('whith wrong certs path', function() {
+            beforeEach(function() {
+                cli.argv(['node', 'server', '-e', endpointHTTPS,
+                                            '--certs=azerty'], fakeExit);
+            });
+            expectProgramToFail();
+        });
 
-    //function expectProgramToQuit() {
-        //it('exit the program', function() {
-            //expect(fakeExit).to.have.been.called;
-        //});
-    /*}*/
+        context('without ssl certs', function() {
+            beforeEach(function() {
+                cli.argv(['node', 'server', '-e', endpointHTTPS,
+                                            '--certs=./test'], fakeExit);
+            });
+            expectProgramToFail();
+        });
+    });
+
+
+    context('when called with wrong port number', function() {
+
+    });
+
+    function expectProgramToFail() {
+        it('exit the program with status code 1', function() {
+            expect(fakeExit).to.have.been.calledWith(1);
+        });
+    }
 });
