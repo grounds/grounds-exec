@@ -8,20 +8,21 @@ var rewire = require('rewire'),
 
 chai.use(sinonChai);
 
-var fakeConsole = {
-    log: sinon.stub(),
-    error: sinon.stub()
-}
-
-logger.__set__('console', fakeConsole);
-
 describe('Logger', function() {
     before(function() {
         clock = sinon.useFakeTimers();
         date  = moment().format();
+        fakeConsole = {
+            log: sinon.stub(),
+            error: sinon.stub()
+        };
+        revert = logger.__set__('console', fakeConsole);
     });
 
-    after(function()  { clock.restore(); });
+    after(function() {
+        revert();
+        clock.restore();
+    });
 
     describe('.log()', function() {
         it('writes logs on stdout', function() {

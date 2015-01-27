@@ -12,15 +12,23 @@ var endpointHTTP = 'http://127.0.0.1:2376',
     certPath = '/test',
     repository = 'test';
 
+var pingSuccess = { ping: function() {} },
+    pingFailure = { ping: function(callback) {
+        callback(new Error());
+    }};
+
 describe('CLI', function() {
     beforeEach(function() {
         fakeExit = sinon.stub();
-        fakeDocker.getClient = sinon.stub();
+        fakeDocker.getClient = sinon.stub().returns(pingSuccess);
+        fakeConsole = { error: sinon.stub() };
         revert = cli.__set__('docker', fakeDocker);
+        revertConsole = cli.__set__('console', fakeConsole);
     });
 
     afterEach(function() {
         revert();
+        revertConsole();
     });
 
     context('when called with default arguments', function() {
@@ -59,6 +67,7 @@ describe('CLI', function() {
             cli.argv(['node', 'server', '-e', invalidEndpoint], fakeExit);
         });
         expectProgramToFail();
+        expectToLogError(fakeDocker.invalidDockerEndpoint);
     });
 
     context('when called with invalid docker repository', function() {
@@ -67,17 +76,19 @@ describe('CLI', function() {
                                         '--repository=/'], fakeExit);
         });
         expectProgramToFail();
+        expectToLogError(fakeDocker.invalidDockerRepository);
     });
 
     context('when called with https docker api', function() {
         var endpointHTTPS = endpointHTTP.replace('http', 'https');
 
-        context('whith wrong certs path', function() {
+        context('with wrong certs path', function() {
             beforeEach(function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=azerty'], fakeExit);
             });
             expectProgramToFail();
+            expectToLogError(fakeDocker.invalidDockerCertsPath);
         });
 
         context('without ssl certs', function() {
@@ -86,17 +97,34 @@ describe('CLI', function() {
                                             '--certs=./test'], fakeExit);
             });
             expectProgramToFail();
+            expectToLogError(fakeDocker.missingKeyCertificate);
         });
     });
 
+    context('when docker API is not responding', function() {
+        beforeEach(function() {
+            revert();
+            fakeDocker.getClient = sinon.stub().returns(pingFailure);
+            revert = cli.__set__('docker', fakeDocker);
+
+            cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
+        });
+        expectProgramToFail();
+        expectToLogError(new Error('Docker API not responding.'));
+    });
 
     context('when called with wrong port number', function() {
-
     });
 
     function expectProgramToFail() {
         it('exit the program with status code 1', function() {
             expect(fakeExit).to.have.been.calledWith(1);
+        });
+    }
+
+    function expectToLogError(error) {
+        it('logs appropriate error', function() {
+            expect(fakeConsole.error).to.have.been.calledWith(error.message);
         });
     }
 });
