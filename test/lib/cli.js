@@ -91,7 +91,7 @@ describe('CLI', function() {
             expectToLogError(fakeDocker.invalidDockerCertsPath);
         });
 
-        context('without ssl certs', function() {
+        context('without ssl certificates', function() {
             beforeEach(function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=./test'], fakeExit);
@@ -124,7 +124,7 @@ describe('CLI', function() {
     }
 
     function expectToLogError(error) {
-        it('logs appropriate error', function() {
+        it('logs error: '+error.message, function() {
             expect(fakeConsole.error).to.have.been.calledWith(error.message);
         });
     }
