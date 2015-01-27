@@ -66,8 +66,8 @@ describe('CLI', function() {
 
             cli.argv(['node', 'server', '-e', invalidEndpoint], fakeExit);
         });
-        expectProgramToFail();
         expectToLogError(fakeDocker.invalidDockerEndpoint);
+        expectProgramToFail();
     });
 
     context('when called with invalid docker repository', function() {
@@ -75,8 +75,8 @@ describe('CLI', function() {
             cli.argv(['node', 'server', '-e', endpointHTTP,
                                         '--repository=/'], fakeExit);
         });
-        expectProgramToFail();
         expectToLogError(fakeDocker.invalidDockerRepository);
+        expectProgramToFail();
     });
 
     context('when called with https docker api', function() {
@@ -87,8 +87,8 @@ describe('CLI', function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=azerty'], fakeExit);
             });
-            expectProgramToFail();
             expectToLogError(fakeDocker.invalidDockerCertsPath);
+            expectProgramToFail();
         });
 
         context('without ssl certificates', function() {
@@ -96,8 +96,8 @@ describe('CLI', function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=./test'], fakeExit);
             });
-            expectProgramToFail();
             expectToLogError(fakeDocker.missingKeyCertificate);
+            expectProgramToFail();
         });
     });
 
@@ -109,9 +109,8 @@ describe('CLI', function() {
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
         });
-
-        expectProgramToFail();
         expectToLogError(new Error('Docker API not responding.'));
+        expectProgramToFail();
     });
 
     context('when called with wrong port number', function() {
