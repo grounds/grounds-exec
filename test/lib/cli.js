@@ -103,7 +103,6 @@ describe('CLI', function() {
 
     context('when docker API is not responding', function() {
         beforeEach(function() {
-            revertDocker();
             fakeDocker.getClient = sinon.stub().returns(pingFailure);
             revertDocker = cli.__set__('docker', fakeDocker);
 
