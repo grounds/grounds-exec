@@ -3,11 +3,9 @@ var rewire = require('rewire'),
     utils = rewire('../../lib/utils'),
     dockerCerts = require('../spec_helper').dockerCerts;
 
-var fsStub = {
+utils.__set__('fs', {
     readFileSync: function(path) { return path; }
-};
-
-utils.__set__('fs', fsStub);
+});
 
 describe('Utils', function() {
     describe('.formatImage()', function() {
