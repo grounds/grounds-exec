@@ -7,6 +7,18 @@ server:
     - $DOCKER_CERT_PATH:/home/.docker
   environment:
     - DOCKER_URL
+    - DOCKER_CERT_PATH=/home/.docker
+    - REPOSITORY
+
+test:
+  image: groundsexec_server
+  command: npm test
+  volumes:
+    - $DOCKER_CERT_PATH:/home/.docker
+  links:
+    - server
+  environment:
+    - DOCKER_URL
     - REPOSITORY
     - TEST_OPTS
     - LANGUAGE

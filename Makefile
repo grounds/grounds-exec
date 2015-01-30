@@ -20,8 +20,7 @@ run: build
 	$(compose) up server
 
 test: clean build
-	$(compose) up -d server
-	$(compose) run server npm test
+	$(compose) run test
 
 push: build
 	scripts/push.sh $(REPOSITORY) $(TAG)
