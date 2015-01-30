@@ -108,7 +108,7 @@ describe('CLI', function() {
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
         });
-        expectToLogError(fakeDocker.dockerAPINotResponding);
+        expectToLogError(fakeDocker.notResponding);
         expectProgramToFail();
     });
 
