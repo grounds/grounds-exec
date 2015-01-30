@@ -12,6 +12,13 @@ var endpointHTTP  = 'http://127.0.0.1:2376',
     endpointHTTPS = endpointHTTP.replace('http', 'https'),
     repository    = 'grounds';
 
+var pingSuccess = { ping: function(callback) {
+        callback(null);
+    }},
+    pingFailure = { ping: function(callback) {
+        callback(new Error());
+    }};
+
 describe('Docker', function() {
     describe('.validate', function() {
         beforeEach(function() {
@@ -27,7 +34,7 @@ describe('Docker', function() {
 
         context('when endpoint is not http or https', function() {
             beforeEach(function() {
-                args = { endpoint: 'ftp://127.0.0.1:2376' };
+                args = { endpoint: endpointHTTP.replace('http', 'ftp') };
             });
             expectCallbackWithError(docker.invalidDockerEndpoint);
         });
@@ -41,7 +48,7 @@ describe('Docker', function() {
 
         context('with valid https endpoint', function() {
             beforeEach(function() {
-                args = { endpoint: endpointHTTPS, repository: 'grounds' };
+                args = { endpoint: endpointHTTPS, repository: repository };
             });
 
             context('when docker certificates path is invalid', function() {
@@ -81,7 +88,7 @@ describe('Docker', function() {
                     expectCallbackWithError(docker.missingCaCertificate);
                 });
 
-                // Stub fs to validate existence of all files except
+                // Stub fs to validate presence of all files except
                 // file specified.
                 function invalidateCertFile(certFile) {
                     revert = docker.__set__('fs', { existsSync: function(file) {
@@ -96,9 +103,35 @@ describe('Docker', function() {
 
         context('with everything valid', function() {
             beforeEach(function() {
-                docker.getClient = sinon.stub().returns(true);
+                args = { endpoint: endpointHTTP, repository: repository };
             });
-            // expect callback with client == true
+
+            context('when docker API is responding', function() {
+                beforeEach(function() {
+                    docker.getClient = sinon.stub().returns(pingSuccess);
+                });
+
+                it('call callback with a proper docker client', function(done) {
+                    docker.validate(args, function(client, err) {
+                        expect(client).not.to.be.null;
+                        done();
+                    });
+                });
+
+                it('call callback without an error', function(done) {
+                    docker.validate(args, function(client, err) {
+                        expect(err).to.be.null;
+                        done();
+                    });
+                });
+            });
+
+            context('when docker API is not responding', function() {
+                beforeEach(function() {
+                    docker.getClient = sinon.stub().returns(pingFailure);
+                });
+                expectCallbackWithError(docker.dockerAPINotResponding);
+            });
         });
 
         function expectCallbackWithError(error) {
