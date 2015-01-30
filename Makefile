@@ -14,7 +14,7 @@ clean:
 	$(compose) rm --force
 
 build:
-	$(compose) build  server
+	$(compose) build server
 
 run: build
 	$(compose) up server

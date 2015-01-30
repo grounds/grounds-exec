@@ -1,7 +1,7 @@
 var expect = require('chai').expect,
+    io = require('socket.io-client'),
     Factory = require('../spec_helper').FactoryGirl,
     socketURL = require('../spec_helper').socketURL,
-    io = require('socket.io-client');
 
 var options = {
   transports: ['websocket'],
