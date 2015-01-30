@@ -130,7 +130,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     docker.getClient = sinon.stub().returns(pingFailure);
                 });
-                expectCallbackWithError(docker.dockerAPINotResponding);
+                expectCallbackWithError(docker.notResponding);
             });
         });
 
