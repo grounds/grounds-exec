@@ -19,14 +19,7 @@ dockerClient.ping(function(err) {
     process.exit(1);
 });
 
-// If test suite runs inside containers
-if (!!process.env.SERVER_PORT)
-    var socketURL = process.env.SERVER_PORT.replace('tcp', 'http');
-else
-    var socketURL = 'http://127.0.0.1:8080';
-
 module.exports = {
-    socketURL: socketURL,
     docker: dockerClient,
     dockerCerts: certs,
     FactoryGirl: FactoryGirl
