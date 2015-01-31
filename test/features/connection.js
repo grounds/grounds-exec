@@ -59,13 +59,17 @@ describe('Connection', function() {
     });
 
     context('when run request is empty', function() {
-        var params = null;
-        itRespondsWithBadRequestError(params);
+        beforeEach(function() {
+            params = null;
+        });
+        expectBadRequestError();
     });
 
     context('when language code is empty', function() {
-        var params = { code: 'puts "lol"' };
-        itRespondsWithBadRequestError(params);
+        beforeEach(function() {
+            params = { code: 'puts "lol"' };
+        });
+        expectBadRequestError();
     });
 
     context('when code is empty', function() {
@@ -89,7 +93,7 @@ describe('Connection', function() {
         });
     });
 
-    function itRespondsWithBadRequestError(params) {
+    function expectBadRequestError() {
         it('responds with a bad request error', function(done) {
             client.on('connect', function(data) {
                 client.on('run', function(data){
