@@ -8,14 +8,5 @@ server:
   environment:
     - DOCKER_URL
     - REPOSITORY
-
-test:
-  image: groundsexec_server
-  command: npm test
-  volumes:
-    - $DOCKER_CERT_PATH:/home/.docker
-  environment:
-    - DOCKER_URL
-    - REPOSITORY
     - TEST_OPTS
     - LANGUAGE
