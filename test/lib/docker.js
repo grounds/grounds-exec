@@ -116,14 +116,14 @@ describe('Docker', function() {
                 });
 
                 it('call callback with a proper docker client', function(done) {
-                    docker.validate(args, function(client, err) {
+                    docker.validate(args, function(err, client) {
                         expect(client).not.to.be.null;
                         done();
                     });
                 });
 
                 it('call callback without an error', function(done) {
-                    docker.validate(args, function(client, err) {
+                    docker.validate(args, function(err, client) {
                         expect(err).to.be.null;
                         done();
                     });
@@ -141,7 +141,7 @@ describe('Docker', function() {
         function expectCallbackWithError(error) {
             it('call callback with: '+error, function() {
                 docker.validate(args, callback);
-                expect(callback).to.have.been.calledWithExactly(null, error);
+                expect(callback).to.have.been.calledWithExactly(error);
             });
         }
     });
