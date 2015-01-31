@@ -3,7 +3,7 @@
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
 TAG        := $(if $(TAG),$(TAG),'latest')
 
-compose := fig -p groundsexec
+compose := REPOSITORY=$(REPOSITORY) fig -p groundsexec
 
 all: run
 
@@ -19,8 +19,8 @@ build:
 run: build
 	$(compose) up server
 
-test: clean build
-	$(compose) run test
+test: build
+	$(compose) run --rm test
 
 push: build
 	scripts/push.sh $(REPOSITORY) $(TAG)

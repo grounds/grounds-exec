@@ -1,8 +1,6 @@
 #!/bin/sh
-
 set -e
 
+# Should be used only inside a grounds-exec container.
 server -e $DOCKER_URL \
-       -p $PORT \
-       -r $REPOSITORY \
-       -c $DOCKER_CERT_PATH
+       -r $REPOSITORY

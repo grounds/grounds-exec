@@ -29,21 +29,21 @@ describe('Docker', function() {
              beforeEach(function() {
                 args = { endpoint: 'azerty' };
             });
-            expectCallbackWithError(docker.invalidDockerEndpoint);
+            expectCallbackWithError(docker.ErrorInvalidEndpoint);
         });
 
         context('when endpoint is not http or https', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP.replace('http', 'ftp') };
             });
-            expectCallbackWithError(docker.invalidDockerEndpoint);
+            expectCallbackWithError(docker.ErrorInvalidEndpoint);
         });
 
         context('when docker repository is invalid', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP, repository: '/azerty' };
             });
-            expectCallbackWithError(docker.invalidDockerRepository);
+            expectCallbackWithError(docker.ErrorInvalidRepository);
         });
 
         context('with valid https endpoint', function() {
@@ -55,7 +55,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     args.certs = 'azerty';
                 });
-                expectCallbackWithError(docker.invalidDockerCertsPath);
+                expectCallbackWithError(docker.ErrorInvalidCertsPath);
             });
 
             context('when docker certificates path is valid', function() {
@@ -71,21 +71,21 @@ describe('Docker', function() {
                     beforeEach(function() {
                         invalidateCertFile('key.pem');
                     });
-                    expectCallbackWithError(docker.missingKeyCertificate);
+                    expectCallbackWithError(docker.ErrorMissingKeyCertificate);
                 });
 
                 context('when cert.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('cert.pem');
                     });
-                    expectCallbackWithError(docker.missingCertCertificate);
+                    expectCallbackWithError(docker.ErrorMissingCertCertificate);
                 });
 
                 context('when ca.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('ca.pem');
                     });
-                    expectCallbackWithError(docker.missingCaCertificate);
+                    expectCallbackWithError(docker.ErrorMissingCaCertificate);
                 });
 
                 // Stub fs to validate presence of all files except
@@ -106,9 +106,13 @@ describe('Docker', function() {
                 args = { endpoint: endpointHTTP, repository: repository };
             });
 
+            afterEach(function() {
+                stub.restore();
+            });
+
             context('when docker API is responding', function() {
                 beforeEach(function() {
-                    docker.getClient = sinon.stub().returns(pingSuccess);
+                    stub = sinon.stub(docker, 'getClient').returns(pingSuccess);
                 });
 
                 it('call callback with a proper docker client', function(done) {
@@ -128,9 +132,9 @@ describe('Docker', function() {
 
             context('when docker API is not responding', function() {
                 beforeEach(function() {
-                    docker.getClient = sinon.stub().returns(pingFailure);
+                   stub = sinon.stub(docker, 'getClient').returns(pingFailure);
                 });
-                expectCallbackWithError(docker.notResponding);
+                expectCallbackWithError(docker.ErrorAPINotResponding);
             });
         });
 
@@ -140,5 +144,13 @@ describe('Docker', function() {
                 expect(callback).to.have.been.calledWithExactly(null, error);
             });
         }
+    });
+
+    describe('.getClient', function() {
+        it('returns a docker client with repository '+repository, function() {
+            var client = docker.getClient(endpointHTTP, null, repository);
+
+            expect(client.repository).to.eq(repository);
+        });
     });
 });

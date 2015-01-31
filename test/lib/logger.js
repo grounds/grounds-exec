@@ -12,10 +12,7 @@ describe('Logger', function() {
     before(function() {
         clock = sinon.useFakeTimers();
         date  = moment().format();
-        fakeConsole = {
-            log: sinon.stub(),
-            error: sinon.stub()
-        };
+        fakeConsole = { log: sinon.stub(), error: sinon.stub() };
         revert = logger.__set__('console', fakeConsole);
     });
 

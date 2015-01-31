@@ -1,19 +1,28 @@
-var expect = require('chai').expect,
+var rewire = require('rewire'),
+    sinon = require('sinon'),
+    expect = require('chai').expect,
     io = require('socket.io-client'),
     Factory = require('../spec_helper').FactoryGirl,
-    socketURL = require('../spec_helper').socketURL,
+    docker = require('../spec_helper').docker,
+    server = rewire('../../lib/server');
 
-var options = {
-  transports: ['websocket'],
-  'force new connection': true
-};
+var socket = {
+    port: 8080,
+    URL: 'http://127.0.0.1:8080',
+    options: { transports: ['websocket'], 'force new connection': true }
+}
 
 describe('Connection', function() {
     var sleepCode  = Factory.create('sleepCode'),
         stdoutCode = Factory.create('stdoutCode');
 
+    before(function() {
+        server.__set__('logger', { log: sinon.stub() });
+        server.listen(socket.port, docker);
+    });
+
     beforeEach(function(){
-        client = io.connect(socketURL, options);
+        client = io.connect(socket.URL, socket.options);
     });
 
     afterEach(function(){

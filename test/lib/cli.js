@@ -66,7 +66,7 @@ describe('CLI', function() {
 
             cli.argv(['node', 'server', '-e', invalidEndpoint], fakeExit);
         });
-        expectToLogError(fakeDocker.invalidDockerEndpoint);
+        expectToLogError(fakeDocker.ErrorInvalidEndpoint);
         expectProgramToFail();
     });
 
@@ -75,7 +75,7 @@ describe('CLI', function() {
             cli.argv(['node', 'server', '-e', endpointHTTP,
                                         '--repository=/'], fakeExit);
         });
-        expectToLogError(fakeDocker.invalidDockerRepository);
+        expectToLogError(fakeDocker.ErrorInvalidRepository);
         expectProgramToFail();
     });
 
@@ -87,7 +87,7 @@ describe('CLI', function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=azerty'], fakeExit);
             });
-            expectToLogError(fakeDocker.invalidDockerCertsPath);
+            expectToLogError(fakeDocker.ErrorInvalidCertsPath);
             expectProgramToFail();
         });
 
@@ -96,7 +96,7 @@ describe('CLI', function() {
                 cli.argv(['node', 'server', '-e', endpointHTTPS,
                                             '--certs=./test'], fakeExit);
             });
-            expectToLogError(fakeDocker.missingKeyCertificate);
+            expectToLogError(fakeDocker.ErrorMissingKeyCertificate);
             expectProgramToFail();
         });
     });
@@ -108,7 +108,7 @@ describe('CLI', function() {
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
         });
-        expectToLogError(fakeDocker.notResponding);
+        expectToLogError(fakeDocker.ErrorAPINotResponding);
         expectProgramToFail();
     });
 
