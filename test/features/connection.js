@@ -8,8 +8,8 @@ var rewire = require('rewire'),
     Connection = rewire('../../lib/connection');
 
 var socket = {
-    port: 8080,
-    URL: 'http://127.0.0.1:8080',
+    port: 8081,
+    URL: 'http://127.0.0.1:8081',
     options: { transports: ['websocket'], 'force new connection': true }
 }
 
