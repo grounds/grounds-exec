@@ -4,7 +4,8 @@ var rewire = require('rewire'),
     io = require('socket.io-client'),
     Factory = require('../spec_helper').FactoryGirl,
     docker = require('../spec_helper').docker,
-    server = rewire('../../lib/server');
+    server = rewire('../../lib/server'),
+    Connection = rewire('../../lib/connection');
 
 var socket = {
     port: 8080,
@@ -16,8 +17,12 @@ describe('Connection', function() {
     var sleepCode  = Factory.create('sleepCode'),
         stdoutCode = Factory.create('stdoutCode');
 
+    // Setup a fake server without logs.
     before(function() {
-        server.__set__('logger', { log: sinon.stub() });
+        fakeLogger = { log: sinon.stub(), error: sinon.stub() };
+        Connection.__set__('logger', fakeLogger);
+        server.__set__('logger', fakeLogger);
+        server.__set__('Connection', Connection);
         server.listen(socket.port, docker);
     });
 
@@ -46,15 +51,18 @@ describe('Connection', function() {
         });
     });
 
-    it('stops previous run request when running a new run', function(done) {
-        client.on('connect', function(data) {
-            client.on('run', function(data){
-                if (data.stream === 'status') done();
+    context('when running a new run', function() {
+        it('stops previous run request', function(done) {
+            client.on('connect', function(data) {
+                client.on('run', function(data){
+                    if (data.stream === 'status') done();
+                });
+                client.emit('run', sleepCode.input);
+
+                setTimeout(function() {
+                    client.emit('run', stdoutCode.input);
+                }, 600);
             });
-            client.emit('run', sleepCode.input);
-            setTimeout(function() {
-                client.emit('run', stdoutCode.input);
-            }, 600);
         });
     });
 
