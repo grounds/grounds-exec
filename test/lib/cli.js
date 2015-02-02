@@ -3,7 +3,7 @@ var chai = require('chai'),
     sinonChai = require('sinon-chai'),
     expect = chai.expect,
     rewire = require('rewire'),
-    fakeDocker = require('../../lib/docker'),
+    fakeDocker = rewire('../../lib/docker'),
     cli = rewire('../../lib/cli');
 
 chai.use(sinonChai);
@@ -12,16 +12,16 @@ var endpointHTTP = 'http://127.0.0.1:2376',
     certPath = '/test',
     repository = 'test';
 
-var pingSuccess = { ping: function() {} },
-    pingFailure = { ping: function(callback) {
+var getSuccessClient = sinon.stub().returns({ ping: function() {} }),
+    getFailureClient = sinon.stub().returns({ ping: function(callback) {
         callback(new Error());
-    }};
+    }});
 
 describe('CLI', function() {
     beforeEach(function() {
         fakeExit = sinon.stub();
-        fakeDocker.getClient = sinon.stub().returns(pingSuccess);
         fakeConsole = { error: sinon.stub() };
+        fakeDocker.__set__('getClient', getSuccessClient);
         revertDocker = cli.__set__('docker', fakeDocker);
         revertConsole = cli.__set__('console', fakeConsole);
     });
@@ -55,7 +55,7 @@ describe('CLI', function() {
                 endpoint+', cert path: '+certs+', repository: '+repo;
 
         it(title, function() {
-            expect(fakeDocker.getClient).to.have.been
+            expect(getSuccessClient).to.have.been
                 .calledWith(endpoint, certs, repo);
         });
     }
@@ -103,7 +103,7 @@ describe('CLI', function() {
 
     context('when docker API is not responding', function() {
         beforeEach(function() {
-            fakeDocker.getClient = sinon.stub().returns(pingFailure);
+            fakeDocker.__set__('getClient', getFailureClient);
             revertDocker = cli.__set__('docker', fakeDocker);
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);

@@ -107,12 +107,12 @@ describe('Docker', function() {
             });
 
             afterEach(function() {
-                stub.restore();
+                revert();
             });
 
             context('when docker API is responding', function() {
                 beforeEach(function() {
-                    stub = sinon.stub(docker, 'getClient').returns(pingSuccess);
+                    revert = docker.__set__('getClient', sinon.stub().returns(pingSuccess));
                 });
 
                 it('call callback with a proper docker client', function(done) {
@@ -132,7 +132,7 @@ describe('Docker', function() {
 
             context('when docker API is not responding', function() {
                 beforeEach(function() {
-                   stub = sinon.stub(docker, 'getClient').returns(pingFailure);
+                    revert = docker.__set__('getClient', sinon.stub().returns(pingFailure));
                 });
                 expectCallbackWithError(docker.ErrorAPINotResponding);
             });
@@ -144,13 +144,5 @@ describe('Docker', function() {
                 expect(callback).to.have.been.calledWithExactly(error);
             });
         }
-    });
-
-    describe('.getClient', function() {
-        it('returns a docker client with repository '+repository, function() {
-            var client = docker.getClient(endpointHTTP, null, repository);
-
-            expect(client.repository).to.eq(repository);
-        });
     });
 });
