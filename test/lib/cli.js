@@ -104,7 +104,6 @@ describe('CLI', function() {
     context('when docker API is not responding', function() {
         beforeEach(function() {
             fakeDocker.__set__('getClient', getFailureClient);
-            revertDocker = cli.__set__('docker', fakeDocker);
 
             cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
         });
