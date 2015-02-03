@@ -46,6 +46,14 @@ A container automatically timeouts 10 seconds after the beginning of a `run`.
 If a `run` request is sent from the same client when a previous `run` request is
 already running, this previous request will be gracefully interrupted.
 
+### Clone this project
+
+    git clone https://github.com/grounds/grounds-exec.git
+    
+### Get into this project directory
+    
+    cd grounds-exec
+
 ### Build language stack images
 
     make images
