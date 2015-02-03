@@ -21,6 +21,5 @@ dockerClient.ping(function(err) {
 
 module.exports = {
     docker: dockerClient,
-    dockerCerts: certs,
     FactoryGirl: FactoryGirl
 };

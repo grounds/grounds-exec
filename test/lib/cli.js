@@ -61,11 +61,12 @@ describe('CLI', function() {
         beforeEach(function() {
             cli.argv(['node', 'server', '-e', 'unkown'], fakeExit);
         });
+        expectToLogError();
+        expectProgramToFail();
+    });
 
-        it('logs an error', function() {
-            expect(fakeConsole.error).to.have.been.called;
-        });
-
+    context('when server failed to start', function() {
+        expectToLogError();
         expectProgramToFail();
     });
 
@@ -91,62 +92,9 @@ describe('CLI', function() {
         });
     }
 
-    function expectToLogError(error) {
-        it('logs error: '+error.message, function() {
-            expect(fakeConsole.error).to.have.been.calledWith(error.message);
+    function expectToLogError() {
+        it('logs an error', function() {
+            expect(fakeConsole.error).to.have.been.called;
         });
     }
-
-    // This tests seems to be redundant with docker module tests
-
-/*    context('when called with wrong docker endpoint', function() {*/
-        //beforeEach(function() {
-            //var invalidEndpoint = endpointHTTP.replace('http', 'ftp');
-
-            //cli.argv(['node', 'server', '-e', invalidEndpoint], fakeExit);
-        //});
-        //expectToLogError(fakeDocker.ErrorInvalidEndpoint);
-        //expectProgramToFail();
-    //});
-
-    //context('when called with invalid docker repository', function() {
-        //beforeEach(function() {
-            //cli.argv(['node', 'server', '-e', endpointHTTP,
-                                        //'--repository=/'], fakeExit);
-        //});
-        //expectToLogError(fakeDocker.ErrorInvalidRepository);
-        //expectProgramToFail();
-    //});
-
-    //context('when called with https docker api', function() {
-        //var endpointHTTPS = endpointHTTP.replace('http', 'https');
-
-        //context('with wrong certs path', function() {
-            //beforeEach(function() {
-                //cli.argv(['node', 'server', '-e', endpointHTTPS,
-                                            //'--certs=azerty'], fakeExit);
-            //});
-            //expectToLogError(fakeDocker.ErrorInvalidCertsPath);
-            //expectProgramToFail();
-        //});
-
-        //context('without ssl certificates', function() {
-            //beforeEach(function() {
-                //cli.argv(['node', 'server', '-e', endpointHTTPS,
-                                            //'--certs=./test'], fakeExit);
-            //});
-            //expectToLogError(fakeDocker.ErrorMissingKeyCertificate);
-            //expectProgramToFail();
-        //});
-    //});
-
-    //context('when docker API is not responding', function() {
-        //beforeEach(function() {
-            //fakeDocker.__set__('getClient', getFailureClient);
-
-            //cli.argv(['node', 'server', '-e', endpointHTTP], fakeExit);
-        //});
-        //expectToLogError(fakeDocker.ErrorAPINotResponding);
-        //expectProgramToFail();
-    /*});*/
 });

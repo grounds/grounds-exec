@@ -1,29 +1,38 @@
 var rewire = require('rewire'),
     expect = require('chai').expect,
-    utils = rewire('../../lib/utils'),
-    dockerCerts = require('../spec_helper').dockerCerts;
+    utils = rewire('../../lib/utils');
 
 utils.__set__('fs', { readFileSync: function(path) { return path; } });
 
 describe('Utils', function() {
     describe('.formatImage()', function() {
         context('when a repository is specified', function() {
-            it('formats image name with repository prefix', function() {
-                var formated = utils.formatImage('grounds', 'ruby');
+            beforeEach(function() {
+                formated = utils.formatImage('grounds', 'ruby');
+            });
 
+            it('formats image name with repository prefix', function() {
                 expect(formated).to.equal('grounds/exec-ruby');
             });
         });
 
         context('when no repository is specified', function() {
+            beforeEach(function() {
+                formated = utils.formatImage('', 'ruby');
+            });
+
             it('formats image name without repository prefix', function() {
-                expect(utils.formatImage('', 'ruby')).to.equal('exec-ruby');
+                expect(formated).to.equal('exec-ruby');
             });
         });
 
         context('when no language is specified', function() {
+            beforeEach(function() {
+                formated = utils.formatImage('grounds', '');
+            });
+
             it('returns an empty string', function() {
-                expect(utils.formatImage('grounds', '')).to.equal('');
+                expect(formated).to.equal('');
             });
         });
     });
@@ -53,19 +62,31 @@ describe('Utils', function() {
 
     describe('.formatDockerHost()', function() {
         context('when using docker api through http', function() {
+            beforeEach(function() {
+                dockerHost = utils.formatDockerHost('http://127.0.0.1:2375');
+            });
+
             it('returns a valid http docker host', function() {
-                var dockerHost = utils.formatDockerHost('http://127.0.0.1:2375'),
-                    expected   = { protocol: 'http', host: '127.0.0.1', port: 2375 };
+                var expected = { protocol: 'http', host: '127.0.0.1', port: 2375 };
 
                 expect(dockerHost).to.deep.equal(expected);
             });
         });
 
         context('when using docker api through https', function() {
-            it('returns a valid https docker host', function(){
-                var dockerHost = utils.formatDockerHost('https://127.0.0.1:2376',
-                                                        dockerCerts);
+            var endpointHTTPS = 'https://127.0.0.1:2376',
+                certsFiles = {
+                    key: 'key',
+                    cert: 'cert',
+                    ca: 'ca'
+            };
 
+            beforeEach(function() {
+                dockerHost = utils.formatDockerHost(endpointHTTPS,
+                                                    certsFiles);
+            });
+
+            it('returns a valid https docker host', function(){
                 expect(dockerHost).to.satisfy(validateHTTPS);
             });
 
@@ -73,9 +94,9 @@ describe('Utils', function() {
                 return dockerHost.protocol === 'https' &&
                        dockerHost.host     === '127.0.0.1' &&
                        dockerHost.port     === 2376 &&
-                       !!dockerHost.key  &&
-                       !!dockerHost.cert &&
-                       !!dockerHost.ca;
+                       dockerHost.key      === certsFiles.key &&
+                       dockerHost.cert     === certsFiles.cert &&
+                       dockerHost.ca       === certsFiles.ca
             }
         });
     });
