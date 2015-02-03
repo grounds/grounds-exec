@@ -8,11 +8,7 @@ var chai = require('chai'),
 
 chai.use(sinonChai);
 
-var getSuccessClient = sinon.stub().returns({ ping: function() {} }),
-    getFailureClient = sinon.stub().returns({ ping: function(callback) {
-        callback(new Error());
-    }});
-
+var getSuccessClient = sinon.stub().returns({ ping: function() {} });
 
 describe('CLI', function() {
     beforeEach(function() {
@@ -39,21 +35,21 @@ describe('CLI', function() {
         expectServerToListenOn(8080);
     });
 
-    context('when called with custom arguments', function() {
+    context('when called with custom valid arguments', function() {
        var  endpointHTTP = 'http://127.0.0.1:2376',
-            certPath = '/test',
+            certsPath = '/test',
             repository = 'test',
             port = 8081;
 
         beforeEach(function() {
             cli.argv(['node', 'server', '-e', endpointHTTP,
-                                        '--certs='+certPath,
+                                        '--certs='+certsPath,
                                         '--repository='+repository,
                                         '--port='+port]);
         });
         // This test must use an http endpoint, otherwise it will search
         // for ssl certificates and fail.
-        expectNewDockerClientWith(endpointHTTP, certPath, repository);
+        expectNewDockerClientWith(endpointHTTP, certsPath, repository);
         expectServerToListenOn(port);
     });
 
