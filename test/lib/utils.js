@@ -1,5 +1,6 @@
 var rewire = require('rewire'),
     expect = require('chai').expect,
+    path = require('path'),
     utils = rewire('../../lib/utils');
 
 utils.__set__('fs', { readFileSync: function(path) { return path; } });
@@ -100,4 +101,35 @@ describe('Utils', function() {
             }
         });
     });
+
+     describe('.formatCertsFiles()', function() {
+        context('with empty path', function() {
+            beforeEach(function() {
+                certsFiles = utils.formatCertsFiles();
+            });
+
+            it('returns null', function() {
+                expect(certsFiles).to.be.null;
+            });
+        });
+
+        context('with a path', function() {
+            beforeEach(function() {
+                certsPath  = 'test';
+                certsFiles = utils.formatCertsFiles(certsPath);
+            });
+
+            expectFormatedFile('key');
+            expectFormatedFile('cert');
+            expectFormatedFile('ca');
+        });
+
+        function expectFormatedFile(name) {
+            it('returns an objet with '+name+' certificate path', function() {
+                var expected = path.resolve(certsPath, name+'.pem');
+
+                expect(certsFiles[name]).to.eq(expected);
+            });
+        }
+     });
 });
