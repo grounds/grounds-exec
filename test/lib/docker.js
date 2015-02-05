@@ -4,6 +4,7 @@ var chai = require('chai'),
     expect = chai.expect,
     rewire = require('rewire'),
     path = require('path'),
+    errors = require('../../lib/errors'),
     docker = rewire('../../lib/docker');
 
 chai.use(sinonChai);
@@ -29,21 +30,21 @@ describe('Docker', function() {
              beforeEach(function() {
                 args = { endpoint: 'azerty' };
             });
-            expectCallbackWithError(docker.ErrorInvalidEndpoint);
+            expectCallbackWithError(errors.DockerAPIInvalidEndpoint);
         });
 
         context('when endpoint is not http or https', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP.replace('http', 'ftp') };
             });
-            expectCallbackWithError(docker.ErrorInvalidEndpoint);
+            expectCallbackWithError(errors.DockerAPIInvalidEndpoint);
         });
 
         context('when docker repository is invalid', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP, repository: '/azerty' };
             });
-            expectCallbackWithError(docker.ErrorInvalidRepository);
+            expectCallbackWithError(errors.DockerAPIInvalidRepository);
         });
 
         context('with valid https endpoint', function() {
@@ -55,7 +56,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     args.certs = 'azerty';
                 });
-                expectCallbackWithError(docker.ErrorInvalidCertsPath);
+                expectCallbackWithError(errors.DockerAPIInvalidCertsPath);
             });
 
             context('when docker certificates path is valid', function() {
@@ -71,21 +72,21 @@ describe('Docker', function() {
                     beforeEach(function() {
                         invalidateCertFile('key.pem');
                     });
-                    expectCallbackWithError(docker.ErrorMissingKeyCertificate);
+                    expectCallbackWithError(errors.DockerAPIInvalidCertsPath);
                 });
 
                 context('when cert.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('cert.pem');
                     });
-                    expectCallbackWithError(docker.ErrorMissingCertCertificate);
+                    expectCallbackWithError(errors.DockerAPIMissingKeyCertificate);
                 });
 
                 context('when ca.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('ca.pem');
                     });
-                    expectCallbackWithError(docker.ErrorMissingCaCertificate);
+                    expectCallbackWithError(errors.DockerAPIMissingCertCertificate);
                 });
 
                 // Stub fs to validate presence of all files except
@@ -134,7 +135,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     revert = docker.__set__('getClient', sinon.stub().returns(pingFailure));
                 });
-                expectCallbackWithError(docker.ErrorAPINotResponding);
+                expectCallbackWithError(errors.DockerAPINotResponding);
             });
         });
 
@@ -142,6 +143,42 @@ describe('Docker', function() {
             it('call callback with: '+error, function() {
                 docker.validate(args, callback);
                 expect(callback).to.have.been.calledWithExactly(error);
+            });
+        }
+    });
+
+    describe('.getClient', function() {
+        contextWithRepository('grounds');
+        contextWithRepository('test');
+
+        // Test the same configuration used in spec helper to test modules
+        // wich required a valid docker client.
+        context('with specs config', function() {
+            beforeEach(function() {
+                var endpoint = process.env.DOCKER_URL,
+                    certs = process.env.DOCKER_CERT_PATH || '/home/.docker',
+                    repository = process.env.REPOSITORY || 'grounds';
+
+                dockerClient = docker.getClient(endpoint, certs, repository);
+            });
+
+            it('returns a proper docker client to connect with', function(done) {
+                dockerClient.ping(function(err) {
+                    expect(err).to.be.null;
+                    done();
+                });
+            });
+        });
+
+        function contextWithRepository(repository) {
+            context('with repository '+repository, function() {
+                beforeEach(function() {
+                    dockerClient = docker.getClient(endpointHTTP, null, repository);
+                });
+
+                it('returns a docker client using repository '+repository, function() {
+                    expect(dockerClient.repository).to.eq(repository);
+                });
             });
         }
     });

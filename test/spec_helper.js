@@ -12,11 +12,13 @@ var endpoint   = process.env.DOCKER_URL,
 
 var dockerClient = docker.getClient(endpoint, certs, repository);
 
+// If client is not working, docker module tests are testing
+// if getClient is working correctly.
 dockerClient.ping(function(err) {
-    if (!err) return;
-
-    console.log('Docker API not responding with %s.', endpoint);
-    process.exit(1);
+    if (err) {
+        console.log(err);
+        process.exit(1);
+    }
 });
 
 module.exports = {

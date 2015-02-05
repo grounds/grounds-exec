@@ -1,9 +1,14 @@
 var rewire = require('rewire'),
     sinon = require('sinon'),
-    expect = require('chai').expect,
+    chai = require('chai'),
+    sinonChai = require('sinon-chai'),
+    expect = chai.expect,
     io = require('socket.io-client'),
     docker = require('../spec_helper').docker,
+    errors = require('../../lib/errors'),
     server = rewire('../../lib/server');
+
+chai.use(sinonChai);
 
 var socket = {
     port: 8080,
@@ -14,33 +19,57 @@ var socket = {
 describe('Server', function() {
     beforeEach(function(){
         fakeLogger = { log: sinon.stub(), error: sinon.stub() };
-        revert = server.__set__('logger', fakeLogger);
+        fakeConnection = sinon.spy();
+        revertLogger = server.__set__('logger', fakeLogger);
+        revertConnection = server.__set__('Connection', fakeConnection);
     });
 
     afterEach(function(){
-        revert();
+        revertLogger();
+        revertConnection();
     });
 
     describe('.listen', function() {
-        context('when port number is invalid', function() {
-            var port = -1;
-
-            it('fails to listen', function() {
-                server.listen(port, docker);
+        context('when port is not numeric', function() {
+            beforeEach(function(){
+                err = server.listen('lol', docker);
             });
+            expectToReturnError(errors.ServerPortInvalid);
         });
 
-        context('when port is already bind', function() {
-
+        context('when port number is invalid', function() {
+            beforeEach(function(){
+                err = server.listen(-1, docker);
+            });
+            expectToReturnError(errors.ServerPortInvalid);
         });
+
+/*        context('when port is already bind', function() {*/
+            //beforeEach(function(){
+                //server.listen(socket.port, docker);
+                //err = server.listen(socket.port, docker);
+            //});
+            //expectToReturnError(errors.ServerFailedToListen);
+        /*});*/
+
+        function expectToReturnError(error) {
+            it('returns error: '+error.message, function() {
+                expect(err).to.eq(error);
+            });
+        }
 
         context('when listening', function() {
             beforeEach(function(){
                 server.listen(socket.port, docker);
             });
 
-            it('logs a message', function() {
-                expect(fakeLogger).to.have.been.called;
+            afterEach(function(){
+                server.close();
+            });
+
+            it('logs listening message', function() {
+               expect(fakeLogger.log).to.have.been
+                .calledWith('Listening on:', socket.port);
             });
 
             context('when a new client connects', function() {
@@ -48,8 +77,9 @@ describe('Server', function() {
                     client = io.connect(socket.URL, socket.options);
                 });
 
-                afterEach(function(){
-                    client.disconnect();
+                it('creates a connection', function() {
+                    new fakeConnection();
+                    expect(fakeConnection).to.have.been.calledWithNew();
                 });
             });
         });
