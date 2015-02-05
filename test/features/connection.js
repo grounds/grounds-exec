@@ -26,6 +26,10 @@ describe('Connection', function() {
         server.listen(socket.port, docker);
     });
 
+    after(function() {
+        server.close();
+    });
+
     beforeEach(function(){
         client = io.connect(socket.URL, socket.options);
     });
