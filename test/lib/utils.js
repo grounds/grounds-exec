@@ -87,17 +87,17 @@ describe('Utils', function() {
                                                     certsFiles);
             });
 
-            it('returns a valid https docker host', function(){
-                expect(dockerHost).to.satisfy(validateHTTPS);
-            });
+            expectDockerHostWith('protocol', 'https');
+            expectDockerHostWith('host', '127.0.0.1');
+            expectDockerHostWith('port', 2376);
+            expectDockerHostWith('key', certsFiles.key);
+            expectDockerHostWith('cert', certsFiles.cert);
+            expectDockerHostWith('ca', certsFiles.ca);
 
-            function validateHTTPS(dockerHost) {
-                return dockerHost.protocol === 'https' &&
-                       dockerHost.host     === '127.0.0.1' &&
-                       dockerHost.port     === 2376 &&
-                       dockerHost.key      === certsFiles.key &&
-                       dockerHost.cert     === certsFiles.cert &&
-                       dockerHost.ca       === certsFiles.ca
+            function expectDockerHostWith(key, value) {
+                it('returns a docker host with '+key+': '+value, function() {
+                    expect(dockerHost[key]).to.eq(value);
+                });
             }
         });
     });
