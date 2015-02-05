@@ -119,9 +119,9 @@ describe('Utils', function() {
                 certsFiles = utils.formatCertsFiles(certsPath);
             });
 
-            expectFormatedFile('key');
-            expectFormatedFile('cert');
-            expectFormatedFile('ca');
+            ['key', 'cert', 'ca'].forEach(function(file) {
+                expectFormatedFile(file);
+            });
         });
 
         function expectFormatedFile(name) {
