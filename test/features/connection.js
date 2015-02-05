@@ -38,7 +38,7 @@ describe('Connection', function() {
         client.disconnect();
     });
 
-    it('can be establisehd', function(done) {
+    it('can be established', function(done) {
         client.on('connect', function(data) { done(); });
     });
 
