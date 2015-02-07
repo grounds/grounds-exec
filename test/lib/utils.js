@@ -32,20 +32,34 @@ describe('Utils', function() {
                 formated = utils.formatImage('grounds', '');
             });
 
-            it('returns an empty string', function() {
-                expect(formated).to.equal('');
-            });
+            expectEmptyString();
         });
     });
 
     describe('.formatCmd()', function() {
-        it('returns an escaped string', function() {
-            var code     = 'puts "Hello world\\n\\r\\t"\r\n\t',
-                expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
+        beforeEach(function() {
+            formated = utils.formatCmd('puts "Hello world\\n\\r\\t"\r\n\t');
+        });
 
-            expect(utils.formatCmd(code)).to.equal(expected);
+        it('returns an escaped string', function() {
+            var expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
+
+            expect(formated).to.equal(expected);
+        });
+
+        context('when code is not specified', function() {
+            beforeEach(function() {
+                formated = utils.formatCmd();
+            });
+            expectEmptyString();
         });
     });
+
+    function expectEmptyString() {
+        it('returns an empty string', function() {
+            expect(formated).to.equal('');
+        });
+    }
 
     describe('.formatStatus()', function() {
         it('returns a signed integer (range -128 to 127)', function() {
