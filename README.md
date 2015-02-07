@@ -76,6 +76,18 @@ mounted has a volume inside the container.
 
     make run
 
+You can also run the server in the background:
+
+    make detach
+
+Or:
+
+    make
+
+If the server is already running:
+
+    make re
+
 ### Connect to the server
 
 You need to use a [socket.io](http://socket.io/docs/client-api/) client to
