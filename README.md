@@ -88,6 +88,13 @@ If the server is already running:
 
     make re
 
+If you want [New Relic](http://newrelic.com/) metrics you can also specify:
+
+* `NEWRELIC_LICENSE_KEY`
+* `NEWRELIC_APP_NAME`
+
+    NEWRELIC_LICENSE_KEY="<you license key>" NEWRELIC_APP_NAME="grounds-exec" make run
+
 ### Connect to the server
 
 You need to use a [socket.io](http://socket.io/docs/client-api/) client to
