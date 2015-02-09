@@ -148,9 +148,6 @@ describe('Docker', function() {
     });
 
     describe('.getClient', function() {
-        contextWithRepository('grounds');
-        contextWithRepository('test');
-
         // Test the same configuration used in spec helper to test modules
         // wich required a valid docker client.
         context('with specs config', function() {
@@ -168,6 +165,10 @@ describe('Docker', function() {
                     done();
                 });
             });
+        });
+
+        ['grounds', 'test', '', null].forEach(function(repository) {
+            contextWithRepository(repository);
         });
 
         function contextWithRepository(repository) {
