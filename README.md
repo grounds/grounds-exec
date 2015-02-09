@@ -101,7 +101,7 @@ If you want [New Relic](http://newrelic.com/) metrics you can also specify:
 * `NEWRELIC_LICENSE_KEY`
 * `NEWRELIC_APP_NAME`
 
-    NEWRELIC_LICENSE_KEY="<you license key>" NEWRELIC_APP_NAME="grounds-exec" make run
+e.g. `NEWRELIC_LICENSE_KEY="<you license key>" NEWRELIC_APP_NAME="grounds-exec" make run`
 
 ### Connect to the server
 
