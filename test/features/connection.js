@@ -10,7 +10,7 @@ var rewire = require('rewire'),
 var socket = {
     port: 8081,
     URL: 'http://127.0.0.1:8081',
-    options: { transports: ['websocket'], 'force new connection': true }
+    options: { transports: ['websocket'], 'forceNew': true }
 }
 
 describe('Connection', function() {

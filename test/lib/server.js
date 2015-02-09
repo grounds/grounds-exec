@@ -13,7 +13,7 @@ chai.use(sinonChai);
 var socket = {
     port: 8080,
     URL: 'http://127.0.0.1:8080',
-    options: { transports: ['websocket'], 'force new connection': true }
+    options: { transports: ['websocket'], 'forceNew': true }
 }
 
 describe('Server', function() {
