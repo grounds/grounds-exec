@@ -168,10 +168,10 @@ describe('Docker', function() {
         });
 
         ['grounds', 'test', '', null].forEach(function(repository) {
-            contextWithRepository(repository);
+            expectClientWithRepository(repository);
         });
 
-        function contextWithRepository(repository) {
+        function expectClientWithRepository(repository) {
             context('with repository '+repository, function() {
                 beforeEach(function() {
                     dockerClient = docker.getClient(endpointHTTP, null, repository);
