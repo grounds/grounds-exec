@@ -24,10 +24,10 @@ function loadExamples() {
         outputs  = [];
 
     // Read output files
-    var dirPath = path.resolve(__dirname, '../../examples/output'),
-        files   = fs.readdirSync(dirPath);
+    var dirPath       = path.resolve(__dirname, '../../examples/output'),
+        outputFiles   = fs.readdirSync(dirPath);
 
-    files.forEach(function(file) {
+    outputFiles.forEach(function(file) {
         var filePath = path.resolve(dirPath, file),
             output   = fs.readFileSync(filePath).toString();
 
@@ -36,10 +36,10 @@ function loadExamples() {
 
     // Read code files
     languages.forEach(function(language) {
-        dirPath = path.resolve(__dirname, '../../examples/code', language);
-        files   = fs.readdirSync(dirPath);
+        dirPath   = path.resolve(__dirname, '../../examples/code', language);
+        codeFiles = fs.readdirSync(dirPath);
 
-        files.forEach(function(file) {
+        codeFiles.forEach(function(file) {
             var filePath = path.resolve(dirPath, file),
                 code = fs.readFileSync(filePath).toString(),
                 key = file.substring(0, file.lastIndexOf('.')),

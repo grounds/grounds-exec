@@ -8,25 +8,33 @@ var chai = require('chai'),
 
 chai.use(sinonChai);
 
-var getSuccessClient = sinon.stub().returns({ ping: function() {} });
+var successClient = {
+        ping: function(callback) {
+            callback(null);
+        }
+    },
+    getSuccessClient = sinon.stub().returns(successClient);
+
+var endpointHTTP = 'http://127.0.0.1:2375';
 
 describe('CLI', function() {
     beforeEach(function() {
         fakeExit = sinon.stub();
         fakeConsole = { error: sinon.stub() };
+        fakeServer = { listen: sinon.stub() };
         fakeDocker.__set__('getClient', getSuccessClient);
         revertDocker = cli.__set__('docker', fakeDocker);
         revertConsole = cli.__set__('console', fakeConsole);
+        revertServer = cli.__set__('server', fakeServer);
     });
 
     afterEach(function() {
         revertDocker();
         revertConsole();
+        revertServer();
     });
 
     context('when called with default arguments', function() {
-        var endpointHTTP = 'http://127.0.0.1:2375';
-
         beforeEach(function() {
             cli.argv(['node', 'server', '-e', endpointHTTP]);
         });
@@ -39,31 +47,38 @@ describe('CLI', function() {
        var  endpointHTTP = 'http://127.0.0.1:2376',
             certsPath = '/test',
             repository = 'test',
-            port = 8081;
+            invalidPort = 'invalid';
 
         beforeEach(function() {
             cli.argv(['node', 'server', '-e', endpointHTTP,
                                         '--certs='+certsPath,
                                         '--repository='+repository,
-                                        '--port='+port]);
+                                        '--port='+invalidPort]);
         });
         // This test must use an http endpoint, otherwise it will search
         // for ssl certificates and fail.
         expectNewDockerClientWith(endpointHTTP, certsPath, repository);
-        expectServerToListenOn(port);
+
     });
 
     context('when failed to create a docker client', function() {
         beforeEach(function() {
-            cli.argv(['node', 'server', '-e', 'unkown'], fakeExit);
+            cli.argv(['node', 'server', '-e', 'unknown'], fakeExit);
         });
         expectToLogError();
         expectProgramToFail();
     });
 
-    context('when server failed to start', function() {
-   //     expectToLogError();
-   //     expectProgramToFail();
+    context('when called with invalid port', function() {
+        beforeEach(function() {
+            revertServer();
+
+            cli.argv(['node', 'server', '-e', endpointHTTP,
+                                        '-p', 'lol'],
+                                        fakeExit);
+        });
+        expectToLogError();
+        expectProgramToFail();
     });
 
     function expectNewDockerClientWith(endpoint, certs, repo) {
@@ -78,7 +93,8 @@ describe('CLI', function() {
 
     function expectServerToListenOn(port) {
         it('launches a server listening on '+port, function() {
-
+            expect(fakeServer.listen).to.have.been
+                .calledWith(port, successClient);
         });
     }
 

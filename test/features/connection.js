@@ -4,14 +4,9 @@ var rewire = require('rewire'),
     io = require('socket.io-client'),
     Factory = require('../spec_helper').FactoryGirl,
     docker = require('../spec_helper').docker,
+    socket = require('../spec_helper').socket,
     server = rewire('../../lib/server'),
     Connection = rewire('../../lib/connection');
-
-var socket = {
-    port: 8081,
-    URL: 'http://127.0.0.1:8081',
-    options: { transports: ['websocket'], 'forceNew': true }
-}
 
 describe('Connection', function() {
     var sleepCode  = Factory.create('sleepCode'),
