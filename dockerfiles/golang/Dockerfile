@@ -1,4 +1,4 @@
-FROM google/golang:latest
+FROM golang:latest
 
 ENV DEV /home/dev
 
