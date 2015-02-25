@@ -1,5 +1,5 @@
 # Google images are well maintained and lighter than officials
-FROM google/nodejs
+FROM node:latest
 
 ENV DEV /home/dev
 

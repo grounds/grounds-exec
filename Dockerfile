@@ -1,4 +1,4 @@
-FROM google/nodejs:0.10.33
+FROM node:0.10.36
 
 ENV APP /grounds-exec
 
