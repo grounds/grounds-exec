@@ -8,8 +8,9 @@ languages inside Docker containers.
 grounds-exec support many languages and make it really trivial to add support
 for other languages.
 
-All you need is [Docker 1.3+](https://docker.com/), [Fig 1.0+](http://www.fig.sh/)
-and [make](http://www.gnu.org/software/make/) to run this project inside Docker
+All you need is [Docker 1.3+](https://docker.com/),
+[Docker Compose 1.1+](http://docs.docker.com/compose/) and
+[make](http://www.gnu.org/software/make/) to run this project inside Docker
 containers with the same environment as in production.
 
 ## Languages
@@ -49,9 +50,9 @@ already running, this previous request will be gracefully interrupted.
 ### Clone this project
 
     git clone https://github.com/grounds/grounds-exec.git
-    
+
 ### Get into this project directory
-    
+
     cd grounds-exec
 
 ### Build language stack images

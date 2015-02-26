@@ -3,7 +3,7 @@
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
 TAG        := $(if $(TAG),$(TAG),'latest')
 
-compose := REPOSITORY=$(REPOSITORY) fig -p groundsexec
+compose := REPOSITORY=$(REPOSITORY) docker-compose -p groundsexec
 
 all: detach
 
