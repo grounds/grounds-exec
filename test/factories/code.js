@@ -16,3 +16,13 @@ FactoryGirl.define('stdoutCode', function() {
         { stream: 'status', chunk: 0 }
     ];
 });
+
+FactoryGirl.define('defaultCode', function() {
+    this.stdout = 'hello world!\n';
+    this.stderr = 'hello stderr!\n';
+    this.exitCode = 1;
+    this.language = 'ruby';
+    this.code = 'puts "' + this.stdout +'";' +
+        '$stderr.puts "'+ this.stderr+'";' +
+        'exit '+this.exitCode;
+});

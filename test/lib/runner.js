@@ -9,7 +9,8 @@ var rewire  = require('rewire'),
 var maxMemory = Runner.__get__('maxMemory');
 
 describe('Runner', function() {
-    var sleepCode  = Factory.create('sleepCode');
+    var sleepCode   = Factory.create('sleepCode'),
+        defaultCode = Factory.create('defaultCode');
 
     beforeEach(function() {
         language = 'ruby'
@@ -80,7 +81,7 @@ describe('Runner', function() {
 
     describe('#run()', function() {
         beforeEach(function(done) {
-            prepareRun(done);
+            prepareRun(defaultCode, done);
         });
 
         context('when container exits', function() {
@@ -93,15 +94,15 @@ describe('Runner', function() {
             });
 
             it('has emited container exit code', function() {
-                expect(exitCode).to.equal(1);
+                expect(exitCode).to.equal(defaultCode.exitCode);
             });
 
             it('has emiteded appropriate output on stdout', function() {
-                expect(output.stdout).to.equal('hello world!\n');
+                expect(output.stdout).to.equal(defaultCode.stdout);
             });
 
             it('has emiteded appropriate output on stderr', function() {
-                expect(output.stderr).to.equal('hello stderr!\n');
+                expect(output.stderr).to.equal(defaultCode.stderr);
             });
 
             it('removes its container', function(done) {
@@ -112,7 +113,9 @@ describe('Runner', function() {
             });
         });
 
-        function prepareRun(done) {
+        function prepareRun(example, done) {
+            runner = new Runner(docker, example.language, example.code);
+
             output = { stdout: '', stderr: '' };
 
             runner.on('output', function(data) {
