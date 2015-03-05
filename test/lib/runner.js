@@ -6,37 +6,28 @@ var rewire  = require('rewire'),
     utils = require('../../lib/utils'),
     Runner = rewire('../../lib/runner');
 
-var maxMemory = Runner.__get__('maxMemory');
+var maxMemory = Runner.__get__('maxMemory'),
+    maxExecutionTime = Runner.__get__('maxExecutionTime');
 
 describe('Runner', function() {
     var sleepCode   = Factory.create('sleepCode'),
         defaultCode = Factory.create('defaultCode');
 
-    beforeEach(function() {
-        language = 'ruby'
-        code     = 'puts "hello world!"; $stderr.puts "hello stderr!"; exit 1'
-        runner   = new Runner(docker, language, code);
-    });
-
-    it('uses this docker client', function() {
-        expect(runner.client).to.equal(docker);
-    });
-
-    it('uses apropriate image with this language', function() {
-        var image = utils.formatImage(docker.repository, language);
-
-        expect(runner.image).to.equal(image);
-    });
-
-    it('uses apropriate command with this code', function() {
-        var cmd = utils.formatCmd(code);
-
-        expect(runner.cmd).to.equal(cmd);
+    it('has a max execution time of 10 seconds', function() {
+        expect(maxExecutionTime / 1000).to.equal(10);
     });
 
     describe('#create()', function() {
         beforeEach(function(done) {
+            language = defaultCode.language;
+            code = defaultCode.code;
+
+            runner = new Runner(docker, language, code);
             runner.create(done);
+        });
+
+        it('uses this docker client', function() {
+            expect(runner.client).to.equal(docker);
         });
 
         it('creates a container', function() {
@@ -50,46 +41,55 @@ describe('Runner', function() {
             });
         });
 
-        it('is attached on this container stdout', function(done) {
-            runner.get('AttachStdout', function(info) {
-                expect(info).to.be.true;
-                done();
-            });
-        });
+        it('creates a container with this language image', function(done) {
+            var image = utils.formatImage(docker.repository, language);
 
-        it('is attached on this container stderr', function(done) {
-            runner.get('AttachStderr', function(info) {
-                expect(info).to.be.true;
-                done();
-            });
-        });
-
-        it('creates a container with this image', function(done) {
             runner.get('Image', function(info) {
-                expect(info).to.equal(runner.image);
+                expect(info).to.equal(image);
                 done();
             });
         });
 
-        it('creates a container with this command', function(done) {
+        it('creates a container with this code command', function(done) {
+            var cmd = utils.formatCmd(code);
+
             runner.get('Cmd', function(info) {
-                expect(info).to.deep.equal([runner.cmd]);
+                expect(info).to.deep.equal([cmd]);
                 done();
             });
         });
     });
 
     describe('#run()', function() {
-        beforeEach(function(done) {
-            prepareRun(defaultCode, done);
+        context('when container is not yet created', function() {
+            beforeEach(function() {
+                runner = new Runner(docker, '', '');
+            });
+
+            it('throws an error', function() {
+                expect(function() {
+                    runner.run(function() {});
+                }).to.throw(Error);
+            });
         });
 
+        // For this context we are testing against a
+        // code sample that writes both on stdout and
+        // stderr, returns an exit code of 1, with a
+        // really short execution time.
         context('when container exits', function() {
             beforeEach(function(done) {
-                container = runner.container;
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
 
-                runner.run(function(err) {
-                    done();
+                    container = runner.container;
+
+                    runner.run(function(err) {
+
+                        if (err) return done(err);
+
+                        done();
+                    });
                 });
             });
 
@@ -105,29 +105,108 @@ describe('Runner', function() {
                 expect(output.stderr).to.equal(defaultCode.stderr);
             });
 
-            it('removes its container', function(done) {
+            it('has removed its container', function(done) {
                 container.inspect(function(err, data) {
-                    expect(err).not.to.be.null;
+                    expect(err).not.to.be.undefined;
+                    done();
+                });
+            });
+
+            it('has no container', function() {
+                expect(runner.container).to.be.null;
+            });
+        });
+
+        // For this context we are using a code sample
+        // that should hang more than the test suite
+        // default timeout, but runner should automatically
+        // timeouts after maxExecutionTime and stop the
+        // container, preventing these tests from timeouts.
+        context('when execution is too long', function() {
+            beforeEach(function(done) {
+                revert = Runner.__set__('maxExecutionTime', 1);
+
+                prepareRun(sleepCode, done);
+            });
+
+            afterEach(function() {
+                revert();
+            });
+
+            it('timeouts and stops the container', function(done) {
+                runner.run(function(err) {
+                    expect(output.stderr).to.equal('');
+
+                    if (err) return done(err);
+
                     done();
                 });
             });
         });
-
-        function prepareRun(example, done) {
-            runner = new Runner(docker, example.language, example.code);
-
-            output = { stdout: '', stderr: '' };
-
-            runner.on('output', function(data) {
-                output[data.stream] += data.chunk;
-            }).on('status', function(data) {
-                exitCode = data;
-            });;
-
-            runner.create(done);
-        }
     });
 
+    describe('#stop()', function() {
+        context('when idle', function() {
+            it('does nothing', function() {
+                expect(function() {
+                    runner.stop();
+                }).not.to.throw(Error);
+            });
+        });
+
+        // For this context we are using a code example
+        // that should hang more than the test suite
+        // default timeout, if stops fails, these tests
+        // should timeout.
+        context('when running some code', function() {
+            beforeEach(function(done) {
+                prepareRun(sleepCode, done);
+            });
+
+            it('stops the container execution', function(done) {
+                runner.run(function(err) {
+                    expect(output.stderr).to.equal('');
+
+                    if (err) return done(err);
+
+                    done();
+                });
+                // We are not sure here that container is already started
+                runner.stop();
+            });
+
+            it("hasn't emited container exit code", function(done) {
+                runner.run(function(err) {
+                    expect(exitCode).to.be.null;
+
+                    if (err) return done(err);
+
+                    done();
+                });
+                // waitUntil('Running' == true');
+                // We are not sure here that container is already started
+                runner.stop();
+            });
+        });
+    });
+
+    // Prepare a runner for the code example given,
+    // listen on stdout, stderr and exit code then
+    // call calback when container is created.
+    function prepareRun(example, callback) {
+        runner = new Runner(docker, example.language, example.code);
+
+        output   = { stdout: '', stderr: '' };
+        exitCode = null;
+
+        runner.on('output', function(data) {
+            output[data.stream] += data.chunk;
+        }).on('status', function(data) {
+            exitCode = data;
+        });;
+
+        runner.create(callback);
+    }
 
 
         //context('when language is empty', function() {
@@ -178,40 +257,7 @@ describe('Runner', function() {
                 //});
                 //runner.run(sleepCode.language, sleepCode.code);
             //});
-
-            //it("doesn't return its container status code", function(done) {
-                //var statusCode = null;
-
-                //runner.on('output', function(data) {
-                    //if (data.stream === 'status')
-                        //statusCode = data.chunk;
-                    //if (data.stream !== 'error') return;
-
-                    //expect(statusCode).to.equal(null);
-                    //done();
-                //});
-                //runner.run(sleepCode.language, sleepCode.code);
-            //});
         //});
     //});
-
-    //describe('#stop()', function() {
-        //it('stops a running container', function(done) {
-            //runner.on('output', function(data) {
-                //if (data.stream === 'start') this.stop();
-                //if (data.stream !== 'status') return;
-
-                //expect(this.state).to.equal('finished');
-                //done();
-            //});
-            //runner.run(sleepCode.language, sleepCode.code);
-        //});
-
-        //context('when runner has no container', function() {
-            //it("doesn't fail", function() {
-                //runner._container = null;
-                //runner.stop();
-            //});
-        //});
     /*});*/
 });

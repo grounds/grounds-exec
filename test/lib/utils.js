@@ -31,7 +31,6 @@ describe('Utils', function() {
             beforeEach(function() {
                 formated = utils.formatImage('grounds', '');
             });
-
             expectEmptyString();
         });
     });
@@ -42,9 +41,9 @@ describe('Utils', function() {
         });
 
         it('returns an escaped string', function() {
-            var expected = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
+            var escapedString = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
 
-            expect(formated).to.equal(expected);
+            expect(formated).to.equal(escapedString);
         });
 
         context('when code is not specified', function() {
