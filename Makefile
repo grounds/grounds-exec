@@ -23,7 +23,7 @@ detach:
 	$(compose) up -d
 
 test: build
-	$(compose) run --rm server npm test
+	$(compose) run server npm test
 
 push:
 	scripts/push.sh $(REPOSITORY) $(TAG)
