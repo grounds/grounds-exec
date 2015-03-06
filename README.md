@@ -1,5 +1,5 @@
 # grounds-exec
-[ ![Codeship Status for grounds/grounds-exec](https://codeship.io/projects/8bd7b600-2357-0132-4e4e-7e9ae55fd39f/status?branch=master)](https://codeship.io/projects/36679)
+[![Circle CI](https://circleci.com/gh/grounds/grounds-exec.svg?style=svg)](https://circleci.com/gh/grounds/grounds-exec)
 
 This project is a server with real-time bidirectional event-based communication,
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
