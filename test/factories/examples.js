@@ -15,8 +15,7 @@ var languages = !!process.env.LANGUAGE ? [process.env.LANGUAGE] :
     'php',
     'python2',
     'python3',
-    'ruby',
-    'rust'
+    'ruby'
 ];
 
 function loadExamples() {
