@@ -9,7 +9,7 @@ dependencies:
 
 test:
   override:
-    - make test
+    - sudo make test
     
 deployment:
   hub:
