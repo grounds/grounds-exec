@@ -1,12 +1,10 @@
-var rewire = require('rewire'),
-    sinon = require('sinon'),
+var sinon = require('sinon'),
     expect = require('chai').expect,
     io = require('socket.io-client'),
-    Factory = require('../spec_helper').FactoryGirl,
-    docker = require('../spec_helper').docker,
-    socket = require('../spec_helper').socket,
-    server = rewire('../../lib/server'),
-    Connection = rewire('../../lib/connection');
+    Server = require('../support/server'),
+    Factory = require('../spec_helper').FactoryGirl;
+
+var server = new Server();
 
 describe('Connection', function() {
     var sleepCode   = Factory.create('sleepCode'),
@@ -14,11 +12,7 @@ describe('Connection', function() {
 
     // Setup a fake server without logs.
     before(function() {
-        fakeLogger = { log: sinon.stub(), error: sinon.stub() };
-        Connection.__set__('logger', fakeLogger);
-        server.__set__('logger', fakeLogger);
-        server.__set__('Connection', Connection);
-        server.listen(socket.port, docker);
+        server.listen();
     });
 
     after(function() {
@@ -26,7 +20,7 @@ describe('Connection', function() {
     });
 
     beforeEach(function(done){
-        client = io.connect(socket.URL, socket.options);
+        client = io.connect(server.URL, server.options);
         client.on('connect', function() {
             done();
         }).on('connect_error', function(err) {
@@ -77,19 +71,51 @@ describe('Connection', function() {
 
     context('when previous run is still running', function() {
         beforeEach(function() {
-            client.emit('run', runOpts(sleepCode));
+            clock = sinon.useFakeTimers();
+        });
+
+        afterEach(function() {
+            clock.restore();
         });
 
         it('a new run request stops previous runner', function(done) {
-            client.on('run', runHandler(done, function(output) {
-                expect(defaultCode).to.contain.all.keys(output);
-            }));
-
-            setTimeout(function() {
-                client.emit('run', runOpts(defaultCode));
-            }, 600);
+            client.on('run', function(data) {
+                switch (data.stream) {
+                    case 'start':
+                        clock.tick(600);
+                        client.emit('run', runOpts(defaultCode));
+                        break;
+                    case 'stop':
+                        done();
+                }
+            });
+            client.emit('run', runOpts(defaultCode));
         });
     });
+
+    context('when run is too long', function() {
+        beforeEach(function() {
+            clock = sinon.useFakeTimers();
+        });
+
+        afterEach(function() {
+            clock.restore();
+        });
+
+        it('emits a timeout error', function(done) {
+            client.on('run', function(data) {
+                switch (data.stream) {
+                    case 'start':
+                        clock.tick(20000);
+                        break;
+                    case 'error':
+                        done();
+                }
+            });
+            client.emit('run', runOpts(sleepCode));
+        });
+    });
+
     function runOpts(example){
         return { language: example.language, code: example.code };
     }

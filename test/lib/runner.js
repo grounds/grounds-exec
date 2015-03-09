@@ -124,7 +124,8 @@ describe('Runner', function() {
         // container, preventing these tests from timeouts.
         context('when execution is too long', function() {
             beforeEach(function(done) {
-                revert = Runner.__set__('maxExecutionTime', 1);
+                fakeTimeout = 1;
+                revert = Runner.__set__('maxExecutionTime', fakeTimeout);
 
                 prepareRun(sleepCode, done);
             });
@@ -133,9 +134,9 @@ describe('Runner', function() {
                 revert();
             });
 
-            it('timeouts and stops the container', function(done) {
+            it('emit a timeout and stops the container', function(done) {
                 runner.run(function(err) {
-                    expect(output.stderr).to.equal('');
+                    expect(timeout).to.equal(fakeTimeout);
 
                     if (err) return done(err);
 
@@ -197,13 +198,16 @@ describe('Runner', function() {
         runner = new Runner(docker, example.language, example.code);
 
         output   = { stdout: '', stderr: '' };
-        exitCode = null;
+        exitCode = null,
+        timeout  = null;
 
         runner.on('output', function(data) {
             output[data.stream] += data.chunk;
         }).on('status', function(data) {
             exitCode = data;
-        });;
+        }).on('timeout', function(data){
+            timeout = data;
+        });
 
         runner.create(callback);
     }
@@ -228,36 +232,4 @@ describe('Runner', function() {
         //context('when docker failed to run a new container', function() {
             //expectErrorWith('unknown', '');
         //});
-
-        //function expectErrorWith(language, code) {
-            //it('emits an error', function(done) {
-                //runner.on('output', function(data) {
-                    //expect(data.stream).to.equal('error');
-                    //done();
-                //});
-                //runner.run(language, code);
-            //});
-        //}
-
-        //context('when it takes too long', function() {
-            //beforeEach(function() {
-                //revert = Runner.__set__('runTimeout', 1);
-            //});
-
-            //afterEach(function() {
-                //revert();
-            //});
-
-            //it('timeouts and emits an error', function(done) {
-                //runner.on('output', function(data) {
-                    //if (data.stream !== 'error') return;
-
-                    //expect(this.state).to.equal('timeout');
-                    //done();
-                //});
-                //runner.run(sleepCode.language, sleepCode.code);
-            //});
-        //});
-    //});
-    /*});*/
 });
