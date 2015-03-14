@@ -20,12 +20,13 @@
     "validator": "3.28.x"
   },
   "devDependencies": {
-    "mocha": "1.21.x",
     "chai": "2.1.x",
+    "factory_girl": "0.2.x",
+    "mocha": "1.21.x",
+    "q": "^1.2.0",
+    "rewire": "2.1.x",
     "sinon": "1.10.x",
     "sinon-chai": "2.7.x",
-    "rewire": "2.1.x",
-    "factory_girl": "0.2.x",
     "socket.io-client": "1.1.x"
   },
   "scripts": {

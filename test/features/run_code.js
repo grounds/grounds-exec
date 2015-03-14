@@ -6,7 +6,7 @@ var sinon = require('sinon'),
 
 var server = new Server();
 
-describe('Connection', function() {
+describe('Run some code', function() {
     var sleepCode   = Factory.create('sleepCode'),
         defaultCode = Factory.create('defaultCode');
 

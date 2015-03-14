@@ -35,7 +35,8 @@ describe('Runner', function() {
         });
 
         it('creates a container with maxMemory set', function(done) {
-            runner.get('Memory', function(info) {
+            return runner.get('Memory')
+            .then(function(info) {
                 expect(info).to.equal(maxMemory);
                 done();
             });
@@ -44,7 +45,8 @@ describe('Runner', function() {
         it('creates a container with this language image', function(done) {
             var image = utils.formatImage(docker.repository, language);
 
-            runner.get('Image', function(info) {
+            return runner.get('Image')
+            .then(function(info) {
                 expect(info).to.equal(image);
                 done();
             });
@@ -53,11 +55,48 @@ describe('Runner', function() {
         it('creates a container with this code command', function(done) {
             var cmd = utils.formatCmd(code);
 
-            runner.get('Cmd', function(info) {
+            return runner.get('Cmd')
+            .then(function(info) {
                 expect(info).to.deep.equal([cmd]);
                 done();
             });
         });
+
+        context('when container creation failed', function(done) {
+            beforeEach(function() {
+                runner = new Runner(docker, 'unknown', '');
+
+                expected = new Error('Create failed.');
+
+                revert = docker.createContainer;
+                docker.createContainer = sinon.stub().yields(expected);
+            });
+
+            afterEach(function() {
+                docker.createContainer = revert;
+            });
+
+            it('calls create callback with an error', function(done) {
+                runner.create(function(err) {
+                    expect(err).to.equal(expected);
+                    done();
+                });
+            });
+        });
+
+      /*  context('when container attach failed', function(done) {*/
+            //beforeEach(function() {
+                //expected = new Error('Attach failed.');
+
+                            //});
+
+            //it('call callback with an error', function(done) {
+                //runner.create(function(err) {
+                    //expect(err).to.equal(expected);
+                    //done();
+                //});
+            //});
+        /*});*/
     });
 
     describe('#run()', function() {
@@ -73,6 +112,48 @@ describe('Runner', function() {
             });
         });
 
+        context('when docker fail to start this container', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    runner.container.start = sinon.stub().yields(new Error());
+
+                    done();
+                });
+            });
+
+            expectRunCallbackWithError();
+        });
+
+        context('when docker fail to wait for this container', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    runner.container.wait = sinon.stub().yields(new Error());
+
+                    done();
+                });
+            });
+
+            expectRunCallbackWithError();
+        });
+
+        context('when docker fail to remove this container', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    runner.container.remove = sinon.stub().yields(new Error());
+
+                    done();
+                });
+            });
+
+            expectRunCallbackWithError();
+        });
+
         // For this context we are testing against a
         // code sample that writes both on stdout and
         // stderr, returns an exit code of 1, with a
@@ -84,12 +165,7 @@ describe('Runner', function() {
 
                     container = runner.container;
 
-                    runner.run(function(err) {
-
-                        if (err) return done(err);
-
-                        done();
-                    });
+                    runner.run(done);
                 });
             });
 
@@ -107,7 +183,7 @@ describe('Runner', function() {
 
             it('has removed its container', function(done) {
                 container.inspect(function(err, data) {
-                    expect(err).not.to.be.undefined;
+                    expect(err).not.to.be.null;
                     done();
                 });
             });
@@ -136,9 +212,9 @@ describe('Runner', function() {
 
             it('emit a timeout and stops the container', function(done) {
                 runner.run(function(err) {
-                    expect(timeout).to.equal(fakeTimeout);
-
                     if (err) return done(err);
+
+                    expect(timeout).to.equal(fakeTimeout);
 
                     done();
                 });
@@ -162,31 +238,30 @@ describe('Runner', function() {
         context('when running some code', function() {
             beforeEach(function(done) {
                 prepareRun(sleepCode, done);
+
+                runner.on('start', function() {
+                    runner.stop();
+                });
             });
 
             it('stops the container execution', function(done) {
                 runner.run(function(err) {
-                    expect(output.stderr).to.equal('');
-
                     if (err) return done(err);
+
+                    expect(output.stderr).to.equal('');
 
                     done();
                 });
-                // We are not sure here that container is already started
-                runner.stop();
             });
 
             it("hasn't emited container exit code", function(done) {
                 runner.run(function(err) {
-                    expect(exitCode).to.be.null;
-
                     if (err) return done(err);
+
+                    expect(exitCode).to.be.null;
 
                     done();
                 });
-                // waitUntil('Running' == true');
-                // We are not sure here that container is already started
-                runner.stop();
             });
         });
     });
@@ -212,6 +287,14 @@ describe('Runner', function() {
         runner.create(callback);
     }
 
+    function expectRunCallbackWithError() {
+        it('call callback with an error', function(done) {
+            runner.run(function(err) {
+                expect(err).not.to.be.null;
+                done();
+            });
+        });
+    }
 
         //context('when language is empty', function() {
             //expectErrorWith('', 'puts 42');

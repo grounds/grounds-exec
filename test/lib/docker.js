@@ -13,12 +13,8 @@ var endpointHTTP  = 'http://127.0.0.1:2376',
     endpointHTTPS = endpointHTTP.replace('http', 'https'),
     repository    = 'grounds';
 
-var pingSuccess = { ping: function(callback) {
-        callback(null);
-    }},
-    pingFailure = { ping: function(callback) {
-        callback(new Error());
-    }};
+var pingSuccess = { ping: sinon.stub().yields(null) },
+    pingFailure = { ping: sinon.stub().yields(new Error()) };
 
 describe('Docker', function() {
     describe('.validate', function() {

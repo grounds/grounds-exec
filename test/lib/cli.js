@@ -8,11 +8,7 @@ var chai = require('chai'),
 
 chai.use(sinonChai);
 
-var successClient = {
-        ping: function(callback) {
-            callback(null);
-        }
-    },
+var successClient = { ping: sinon.stub().yields(null) },
     getSuccessClient = sinon.stub().returns(successClient);
 
 var endpointHTTP = 'http://127.0.0.1:2375';
