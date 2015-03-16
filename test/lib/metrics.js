@@ -22,7 +22,9 @@ describe('Metrics', function() {
             });
 
             it('returns a different callback than the original one', function() {
-                expect(metrics.add('run', callback)).not.to.equal(callback);
+                add();
+
+                expect(newCallback).not.to.equal(callback);
             });
 
             it('returns a callback encapsulating the original one', function() {
@@ -30,7 +32,9 @@ describe('Metrics', function() {
 
                 add();
 
-                if (newCallback !== callback) newCallback(data);
+                // We must first verify that we are not getting the original one.
+                if (newCallback !=== callback)
+                    newCallback(data);
 
                 expect(callback).to.have.been.calledWith(data);
             });

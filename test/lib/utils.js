@@ -19,11 +19,11 @@ describe('Utils', function() {
 
         context('when no repository is specified', function() {
             beforeEach(function() {
-                formated = utils.formatImage('', 'ruby');
+                formated = utils.formatImage('', 'java');
             });
 
             it('formats image name without repository prefix', function() {
-                expect(formated).to.equal('exec-ruby');
+                expect(formated).to.equal('exec-java');
             });
         });
 

@@ -83,23 +83,26 @@ describe('Runner', function() {
                 });
             });
         });
-
-      /*  context('when container attach failed', function(done) {*/
-            //beforeEach(function() {
-                //expected = new Error('Attach failed.');
-
-                            //});
-
-            //it('call callback with an error', function(done) {
-                //runner.create(function(err) {
-                    //expect(err).to.equal(expected);
-                    //done();
-                //});
-            //});
-        /*});*/
     });
 
     describe('#run()', function() {
+        context('when everything is valid', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    done();
+                });
+            });
+
+            it('call run callback without error', function(done) {
+                runner.run(function(err) {
+                    expect(err).to.be.null;
+                    done();
+                });
+            });
+        });
+
         context('when container is not yet created', function() {
             beforeEach(function() {
                 runner = new Runner(docker, '', '');
@@ -110,6 +113,20 @@ describe('Runner', function() {
                     runner.run(function() {});
                 }).to.throw(Error);
             });
+        });
+
+        context('when docker fail to attach to this container', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    runner.container.attach = sinon.stub().yields(new Error());
+
+                    done();
+                });
+            });
+
+            expectRunCallbackWithError();
         });
 
         context('when docker fail to start this container', function() {
@@ -132,6 +149,20 @@ describe('Runner', function() {
                     if (err) return done(err);
 
                     runner.container.wait = sinon.stub().yields(new Error());
+
+                    done();
+                });
+            });
+
+            expectRunCallbackWithError();
+        });
+
+        context('when docker fail to inspect this container', function() {
+            beforeEach(function(done) {
+                prepareRun(defaultCode, function(err) {
+                    if (err) return done(err);
+
+                    runner.container.inspect = sinon.stub().yields(new Error());
 
                     done();
                 });
@@ -295,24 +326,4 @@ describe('Runner', function() {
             });
         });
     }
-
-        //context('when language is empty', function() {
-            //expectErrorWith('', 'puts 42');
-        //});
-
-        //context('when code is too long', function() {
-            //beforeEach(function() {
-                //revert = Runner.__set__('maxSizeProgram', 0)
-            //});
-
-            //afterEach(function() {
-                //revert();
-            //});
-
-            //expectErrorWith('ruby', '');
-        //});
-
-        //context('when docker failed to run a new container', function() {
-            //expectErrorWith('unknown', '');
-        //});
 });
