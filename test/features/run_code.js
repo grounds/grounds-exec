@@ -1,14 +1,19 @@
 var sinon = require('sinon'),
     expect = require('chai').expect,
+    rewire = require('rewire'),
     io = require('socket.io-client'),
     Server = require('../support/server'),
     Factory = require('../spec_helper').FactoryGirl;
 
 var server = new Server();
 
+var error = rewire('../../lib/handler/run').__get__('error');
+
 describe('Run some code', function() {
     var sleepCode   = Factory.create('sleepCode'),
-        defaultCode = Factory.create('defaultCode');
+        defaultCode = Factory.create('defaultCode'),
+        tooLongCode = Factory.create('tooLongCode'),
+        undefinedCode = Factory.create('undefinedCode');
 
     // Setup a fake server without logs.
     before(function() {
@@ -32,17 +37,12 @@ describe('Run some code', function() {
         client.disconnect();
     });
 
-    it('accepts run request and replies with proper output', function(done) {
-        client.on('run', runHandler(done, function(output) {
-            expect(defaultCode).to.contain.all.keys(output);
-        }));
-        client.emit('run', runOpts(defaultCode));
-    });
+    expectProperResponse(defaultCode);
 
     context('when run request is empty', function() {
         it('responds with an error', function(done) {
-            client.on('run', runHandler(done, function(data) {
-                expect(data).to.contain.all.keys({ stream: 'error', chunk: 'Empty request.' });
+            client.on('run', runHandler(done, function(response) {
+                expectErrorResponse(response, error.EmptyRequest);
             }));
             client.emit('run');
         });
@@ -51,22 +51,30 @@ describe('Run some code', function() {
     context('when run request language is not specified', function() {
         it('responds with an error', function(done) {
             client.on('run', runHandler(done, function(data) {
-                expect(data).to.contain.all.keys({ stream: 'error', chunk: 'Docker error.' });
+                expect(data.stream).to.equal('error');
             }));
-            client.emit('run', {});
+            client.emit('run', { code: '' });
         });
+    });
+
+    context('when run request code is empty', function() {
+        expectProperResponse(undefinedCode);
+    });
+
+    context('when run request code is too long', function() {
+        expectErrorResponse(tooLongCode, error.ProgramTooLong);
     });
 
     it('prevents run request spam', function(done) {
         client.on('run', function(data) {
             if (data.stream !== 'error') return;
 
-            expect(data).to.contain.all.keys({ stream: 'error', chunk: 'Spam prevention.' });
+            expect(data.chunk).to.equal(error.SpamPrevention.message);
 
             done();
         });
-        client.emit('run', runOpts(defaultCode));
-        client.emit('run', runOpts(defaultCode));
+        client.emit('run', defaultCode);
+        client.emit('run', defaultCode);
     });
 
     context('when previous run is still running', function() {
@@ -83,13 +91,13 @@ describe('Run some code', function() {
                 switch (data.stream) {
                     case 'start':
                         clock.tick(600);
-                        client.emit('run', runOpts(defaultCode));
+                        client.emit('run', defaultCode);
                         break;
                     case 'stop':
                         done();
                 }
             });
-            client.emit('run', runOpts(defaultCode));
+            client.emit('run', defaultCode);
         });
     });
 
@@ -112,16 +120,37 @@ describe('Run some code', function() {
                         done();
                 }
             });
-            client.emit('run', runOpts(sleepCode));
+            client.emit('run', sleepCode);
         });
     });
 
-    function runOpts(example){
-        return { language: example.language, code: example.code };
+    function expectProperResponse(example) {
+        it('accepts run request and replies with proper response', function(done) {
+            client.on('run', runHandler(done, function(response) {
+                var expected = {};
+
+                ['stdout', 'stderr', 'exitCode'].forEach(function(prop) {
+                    expected[prop] = example[prop];
+                });
+                expect(response).to.deep.equal(expected);
+            }));
+            client.emit('run', example);
+        });
+    }
+
+    function expectErrorResponse(example, err) {
+        var expected = { stream: 'error', chunk: err.message };
+
+        it('responds with an error', function(done) {
+            client.on('run', runHandler(done, function(response) {
+                expect(response).to.deep.equal(expected);
+            }));
+            client.emit('run', tooLongCode);
+        });
     }
 
     function runHandler(done, callback) {
-        var output = {
+        var response = {
             stdout: '',
             stderr: '',
             exitCode: null
@@ -131,11 +160,11 @@ describe('Run some code', function() {
             switch (data.stream) {
                 case 'stdout':
                 case 'stderr':
-                    output[data.stream] += data.chunk;
+                    response[data.stream] += data.chunk;
                     break;
                 case 'status':
-                    output.exitCode = data.chunk;
-                    callback(output);
+                    response.exitCode = data.chunk;
+                    callback(response);
                     done();
                     break;
                 case 'error':

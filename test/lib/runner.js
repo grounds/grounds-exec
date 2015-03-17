@@ -17,17 +17,17 @@ describe('Runner', function() {
         expect(maxExecutionTime / 1000).to.equal(10);
     });
 
+    beforeEach(function() {
+        runner = new Runner(docker);
+    });
+
+    it('uses given docker client', function() {
+        expect(runner.client).to.equal(docker);
+    });
+
     describe('#create()', function() {
         beforeEach(function(done) {
-            language = defaultCode.language;
-            code = defaultCode.code;
-
-            runner = new Runner(docker, language, code);
-            runner.create(done);
-        });
-
-        it('uses this docker client', function() {
-            expect(runner.client).to.equal(docker);
+            create(defaultCode, done);
         });
 
         it('creates a container', function() {
@@ -43,7 +43,7 @@ describe('Runner', function() {
         });
 
         it('creates a container with this language image', function(done) {
-            var image = utils.formatImage(docker.repository, language);
+            var image = utils.formatImage(docker.repository, defaultCode.language);
 
             return runner.get('Image')
             .then(function(info) {
@@ -53,7 +53,7 @@ describe('Runner', function() {
         });
 
         it('creates a container with this code command', function(done) {
-            var cmd = utils.formatCmd(code);
+            var cmd = utils.formatCmd(defaultCode.code);
 
             return runner.get('Cmd')
             .then(function(info) {
@@ -64,21 +64,24 @@ describe('Runner', function() {
 
         context('when container creation failed', function(done) {
             beforeEach(function() {
-                runner = new Runner(docker, 'unknown', '');
-
-                expected = new Error('Create failed.');
+                error = new Error();
 
                 revert = docker.createContainer;
-                docker.createContainer = sinon.stub().yields(expected);
+
+                docker.createContainer = sinon.stub().yields(error);
             });
 
             afterEach(function() {
                 docker.createContainer = revert;
             });
 
-            it('calls create callback with an error', function(done) {
-                runner.create(function(err) {
-                    expect(err).to.equal(expected);
+            it('gets an error', function(done) {
+                return runner.create(defaultCode)
+                .then(function () {
+                    done('runner created a container but it should not');
+                })
+                .fail(function (err) {
+                    expect(err).to.equal(error);
                     done();
                 });
             });
@@ -86,141 +89,80 @@ describe('Runner', function() {
     });
 
     describe('#run()', function() {
-        context('when everything is valid', function() {
+        // For this context we are testing against a
+        // code sample that writes both on stdout and
+        // stderr, returns an exit code of 1, with a
+        // really short execution time.
+        context('when container is created', function() {
             beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
+                create(defaultCode, done);
+            });
 
-                    done();
+            it('runs the container', function(done) {
+                run(done);
+            });
+
+            ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
+                function (action) {
+                context('when docker fail to '+action+' this container', function() {
+                    beforeEach(function() {
+                        error = new Error();
+
+                        runner.container[action] = sinon.stub().yields(error);
+                    });
+
+                    it('gets an error', function(done) {
+                        return runner.run()
+                        .then(function() {
+                            done('container '+action+' did not fail.');
+                        })
+                        .fail(function (err) {
+                            expect(err).to.equal(error);
+                            done();
+                        });
+                    });
                 });
             });
 
-            it('call run callback without error', function(done) {
-                runner.run(function(err) {
-                    expect(err).to.be.null;
-                    done();
+            context('when container exits', function() {
+                beforeEach(function(done) {
+                    emited = attachRunnerEvents();
+
+                    container = runner.container;
+
+                    run(done);
+                });
+
+                it('has emited container exit code', function() {
+                    expect(emited.exitCode).to.equal(defaultCode.exitCode);
+                });
+
+                it('has emited appropriate output on stdout', function() {
+                    expect(emited.output.stdout).to.equal(defaultCode.stdout);
+                });
+
+                it('has emited appropriate output on stderr', function() {
+                    expect(emited.output.stderr).to.equal(defaultCode.stderr);
+                });
+
+                it('has removed its container', function(done) {
+                    container.inspect(function(err, data) {
+                        expect(err).not.to.be.null;
+                        done();
+                    });
+                });
+
+                it('has no container', function() {
+                    expect(runner.container).to.be.null;
                 });
             });
         });
 
         context('when container is not yet created', function() {
-            beforeEach(function() {
-                runner = new Runner(docker, '', '');
-            });
-
             it('throws an error', function() {
                 expect(function() {
-                    runner.run(function() {});
+                    runner.run();
                 }).to.throw(Error);
-            });
-        });
-
-        context('when docker fail to attach to this container', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    runner.container.attach = sinon.stub().yields(new Error());
-
-                    done();
-                });
-            });
-
-            expectRunCallbackWithError();
-        });
-
-        context('when docker fail to start this container', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    runner.container.start = sinon.stub().yields(new Error());
-
-                    done();
-                });
-            });
-
-            expectRunCallbackWithError();
-        });
-
-        context('when docker fail to wait for this container', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    runner.container.wait = sinon.stub().yields(new Error());
-
-                    done();
-                });
-            });
-
-            expectRunCallbackWithError();
-        });
-
-        context('when docker fail to inspect this container', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    runner.container.inspect = sinon.stub().yields(new Error());
-
-                    done();
-                });
-            });
-
-            expectRunCallbackWithError();
-        });
-
-        context('when docker fail to remove this container', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    runner.container.remove = sinon.stub().yields(new Error());
-
-                    done();
-                });
-            });
-
-            expectRunCallbackWithError();
-        });
-
-        // For this context we are testing against a
-        // code sample that writes both on stdout and
-        // stderr, returns an exit code of 1, with a
-        // really short execution time.
-        context('when container exits', function() {
-            beforeEach(function(done) {
-                prepareRun(defaultCode, function(err) {
-                    if (err) return done(err);
-
-                    container = runner.container;
-
-                    runner.run(done);
-                });
-            });
-
-            it('has emited container exit code', function() {
-                expect(exitCode).to.equal(defaultCode.exitCode);
-            });
-
-            it('has emiteded appropriate output on stdout', function() {
-                expect(output.stdout).to.equal(defaultCode.stdout);
-            });
-
-            it('has emiteded appropriate output on stderr', function() {
-                expect(output.stderr).to.equal(defaultCode.stderr);
-            });
-
-            it('has removed its container', function(done) {
-                container.inspect(function(err, data) {
-                    expect(err).not.to.be.null;
-                    done();
-                });
-            });
-
-            it('has no container', function() {
-                expect(runner.container).to.be.null;
             });
         });
 
@@ -234,20 +176,22 @@ describe('Runner', function() {
                 fakeTimeout = 1;
                 revert = Runner.__set__('maxExecutionTime', fakeTimeout);
 
-                prepareRun(sleepCode, done);
+                emited = attachRunnerEvents();
+
+                create(sleepCode, done);
             });
 
             afterEach(function() {
                 revert();
             });
 
-            it('emit a timeout and stops the container', function(done) {
-                runner.run(function(err) {
-                    if (err) return done(err);
+            it('emits a timeout and stops the container', function(done) {
+                runner.on('timeout', function(executionTime) {
+                    timeout = executionTime;
+                });
 
+                run(done, function() {
                     expect(timeout).to.equal(fakeTimeout);
-
-                    done();
                 });
             });
         });
@@ -264,66 +208,71 @@ describe('Runner', function() {
 
         // For this context we are using a code example
         // that should hang more than the test suite
-        // default timeout, if stops fails, these tests
+        // default timeout, if stop fails, these tests
         // should timeout.
-        context('when running some code', function() {
+        context('when running', function() {
             beforeEach(function(done) {
-                prepareRun(sleepCode, done);
-
                 runner.on('start', function() {
                     runner.stop();
                 });
+
+                emited = attachRunnerEvents();
+
+                create(sleepCode, done);
             });
 
+            // We must verify that the container doesn't
+            // stop because of the code sent as parameter.
             it('stops the container execution', function(done) {
-                runner.run(function(err) {
-                    if (err) return done(err);
-
-                    expect(output.stderr).to.equal('');
-
-                    done();
+                run(done, function() {
+                    expect(emited.output.stderr).to.equal('');
                 });
             });
 
             it("hasn't emited container exit code", function(done) {
-                runner.run(function(err) {
-                    if (err) return done(err);
-
-                    expect(exitCode).to.be.null;
-
-                    done();
+                run(done, function() {
+                    expect(emited.exitCode).to.be.null;
                 });
             });
         });
     });
 
-    // Prepare a runner for the code example given,
-    // listen on stdout, stderr and exit code then
-    // call calback when container is created.
-    function prepareRun(example, callback) {
-        runner = new Runner(docker, example.language, example.code);
-
-        output   = { stdout: '', stderr: '' };
-        exitCode = null,
-        timeout  = null;
-
-        runner.on('output', function(data) {
-            output[data.stream] += data.chunk;
-        }).on('status', function(data) {
-            exitCode = data;
-        }).on('timeout', function(data){
-            timeout = data;
+    function create(example, done) {
+        return runner.create(example)
+        .then(function (container) {
+            done();
+        })
+        .fail(function (err) {
+            done(err);
         });
-
-        runner.create(callback);
     }
 
-    function expectRunCallbackWithError() {
-        it('call callback with an error', function(done) {
-            runner.run(function(err) {
-                expect(err).not.to.be.null;
-                done();
-            });
+    function run(done, callback) {
+        return runner.run()
+        .then(function() {
+            if (typeof(callback) !== 'undefined')
+                callback();
+            done();
+        })
+        .fail(function (err) {
+            done(err);
         });
+    }
+
+    function attachRunnerEvents() {
+        var emited = {
+            output: { stdout: '', stderr: '' },
+            exitCode: null,
+            timeout: null
+        }
+
+        runner.on('output', function(data) {
+            emited.output[data.stream] += data.chunk;
+        }).on('status', function(data) {
+            emited.exitCode = data;
+        }).on('timeout', function(data){
+            emited.timeout = data;
+        });
+        return emited;
     }
 });
