@@ -4,7 +4,6 @@ var chai = require('chai'),
     expect = chai.expect,
     rewire = require('rewire'),
     path = require('path'),
-    errors = require('../../lib/errors'),
     docker = rewire('../../lib/docker');
 
 chai.use(sinonChai);
@@ -16,6 +15,8 @@ var endpointHTTP  = 'http://127.0.0.1:2376',
 var pingSuccess = { ping: sinon.stub().yields(null) },
     pingFailure = { ping: sinon.stub().yields(new Error()) };
 
+var error = docker.__get__('error');
+
 describe('Docker', function() {
     describe('.validate', function() {
         beforeEach(function() {
@@ -26,21 +27,21 @@ describe('Docker', function() {
              beforeEach(function() {
                 args = { endpoint: 'azerty' };
             });
-            expectCallbackWithError(errors.DockerAPIInvalidEndpoint);
+            expectCallbackWithError(error.InvalidEndpoint);
         });
 
         context('when endpoint is not http or https', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP.replace('http', 'ftp') };
             });
-            expectCallbackWithError(errors.DockerAPIInvalidEndpoint);
+            expectCallbackWithError(error.InvalidEndpoint);
         });
 
         context('when docker repository is invalid', function() {
             beforeEach(function() {
                 args = { endpoint: endpointHTTP, repository: '/azerty' };
             });
-            expectCallbackWithError(errors.DockerAPIInvalidRepository);
+            expectCallbackWithError(error.InvalidRepository);
         });
 
         context('with valid https endpoint', function() {
@@ -52,7 +53,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     args.certs = 'azerty';
                 });
-                expectCallbackWithError(errors.DockerAPIInvalidCertsPath);
+                expectCallbackWithError(error.InvalidCertsPath);
             });
 
             context('when docker certificates path is valid', function() {
@@ -68,21 +69,21 @@ describe('Docker', function() {
                     beforeEach(function() {
                         invalidateCertFile('key.pem');
                     });
-                    expectCallbackWithError(errors.DockerAPIInvalidCertsPath);
+                    expectCallbackWithError(error.InvalidCertsPath);
                 });
 
                 context('when cert.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('cert.pem');
                     });
-                    expectCallbackWithError(errors.DockerAPIMissingKeyCertificate);
+                    expectCallbackWithError(error.MissingKeyCertificate);
                 });
 
                 context('when ca.pem is missing', function() {
                     beforeEach(function() {
                         invalidateCertFile('ca.pem');
                     });
-                    expectCallbackWithError(errors.DockerAPIMissingCertCertificate);
+                    expectCallbackWithError(error.MissingCaCertificate);
                 });
 
                 // Stub fs to validate presence of all files except
@@ -131,7 +132,7 @@ describe('Docker', function() {
                 beforeEach(function() {
                     revert = docker.__set__('getClient', sinon.stub().returns(pingFailure));
                 });
-                expectCallbackWithError(errors.DockerAPINotResponding);
+                expectCallbackWithError(error.DockerAPINotResponding);
             });
         });
 
