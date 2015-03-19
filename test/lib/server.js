@@ -5,10 +5,11 @@ var rewire = require('rewire'),
     expect = chai.expect,
     io = require('socket.io-client'),
     docker = require('../spec_helper').docker,
-    errors = require('../../lib/errors'),
     server = rewire('../../lib/server');
 
 chai.use(sinonChai);
+
+var error = server.__get__('error');
 
 describe('Server', function() {
     beforeEach(function(){
@@ -29,8 +30,8 @@ describe('Server', function() {
                 err = server.listen('lol', docker);
             });
 
-            it('returns error: '+errors.ServerPortInvalid, function() {
-                expect(err).to.equal(errors.ServerPortInvalid);
+            it('returns error: '+error.InvalidPort, function() {
+                expect(err).to.equal(error.InvalidPort);
             });
         });
 
