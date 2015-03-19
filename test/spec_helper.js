@@ -21,16 +21,7 @@ dockerClient.ping(function(err) {
     }
 });
 
-// Should enforce websocket transport, otherwise polling will
-// fail.
-var socket = {
-    port: 8080,
-    URL: 'http://127.0.0.1:8080',
-    options: { transports: ['websocket'], 'forceNew': true }
-}
-
 module.exports = {
     docker: dockerClient,
     FactoryGirl: FactoryGirl,
-    socket: socket
 };

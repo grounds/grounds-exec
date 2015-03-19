@@ -1,1 +1,0 @@
-$stderr.puts 'Hello stderr'

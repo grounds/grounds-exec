@@ -9,6 +9,5 @@ server:
     - DOCKER_URL
     - REPOSITORY
     - TEST_OPTS
-    - LANGUAGE
     - NEW_RELIC_LICENSE_KEY
     - NEW_RELIC_APP_NAME

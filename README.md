@@ -14,25 +14,13 @@ All you need is [Docker 1.3+](https://docker.com/),
 containers with the same environment as in production.
 
 ## Languages
-There is one Docker image for each language stack supported.
 
-grounds-exec currently supports latest version of:
-
-- C
-- C++
-- C#
-- Elixir
-- Go
-- Haxe
-- Java
-- Node.js
-- PHP
-- Python 2 and 3
-- Ruby
-- Rust
+This project is language agnostic, the only mandatory thing is to have Docker
+images following the format described in this
+[repository](http://github.com/grounds/grounds-images).
 
 Checkout this
-[documentation](https://github.com/grounds/grounds-exec/blob/master/docs/NEW_LANGUAGE.md)
+[documentation](https://github.com/grounds/grounds-images/blob/master/docs/NEW_LANGUAGE.md)
 to get more informations about how to add support for a new language stack.
 
 ## Prerequisite
@@ -148,6 +136,10 @@ If an error occured during a `run`, you will receive:
 
 Tests will also run inside Docker containers with the same environment
 as the CI server.
+
+You need to pull the official ruby image to run the test suite:
+
+    docker pull grounds/exec-ruby
 
 To run the test suite:
 

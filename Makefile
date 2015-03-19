@@ -1,4 +1,4 @@
-.PHONY: all re clean build run detach test push images images-push images-pull
+.PHONY: all re clean build run detach test push
 
 REPOSITORY := $(if $(REPOSITORY),$(REPOSITORY),'grounds')
 TAG        := $(if $(TAG),$(TAG),'latest')
@@ -27,12 +27,3 @@ test: build
 
 push:
 	scripts/push.sh $(REPOSITORY) $(TAG)
-
-images:
-	scripts/images.sh build $(REPOSITORY)
-
-images-push:
-	scripts/images.sh push $(REPOSITORY)
-
-images-pull:
-	scripts/images.sh pull $(REPOSITORY)

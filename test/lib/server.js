@@ -5,7 +5,6 @@ var rewire = require('rewire'),
     expect = chai.expect,
     io = require('socket.io-client'),
     docker = require('../spec_helper').docker,
-    socket = require('../spec_helper').socket,
     errors = require('../../lib/errors'),
     server = rewire('../../lib/server');
 
@@ -15,6 +14,9 @@ describe('Server', function() {
     beforeEach(function(){
         fakeLogger = { log: sinon.stub(), error: sinon.stub() };
         revertLogger = server.__set__('logger', fakeLogger);
+
+        port = 8080;
+        URL  = 'http://127.0.0.1:8080';
     });
 
     afterEach(function(){
@@ -34,7 +36,7 @@ describe('Server', function() {
 
         context('when port is numeric', function() {
             beforeEach(function(){
-                server.listen(socket.port, docker);
+                server.listen(port, docker);
             });
 
             afterEach(function(){
@@ -43,11 +45,11 @@ describe('Server', function() {
 
             it('logs listening message', function() {
                expect(fakeLogger.log).to.have.been
-                .calledWith('Listening on:', socket.port);
+                .calledWith('Listening on:', port);
             });
 
             it('accepts new connection and disconnection', function(done) {
-                var client = io.connect(socket.URL);
+                var client = io.connect(URL);
 
                 client.on('connect', function() {
                     client.disconnect();
@@ -60,7 +62,7 @@ describe('Server', function() {
     describe('.close', function() {
         context('when server is running', function() {
             beforeEach(function(){
-                server.listen(socket.port, docker);
+                server.listen(port, docker);
             });
 
             it('closes the server', function() {
