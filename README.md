@@ -1,5 +1,5 @@
 # grounds-exec
-[![Circle CI](https://circleci.com/gh/grounds/grounds-exec.svg?style=svg)](https://circleci.com/gh/grounds/grounds-exec)
+[![Circle CI](https://circleci.com/gh/grounds/grounds-exec/tree/master.svg?style=svg)](https://circleci.com/gh/grounds/grounds-exec/tree/master)
 
 This project is a server with real-time bidirectional event-based communication,
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
