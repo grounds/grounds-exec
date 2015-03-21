@@ -2,7 +2,7 @@ server:
   build: .
   command: scripts/server.sh
   ports:
-    - 8080:8080
+    - '8080'
   volumes:
     - $DOCKER_CERT_PATH:/home/.docker
   environment:
