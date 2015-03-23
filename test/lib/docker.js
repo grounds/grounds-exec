@@ -110,7 +110,9 @@ describe('Docker', function() {
 
             context('when docker API is responding', function() {
                 beforeEach(function() {
-                    revert = docker.__set__('getClient', sinon.stub().returns(pingSuccess));
+                    revert = docker.__set__('getClient',
+                        sinon.stub().returns(pingSuccess)
+                    );
                 });
 
                 it('call callback with a proper docker client', function(done) {
@@ -130,7 +132,9 @@ describe('Docker', function() {
 
             context('when docker API is not responding', function() {
                 beforeEach(function() {
-                    revert = docker.__set__('getClient', sinon.stub().returns(pingFailure));
+                    revert = docker.__set__('getClient',
+                        sinon.stub().returns(pingFailure)
+                    );
                 });
                 expectCallbackWithError(error.DockerAPINotResponding);
             });
@@ -149,7 +153,8 @@ describe('Docker', function() {
         // wich required a valid docker client.
         context('with specs config', function() {
             beforeEach(function() {
-                var endpoint = process.env.DOCKER_URL,
+                var endpoint = process.env.DOCKER_RUNNERS_URL ||
+                               process.env.DOCKER_URL,
                     certs = process.env.DOCKER_CERT_PATH || '/home/.docker',
                     repository = process.env.REPOSITORY || 'grounds';
 
@@ -168,14 +173,14 @@ describe('Docker', function() {
             expectClientWithRepository(repository);
         });
 
-        function expectClientWithRepository(repository) {
-            context('with repository '+repository, function() {
+        function expectClientWithRepository(repo) {
+            context('with repository '+repo, function() {
                 beforeEach(function() {
-                    dockerClient = docker.getClient(endpointHTTP, null, repository);
+                    dockerClient = docker.getClient(endpointHTTP, null, repo);
                 });
 
-                it('returns a docker client using repository '+repository, function() {
-                    expect(dockerClient.repository).to.eq(repository);
+                it('returns a docker client using repository '+repo, function() {
+                    expect(dockerClient.repository).to.eq(repo);
                 });
             });
         }
