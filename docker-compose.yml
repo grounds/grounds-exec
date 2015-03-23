@@ -4,7 +4,7 @@ server:
   ports:
     - '8080:8080'
   volumes:
-    - $DOCKER_CERT_PATH:/home/.docker
+    - '$DOCKER_CERT_PATH:/home/.docker'
   environment:
     - DOCKER_URL
     - DOCKER_RUNNERS_URL
