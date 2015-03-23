@@ -6,9 +6,9 @@ var Docker = require('dockerode'),
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
-var endpoint   = process.env.DOCKER_URL,
-    certs      = process.env.DOCKER_CERT_PATH || '/home/.docker',
-    repository = process.env.REPOSITORY || 'grounds';
+var endpoint   = process.env.DOCKER_RUNNERS_URL || process.env.DOCKER_URL,
+    certs      = process.env.DOCKER_CERT_PATH   || '/home/.docker',
+    repository = process.env.REPOSITORY         || 'grounds';
 
 var dockerClient = docker.getClient(endpoint, certs, repository);
 

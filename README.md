@@ -67,6 +67,11 @@ mounted has a volume inside the container.
 
 >Be careful: boot2docker enforces tls verification since version 1.3.
 
+If you want to use a different Docker host to creates code runners inside
+containers you can also specify `DOCKER_RUNNERS_URL`.
+
+>Currently both Docker hosts need to have the same ssl certificates.
+
 ## Socket.io server
 
 ### Start the server
