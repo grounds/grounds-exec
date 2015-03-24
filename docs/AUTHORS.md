@@ -1,6 +1,6 @@
 # Authors
 
-* [Adrien Folie](https://github.com/folieadrien) - Core developer.
+* [Adrien Folie](https://github.com/foliea) - Core developer.
 * [Gaetan Gueraud](https://github.com/exadeci) - Core developer.
 
 ### Special thanks to:
