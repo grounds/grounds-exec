@@ -21,7 +21,9 @@
   },
   "devDependencies": {
     "chai": "2.1.x",
+    "codeclimate-test-reporter": "0.0.x",
     "factory_girl": "0.2.x",
+    "istanbul": "0.3.x",
     "mocha": "1.21.x",
     "q": "1.2.x",
     "rewire": "2.1.x",
@@ -30,7 +32,7 @@
     "socket.io-client": "1.1.x"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha $TEST_OPTS"
+    "test": "./scripts/test.sh"
   },
   "engines": {
     "node": "0.10.x"
