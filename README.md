@@ -1,5 +1,7 @@
 # grounds-exec
 [![Circle CI](https://circleci.com/gh/grounds/grounds-exec/tree/master.svg?style=svg)](https://circleci.com/gh/grounds/grounds-exec/tree/master)
+[![Code Climate](https://codeclimate.com/github/grounds/grounds-exec/badges/gpa.svg)](https://codeclimate.com/github/grounds/grounds-exec)
+[![Test Coverage](https://codeclimate.com/github/grounds/grounds-exec/badges/coverage.svg)](https://codeclimate.com/github/grounds/grounds-exec)
 
 This project is a server with real-time bidirectional event-based communication,
 used by [Grounds](http://beta.42grounds.io) to execute arbitry code within various
