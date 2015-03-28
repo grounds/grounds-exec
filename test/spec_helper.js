@@ -1,27 +1,22 @@
 var Docker = require('dockerode'),
     FactoryGirl = require('factory_girl'),
-    utils = require('../lib/utils'),
-    docker = require('../lib/docker');
+    utils = require('../lib/utils');
 
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
 
-var endpoint   = process.env.DOCKER_RUNNERS_URL || process.env.DOCKER_URL,
-    certs      = process.env.DOCKER_CERT_PATH   || '/home/.docker',
-    repository = process.env.REPOSITORY         || 'grounds';
+var docker = new Docker();;
 
-var dockerClient = docker.getClient(endpoint, certs, repository);
+docker.repository = process.env.REPOSITORY || 'grounds';
 
-// If client is not working, docker module tests are testing
-// if getClient is working correctly.
-dockerClient.ping(function(err) {
+docker.ping(function(err) {
     if (err) {
-        console.log(err);
+        console.log('Docker %s', err);
         process.exit(1);
     }
 });
 
 module.exports = {
-    docker: dockerClient,
+    docker: docker,
     FactoryGirl: FactoryGirl,
 };

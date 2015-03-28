@@ -2,7 +2,6 @@ var rewire = require('rewire'),
     sinon = require('sinon'),
     expect = require('chai').expect,
     io = require('socket.io-client'),
-    docker = require('../spec_helper').docker,
     server = rewire('../../lib/server'),
     Connection = rewire('../../lib/connection'),
     handler = rewire('../../lib/handler'),
@@ -22,7 +21,7 @@ Server.prototype.listen = function() {
     server.__set__('Connection', Connection);
     server.__set__('logger', logger);
 
-    server.listen(this.port, docker);
+    server.listen(this.port);
 }
 
 Server.prototype.close = function() {
