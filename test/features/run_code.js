@@ -37,7 +37,7 @@ describe('Run some code', function() {
         client.disconnect();
     });
 
-    expectProperResponse(defaultCode);
+    expectValidResponse(defaultCode);
 
     context('when run request is empty', function() {
         it('responds with an error', function(done) {
@@ -58,7 +58,7 @@ describe('Run some code', function() {
     });
 
     context('when run request code is empty', function() {
-        expectProperResponse(undefinedCode);
+        expectValidResponse(undefinedCode);
     });
 
     context('when run request code is too long', function() {
@@ -124,7 +124,7 @@ describe('Run some code', function() {
         });
     });
 
-    function expectProperResponse(example) {
+    function expectValidResponse(example) {
         it('accepts run request and replies with proper response', function(done) {
             client.on('run', runHandler(done, function(response) {
                 var expected = {};
