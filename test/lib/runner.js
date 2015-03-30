@@ -1,9 +1,9 @@
 var rewire  = require('rewire'),
     sinon = require('sinon'),
     expect = require('chai').expect,
-    docker = require('../spec_helper').docker,
-    Factory = require('../spec_helper').FactoryGirl,
+    Factory = require('../spec_helper').Factory,
     utils = require('../../lib/utils'),
+    docker = require('../../lib/docker'),
     Runner = rewire('../../lib/runner');
 
 var maxMemory = Runner.__get__('maxMemory'),
@@ -18,11 +18,7 @@ describe('Runner', function() {
     });
 
     beforeEach(function() {
-        runner = new Runner(docker);
-    });
-
-    it('uses given docker client', function() {
-        expect(runner.client).to.equal(docker);
+        runner = new Runner();
     });
 
     describe('#create()', function() {
@@ -43,7 +39,10 @@ describe('Runner', function() {
         });
 
         it('creates a container with this language image', function(done) {
-            var image = utils.formatImage(docker.repository, defaultCode.language);
+            var image = utils.formatImage(
+                docker.getClient().repository,
+                defaultCode.language
+            );
 
             return runner.get('Image')
             .then(function(info) {
@@ -66,13 +65,13 @@ describe('Runner', function() {
             beforeEach(function() {
                 error = new Error();
 
-                revert = docker.createContainer;
+                revert = runner.client.createContainer;
 
-                docker.createContainer = sinon.stub().yields(error);
+                runner.client.createContainer = sinon.stub().yields(error);
             });
 
             afterEach(function() {
-                docker.createContainer = revert;
+                runner.client.createContainer = revert;
             });
 
             it('gets an error', function(done) {

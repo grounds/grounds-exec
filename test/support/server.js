@@ -1,11 +1,12 @@
 var rewire = require('rewire'),
     sinon = require('sinon'),
-    expect = require('chai').expect,
-    io = require('socket.io-client'),
-    server = rewire('../../lib/server'),
-    Connection = rewire('../../lib/connection'),
-    handler = rewire('../../lib/handler'),
-    runHandler = rewire('../../lib/handler/run');
+    quietHandlers = require('./handlers'),
+    server = rewire('../../lib/server');
+
+var quietLogger = { log: sinon.stub(), error: sinon.stub() };
+
+server.__set__('handlers', quietHandlers);
+server.__set__('logger', quietLogger);
 
 function Server() {
     this.port = 8080;
@@ -14,13 +15,6 @@ function Server() {
 }
 
 Server.prototype.listen = function() {
-    var logger = { log: sinon.stub(), error: sinon.stub() };
-
-//    handler.__set__('Run', runHandler);
-    Connection.__set__('handler', handler);
-    server.__set__('Connection', Connection);
-    server.__set__('logger', logger);
-
     server.listen(this.port);
 }
 

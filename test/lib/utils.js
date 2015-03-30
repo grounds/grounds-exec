@@ -5,25 +5,29 @@ var rewire = require('rewire'),
 
 utils.__set__('fs', { readFileSync: function(path) { return path; } });
 
+var IMAGE_PREFIX = utils.__get__('IMAGE_PREFIX');
+
 describe('Utils', function() {
     describe('.formatImage()', function() {
         context('when a repository is specified', function() {
             beforeEach(function() {
-                formated = utils.formatImage('grounds', 'ruby');
+                language = 'ruby';
+                formated = utils.formatImage('grounds', language);
             });
 
             it('formats image name with repository prefix', function() {
-                expect(formated).to.equal('grounds/exec-ruby');
+                expect(formated).to.equal('grounds/'+IMAGE_PREFIX+'-'+language);
             });
         });
 
         context('when no repository is specified', function() {
             beforeEach(function() {
-                formated = utils.formatImage('', 'java');
+                language = 'java';
+                formated = utils.formatImage('', language);
             });
 
             it('formats image name without repository prefix', function() {
-                expect(formated).to.equal('exec-java');
+                expect(formated).to.equal(IMAGE_PREFIX+'-'+language);
             });
         });
 

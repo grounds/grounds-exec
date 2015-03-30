@@ -3,16 +3,16 @@ var sinon = require('sinon'),
     rewire = require('rewire'),
     io = require('socket.io-client'),
     Server = require('../support/server'),
-    Factory = require('../spec_helper').FactoryGirl;
+    Factory = require('../spec_helper').Factory;
 
 var server = new Server();
 
-var error = rewire('../../lib/handler/run').__get__('error');
+var error = rewire('../../lib/handlers/run').__get__('error');
 
 describe('Run some code', function() {
-    var sleepCode   = Factory.create('sleepCode'),
-        defaultCode = Factory.create('defaultCode'),
-        tooLongCode = Factory.create('tooLongCode'),
+    var sleepCode     = Factory.create('sleepCode'),
+        defaultCode   = Factory.create('defaultCode'),
+        tooLongCode   = Factory.create('tooLongCode'),
         undefinedCode = Factory.create('undefinedCode');
 
     // Setup a fake server without logs.

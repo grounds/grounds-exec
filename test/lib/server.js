@@ -10,11 +10,11 @@ chai.use(sinonChai);
 
 describe('Server', function() {
     beforeEach(function(){
-        fakeLogger = { log: sinon.stub(), error: sinon.stub() };
-        revertLogger = server.__set__('logger', fakeLogger);
+        quietLogger = { log: sinon.stub(), error: sinon.stub() };
+        revertLogger = server.__set__('logger', quietLogger);
 
         port = 8080;
-        URL  = 'http://127.0.0.1:8080';
+        url  = 'http://127.0.0.1:8080';
     });
 
     afterEach(function(){
@@ -36,7 +36,7 @@ describe('Server', function() {
         });
 
         it('accepts new connection and disconnection', function(done) {
-            var client = io.connect(URL);
+            var client = io.connect(url);
 
             client.on('connect', function() {
                 client.disconnect();
