@@ -31,7 +31,7 @@ describe('Server', function() {
         });
 
         it('logs listening message', function() {
-           expect(fakeLogger.log).to.have.been
+           expect(quietLogger.log).to.have.been
             .calledWith('Listening on:', port);
         });
 

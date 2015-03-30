@@ -6,15 +6,15 @@ var rewire  = require('rewire'),
     docker = require('../../lib/docker'),
     Runner = rewire('../../lib/runner');
 
-var maxMemory = Runner.__get__('maxMemory'),
-    maxExecutionTime = Runner.__get__('maxExecutionTime');
+var MAX_MEMORY         = Runner.__get__('MAX_MEMORY'),
+    MAX_EXECUTION_TIME = Runner.__get__('MAX_EXECUTION_TIME');
 
 describe('Runner', function() {
     var sleepCode   = Factory.create('sleepCode'),
         defaultCode = Factory.create('defaultCode');
 
     it('has a max execution time of 10 seconds', function() {
-        expect(maxExecutionTime / 1000).to.equal(10);
+        expect(MAX_EXECUTION_TIME / 1000).to.equal(10);
     });
 
     beforeEach(function() {
@@ -33,7 +33,7 @@ describe('Runner', function() {
         it('creates a container with maxMemory set', function(done) {
             return runner.get('Memory')
             .then(function(info) {
-                expect(info).to.equal(maxMemory);
+                expect(info).to.equal(MAX_MEMORY);
                 done();
             });
         });
@@ -173,7 +173,7 @@ describe('Runner', function() {
         context('when execution is too long', function() {
             beforeEach(function(done) {
                 fakeTimeout = 1;
-                revert = Runner.__set__('maxExecutionTime', fakeTimeout);
+                revert = Runner.__set__('MAX_EXECUTION_TIME', fakeTimeout);
 
                 emited = attachRunnerEvents();
 
