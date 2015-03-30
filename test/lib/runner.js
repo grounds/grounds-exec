@@ -21,43 +21,64 @@ describe('Runner', function() {
         runner = new Runner();
     });
 
-    describe('#create()', function() {
-        beforeEach(function(done) {
-            create(defaultCode, done);
-        });
+    describe('#run()', function() {
+        context('when container creation succeed', function(done) {
+            beforeEach(function(done) {
+                // First we need to manually setup a container.
+                return runner._createContainer(defaultCode)
+                .then(function(container) {
+                    // We stub our container attach to fail.
+                    container.attach = sinon.stub().yields(new Error());
 
-        it('creates a container', function() {
-            expect(runner.container).not.to.be.null;
-        });
+                    // We stub our runner client to yield this container.
+                    setFakeContainerCreate(null, container);
 
-        it('creates a container with maxMemory set', function(done) {
-            return runner.get('Memory')
-            .then(function(info) {
-                expect(info).to.equal(MAX_MEMORY);
-                done();
+                    return runner.run(defaultCode);
+                })
+                .then(function() {
+                    done('Run should fail after container creation.');
+                })
+                .fail(function() {
+                    done();
+                });
             });
-        });
 
-        it('creates a container with this language image', function(done) {
-            var image = utils.formatImage(
-                docker.getClient().repository,
-                defaultCode.language
-            );
-
-            return runner.get('Image')
-            .then(function(info) {
-                expect(info).to.equal(image);
-                done();
+            afterEach(function() {
+                revertContainerCreate();
             });
-        });
 
-        it('creates a container with this code command', function(done) {
-            var cmd = utils.formatCmd(defaultCode.code);
+            it('has a container', function() {
+                expect(runner.container).not.to.be.null;
+            });
 
-            return runner.get('Cmd')
-            .then(function(info) {
-                expect(info).to.deep.equal([cmd]);
-                done();
+            it('creates a container with maxMemory set', function(done) {
+                return runner._getContainer('Memory')
+                .then(function(info) {
+                    expect(info).to.equal(MAX_MEMORY);
+                    done();
+                });
+            });
+
+            it('creates a container with this language image', function(done) {
+                var image = utils.formatImage(docker.getClient().repository,
+                    defaultCode.language
+                );
+
+                return runner._getContainer('Image')
+                .then(function(info) {
+                    expect(info).to.equal(image);
+                    done();
+                });
+            });
+
+            it('creates a container with this code command', function(done) {
+                var cmd = utils.formatCmd(defaultCode.code);
+
+                return runner._getContainer('Cmd')
+                .then(function(info) {
+                    expect(info).to.deep.equal([cmd]);
+                    done();
+                });
             });
         });
 
@@ -67,15 +88,15 @@ describe('Runner', function() {
 
                 revert = runner.client.createContainer;
 
-                runner.client.createContainer = sinon.stub().yields(error);
+                setFakeContainerCreate(error);
             });
 
             afterEach(function() {
-                runner.client.createContainer = revert;
+                revertContainerCreate();
             });
 
             it('gets an error', function(done) {
-                return runner.create(defaultCode)
+                return runner.run(defaultCode)
                 .then(function () {
                     done('runner created a container but it should not');
                 })
@@ -85,83 +106,83 @@ describe('Runner', function() {
                 });
             });
         });
-    });
 
-    describe('#run()', function() {
-        // For this context we are testing against a
-        // code sample that writes both on stdout and
-        // stderr, returns an exit code of 1, with a
-        // really short execution time.
-        context('when container is created', function() {
-            beforeEach(function(done) {
-                create(defaultCode, done);
-            });
-
-            it('runs the container', function(done) {
-                run(done);
-            });
-
-            ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
-                function (action) {
-                context('when docker fail to '+action+' this container', function() {
-                    beforeEach(function() {
-                        error = new Error();
-
-                        runner.container[action] = sinon.stub().yields(error);
-                    });
-
-                    it('gets an error', function(done) {
-                        return runner.run()
-                        .then(function() {
-                            done('container '+action+' did not fail.');
-                        })
-                        .fail(function (err) {
-                            expect(err).to.equal(error);
-                            done();
-                        });
-                    });
-                });
-            });
-
-            context('when container exits', function() {
+        ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
+            function (action) {
+            context('when docker fail to '+action+' this container', function() {
                 beforeEach(function(done) {
-                    emited = attachRunnerEvents();
+                    error = new Error();
 
-                    container = runner.container;
+                    // First we need to manually setup a container.
+                    return runner._createContainer(defaultCode)
+                    .then(function(container) {
+                        // We stub our container action to fail.
+                        container[action] = sinon.stub().yields(error);
 
-                    run(done);
+                        setFakeContainerCreate(null, container);
+
+                        done();
+                    })
+                    .fail(function(err) {
+                        done(err);
+                    });
                 });
 
-                it('has emited container exit code', function() {
-                    expect(emited.exitCode).to.equal(defaultCode.exitCode);
+                afterEach(function() {
+                    revertContainerCreate();
                 });
 
-                it('has emited appropriate output on stdout', function() {
-                    expect(emited.output.stdout).to.equal(defaultCode.stdout);
-                });
-
-                it('has emited appropriate output on stderr', function() {
-                    expect(emited.output.stderr).to.equal(defaultCode.stderr);
-                });
-
-                it('has removed its container', function(done) {
-                    container.inspect(function(err, data) {
-                        expect(err).not.to.be.null;
+                it('gets an error', function(done) {
+                    return runner.run(defaultCode)
+                    .then(function() {
+                        done('container '+action+' did not fail.');
+                    })
+                    .fail(function (err) {
+                        expect(err).to.equal(error);
                         done();
                     });
-                });
-
-                it('has no container', function() {
-                    expect(runner.container).to.be.null;
                 });
             });
         });
 
-        context('when container is not yet created', function() {
-            it('throws an error', function() {
-                expect(function() {
-                    runner.run();
-                }).to.throw(Error);
+        // For this context we are testing against a
+        // code sample that writes both on stdout and
+        // stderr, returns an exit code of 1, with a
+        // really short execution time.
+        context('when container exits', function() {
+            beforeEach(function(done) {
+                emited = attachRunnerEvents();
+
+                return runner.run(defaultCode)
+                .then(function () {
+                    done();
+                })
+                .fail(function (err) {
+                    done(err);
+                });
+            });
+
+            it('has emited container exit code', function() {
+                expect(emited.exitCode).to.equal(defaultCode.exitCode);
+            });
+
+            it('has emited appropriate output on stdout', function() {
+                expect(emited.output.stdout).to.equal(defaultCode.stdout);
+            });
+
+            it('has emited appropriate output on stderr', function() {
+                expect(emited.output.stderr).to.equal(defaultCode.stderr);
+            });
+
+            it('has removed its container', function(done) {
+                emited.container.inspect(function(err, data) {
+                    expect(err).not.to.be.null;
+                    done();
+                });
+            });
+
+            it('has no container', function() {
+                expect(runner.container).to.be.null;
             });
         });
 
@@ -171,13 +192,11 @@ describe('Runner', function() {
         // timeouts after maxExecutionTime and stop the
         // container, preventing these tests from timeouts.
         context('when execution is too long', function() {
-            beforeEach(function(done) {
+            beforeEach(function() {
                 fakeTimeout = 1;
                 revert = Runner.__set__('MAX_EXECUTION_TIME', fakeTimeout);
 
                 emited = attachRunnerEvents();
-
-                create(sleepCode, done);
             });
 
             afterEach(function() {
@@ -189,8 +208,13 @@ describe('Runner', function() {
                     timeout = executionTime;
                 });
 
-                run(done, function() {
+                return runner.run(defaultCode)
+                .then(function () {
                     expect(timeout).to.equal(fakeTimeout);
+                    done();
+                })
+                .fail(function (err) {
+                    done(err);
                 });
             });
         });
@@ -217,52 +241,33 @@ describe('Runner', function() {
 
                 emited = attachRunnerEvents();
 
-                create(sleepCode, done);
+                return runner.run(sleepCode)
+                .then(function() {
+                    done();
+                })
+                .fail(function(err) {
+                    done(err);
+                })
             });
 
             // We must verify that the container doesn't
             // stop because of the code sent as parameter.
-            it('stops the container execution', function(done) {
-                run(done, function() {
-                    expect(emited.output.stderr).to.equal('');
-                });
+            it('stops the container execution', function() {
+                expect(emited.output.stderr).to.equal('');
             });
 
-            it("hasn't emited container exit code", function(done) {
-                run(done, function() {
-                    expect(emited.exitCode).to.be.null;
-                });
+            it("hasn't emited container exit code", function() {
+                expect(emited.exitCode).to.be.null;
             });
         });
     });
-
-    function create(example, done) {
-        return runner.create(example)
-        .then(function (container) {
-            done();
-        })
-        .fail(function (err) {
-            done(err);
-        });
-    }
-
-    function run(done, callback) {
-        return runner.run()
-        .then(function() {
-            if (typeof(callback) !== 'undefined')
-                callback();
-            done();
-        })
-        .fail(function (err) {
-            done(err);
-        });
-    }
 
     function attachRunnerEvents() {
         var emited = {
             output: { stdout: '', stderr: '' },
             exitCode: null,
-            timeout: null
+            timeout: null,
+            container: null,
         }
 
         runner.on('output', function(data) {
@@ -271,7 +276,22 @@ describe('Runner', function() {
             emited.exitCode = data;
         }).on('timeout', function(data){
             emited.timeout = data;
+        }).on('created', function(data){
+            emited.container = data;
         });
         return emited;
+    }
+
+    function setFakeContainerCreate(err, container) {
+        containerCreate = runner.client.createContainer;
+
+        // We stub our runner client to yield this container.
+        runner.client.createContainer = sinon.stub().yields(err, container);
+    }
+
+    function revertContainerCreate() {
+        if (typeof(containerCreate) == 'undefined') return;
+
+        runner.client.createContainer = containerCreate;
     }
 });
