@@ -45,18 +45,14 @@ already running, this previous request will be gracefully interrupted.
 
     cd grounds-exec
 
-### Build language stack images
+### Get official images
 
-    make images
+Official Grounds language stack images are available on the Docker hub
+Grounds [organization](https://registry.hub.docker.com/repos/grounds/).
 
-The first build takes a lot of time. If you want you can also pull official
-images:
+e.g. To pull latest Ruby image:
 
-    make images-pull
-
-If you want to push these images to your own repository:
-
-    REPOSITORY="<you repository>" make images-push
+    docker pull grounds/exec-ruby:latest
 
 ### Docker configuration
 
@@ -64,10 +60,10 @@ By default, the code runner will use your Docker host configuration to
 creates containers.
 
 If you want to use a different Docker host to creates code runners inside
-containers you can also specify `DOCKER_RUNNERS_URL`.
+containers you can also specify `DOCKER_HOST_RUNNERS`.
 
->Currently both Docker hosts need to have the same protocol and use the same
-ssl certificates.
+If you want to use SSL for both Docker hosts, they must share the same ssl
+certificates.
 
 ## Socket.io server
 
@@ -93,6 +89,11 @@ If you want [New Relic](http://newrelic.com/) metrics you can also specify:
 * `NEWRELIC_APP_NAME`
 
 e.g. `NEWRELIC_LICENSE_KEY="<you license key>" NEWRELIC_APP_NAME="grounds-exec" make run`
+
+If you want the server to look for custom Docker images, you can specify in your env:
+
+* `TAG`: Image tag (**default**: latest).
+* `REPOSITORY`: Image repository (**default**: grounds).
 
 ### Connect to the server
 

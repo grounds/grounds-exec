@@ -3,7 +3,8 @@ var rewire  = require('rewire'),
     expect = require('chai').expect,
     docker = rewire('../../lib/docker');
 
-var DEFAULT_REPOSITORY = docker.__get__('DEFAULT_REPOSITORY');
+var DEFAULT_REPOSITORY = docker.__get__('DEFAULT_REPOSITORY'),
+    DEFAULT_TAG        = docker.__get__('DEFAULT_TAG');;
 
 describe('Docker', function() {
 
@@ -23,44 +24,78 @@ describe('Docker', function() {
             beforeEach(function() {
                 repository = 'test';
 
-                setRepositoryTo(repository);
+                setEnv('REPOSITORY', repository);
 
                 client = docker.getClient();
             });
 
             afterEach(function() {
-                revertRepository();
+                revertEnv();
             });
 
-            it('returns a docker client with env repository', function() {
+            it('returns a docker client using env repository', function() {
                 expect(client.repository).to.equal(repository);
             });
         });
 
         context('when repository is not present in environment', function() {
             beforeEach(function() {
-                setRepositoryTo('');
+                setEnv('REPOSITORY', '');
 
                 client = docker.getClient();
             });
 
             afterEach(function() {
-                revertRepository();
+                revertEnv();
             });
 
-            it('returns a docker client with default repository', function() {
+            it('returns a docker client using default repository', function() {
                 expect(client.repository).to.equal(DEFAULT_REPOSITORY);
             });
         });
 
-        function setRepositoryTo(repository) {
-            envRepository = process.env.REPOSITORY;
+        context('when tag is present in environment', function() {
+            beforeEach(function() {
+                tag = '1.0.0';
 
-            process.env.REPOSITORY = repository;
+                setEnv('TAG', tag);
+
+                client = docker.getClient();
+            });
+
+            afterEach(function() {
+                revertEnv();
+            });
+
+            it('returns a docker client using env tag', function() {
+                expect(client.tag).to.equal(tag);
+            });
+        });
+
+        context('when tag is not present in environment', function() {
+            beforeEach(function() {
+                setEnv('TAG', '');
+
+                client = docker.getClient();
+            });
+
+            afterEach(function() {
+                revertEnv();
+            });
+
+            it('returns a docker client using default tag', function() {
+                expect(client.tag).to.equal(DEFAULT_TAG);
+            });
+        });
+
+        function setEnv(key, value) {
+            env = process.env;
+
+            process.env[key] = value;
         }
 
-        function revertRepository() {
-            process.env.REPOSITORY = envRepository;
+        function revertEnv() {
+            process.env = env;
         }
     });
 });
