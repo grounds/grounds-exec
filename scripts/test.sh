@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
+source "./scripts/env.sh"
 
 bin="./node_modules/.bin"
 

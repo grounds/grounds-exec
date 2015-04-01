@@ -1,6 +1,6 @@
 server:
   build: .
-  command: bin/server
+  command: scripts/server.sh
   ports:
     - '8080:8080'
   volumes:
@@ -9,6 +9,7 @@ server:
     - DOCKER_CERT_PATH=/home/.docker
     - DOCKER_HOST
     - DOCKER_TLS_VERIFY
+    - DOCKER_RUNNERS_URL
     - REPOSITORY
     - TEST_OPTS
     - NEW_RELIC_LICENSE_KEY
