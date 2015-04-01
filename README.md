@@ -62,8 +62,8 @@ creates containers.
 If you want to use a different Docker host to creates code runners inside
 containers you can also specify `DOCKER_HOST_RUNNERS`.
 
->Currently both Docker hosts need to have the same protocol and use the same
-ssl certificates.
+If you want to use SSL for both Docker hosts, they must share the same ssl
+certificates.
 
 ## Socket.io server
 
