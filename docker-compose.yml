@@ -6,7 +6,9 @@ server:
   volumes:
     - '$DOCKER_CERT_PATH:/home/.docker'
   environment:
-    - DOCKER_URL
+    - DOCKER_CERT_PATH=/home/.docker
+    - DOCKER_HOST
+    - DOCKER_TLS_VERIFY
     - DOCKER_RUNNERS_URL
     - REPOSITORY
     - TEST_OPTS

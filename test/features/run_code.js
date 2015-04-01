@@ -3,16 +3,16 @@ var sinon = require('sinon'),
     rewire = require('rewire'),
     io = require('socket.io-client'),
     Server = require('../support/server'),
-    Factory = require('../spec_helper').FactoryGirl;
+    Factory = require('../spec_helper').Factory;
 
 var server = new Server();
 
-var error = rewire('../../lib/handler/run').__get__('error');
+var error = rewire('../../lib/handlers/run').__get__('error');
 
 describe('Run some code', function() {
-    var sleepCode   = Factory.create('sleepCode'),
-        defaultCode = Factory.create('defaultCode'),
-        tooLongCode = Factory.create('tooLongCode'),
+    var sleepCode     = Factory.create('sleepCode'),
+        defaultCode   = Factory.create('defaultCode'),
+        tooLongCode   = Factory.create('tooLongCode'),
         undefinedCode = Factory.create('undefinedCode');
 
     // Setup a fake server without logs.
@@ -37,7 +37,7 @@ describe('Run some code', function() {
         client.disconnect();
     });
 
-    expectProperResponse(defaultCode);
+    expectValidResponse(defaultCode);
 
     context('when run request is empty', function() {
         it('responds with an error', function(done) {
@@ -58,7 +58,7 @@ describe('Run some code', function() {
     });
 
     context('when run request code is empty', function() {
-        expectProperResponse(undefinedCode);
+        expectValidResponse(undefinedCode);
     });
 
     context('when run request code is too long', function() {
@@ -124,7 +124,7 @@ describe('Run some code', function() {
         });
     });
 
-    function expectProperResponse(example) {
+    function expectValidResponse(example) {
         it('accepts run request and replies with proper response', function(done) {
             client.on('run', runHandler(done, function(response) {
                 var expected = {};

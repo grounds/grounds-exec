@@ -58,21 +58,16 @@ If you want to push these images to your own repository:
 
     REPOSITORY="<you repository>" make images-push
 
-### Set Docker remote API url
+### Docker configuration
 
-You need to specify a docker remote API url to connect with.
-
-    export DOCKER_URL="http://127.0.0.1:2375"
-
-If your are using Docker API through `https`, your `DOCKER_CERT_PATH` will be
-mounted has a volume inside the container.
-
->Be careful: boot2docker enforces tls verification since version 1.3.
+By default, the code runner will use your Docker host configuration to
+creates containers.
 
 If you want to use a different Docker host to creates code runners inside
 containers you can also specify `DOCKER_RUNNERS_URL`.
 
->Currently both Docker hosts need to have the same ssl certificates.
+>Currently both Docker hosts need to have the same protocol and use the same
+ssl certificates.
 
 ## Socket.io server
 

@@ -1,188 +1,66 @@
-var chai = require('chai'),
+var rewire  = require('rewire'),
     sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
-    rewire = require('rewire'),
-    path = require('path'),
+    expect = require('chai').expect,
     docker = rewire('../../lib/docker');
 
-chai.use(sinonChai);
-
-var endpointHTTP  = 'http://127.0.0.1:2376',
-    endpointHTTPS = endpointHTTP.replace('http', 'https'),
-    repository    = 'grounds';
-
-var pingSuccess = { ping: sinon.stub().yields(null) },
-    pingFailure = { ping: sinon.stub().yields(new Error()) };
-
-var error = docker.__get__('error');
+var DEFAULT_REPOSITORY = docker.__get__('DEFAULT_REPOSITORY');
 
 describe('Docker', function() {
-    describe('.validate', function() {
-        beforeEach(function() {
-            callback = sinon.stub();
-        });
 
-        context('when endpoint is invalid', function() {
-             beforeEach(function() {
-                args = { endpoint: 'azerty' };
+    describe('.getClient', function() {
+        // This test ensure we can speak with the Docker host
+        // set in the environment. If another test fails to speak
+        // with the targeted Docker host, run this test suite first.
+        it('returns a valid docker client', function(done) {
+            var client = docker.getClient();
+
+            client.ping(function(err) {
+                done(err);
             });
-            expectCallbackWithError(error.InvalidEndpoint);
         });
 
-        context('when endpoint is not http or https', function() {
+        context('when repository is present in environment', function() {
             beforeEach(function() {
-                args = { endpoint: endpointHTTP.replace('http', 'ftp') };
-            });
-            expectCallbackWithError(error.InvalidEndpoint);
-        });
+                repository = 'test';
 
-        context('when docker repository is invalid', function() {
-            beforeEach(function() {
-                args = { endpoint: endpointHTTP, repository: '/azerty' };
-            });
-            expectCallbackWithError(error.InvalidRepository);
-        });
+                setRepositoryTo(repository);
 
-        context('with valid https endpoint', function() {
-            beforeEach(function() {
-                args = { endpoint: endpointHTTPS, repository: repository };
-            });
-
-            context('when docker certificates path is invalid', function() {
-                beforeEach(function() {
-                    args.certs = 'azerty';
-                });
-                expectCallbackWithError(error.InvalidCertsPath);
-            });
-
-            context('when docker certificates path is valid', function() {
-                beforeEach(function() {
-                    args.certs = '/home/.docker';
-                });
-
-                afterEach(function() {
-                    revert();
-                });
-
-                context('when key.pem is missing', function() {
-                    beforeEach(function() {
-                        invalidateCertFile('key.pem');
-                    });
-                    expectCallbackWithError(error.InvalidCertsPath);
-                });
-
-                context('when cert.pem is missing', function() {
-                    beforeEach(function() {
-                        invalidateCertFile('cert.pem');
-                    });
-                    expectCallbackWithError(error.MissingKeyCertificate);
-                });
-
-                context('when ca.pem is missing', function() {
-                    beforeEach(function() {
-                        invalidateCertFile('ca.pem');
-                    });
-                    expectCallbackWithError(error.MissingCaCertificate);
-                });
-
-                // Stub fs to validate presence of all files except
-                // file specified.
-                function invalidateCertFile(certFile) {
-                    revert = docker.__set__('fs', { existsSync: function(file) {
-                        if (file === path.resolve(args.certs, certFile))
-                          return false;
-                        else
-                          return true;
-                    }});
-                }
-            });
-        });
-
-        context('with everything valid', function() {
-            beforeEach(function() {
-                args = { endpoint: endpointHTTP, repository: repository };
+                client = docker.getClient();
             });
 
             afterEach(function() {
-                revert();
+                revertRepository();
             });
 
-            context('when docker API is responding', function() {
-                beforeEach(function() {
-                    revert = docker.__set__('getClient',
-                        sinon.stub().returns(pingSuccess)
-                    );
-                });
-
-                it('call callback with a proper docker client', function(done) {
-                    docker.validate(args, function(err, client) {
-                        expect(client).not.to.be.null;
-                        done();
-                    });
-                });
-
-                it('call callback without an error', function(done) {
-                    docker.validate(args, function(err, client) {
-                        expect(err).to.be.null;
-                        done();
-                    });
-                });
-            });
-
-            context('when docker API is not responding', function() {
-                beforeEach(function() {
-                    revert = docker.__set__('getClient',
-                        sinon.stub().returns(pingFailure)
-                    );
-                });
-                expectCallbackWithError(error.DockerAPINotResponding);
+            it('returns a docker client with env repository', function() {
+                expect(client.repository).to.equal(repository);
             });
         });
 
-        function expectCallbackWithError(error) {
-            it('call callback with: '+error, function() {
-                docker.validate(args, callback);
-                expect(callback).to.have.been.calledWithExactly(error);
-            });
-        }
-    });
-
-    describe('.getClient', function() {
-        // Test the same configuration used in spec helper to test modules
-        // wich required a valid docker client.
-        context('with specs config', function() {
+        context('when repository is not present in environment', function() {
             beforeEach(function() {
-                var endpoint = process.env.DOCKER_RUNNERS_URL ||
-                               process.env.DOCKER_URL,
-                    certs = process.env.DOCKER_CERT_PATH || '/home/.docker',
-                    repository = process.env.REPOSITORY || 'grounds';
+                setRepositoryTo('');
 
-                dockerClient = docker.getClient(endpoint, certs, repository);
+                client = docker.getClient();
             });
 
-            it('returns a proper docker client to connect with', function(done) {
-                dockerClient.ping(function(err) {
-                    expect(err).to.be.null;
-                    done();
-                });
+            afterEach(function() {
+                revertRepository();
+            });
+
+            it('returns a docker client with default repository', function() {
+                expect(client.repository).to.equal(DEFAULT_REPOSITORY);
             });
         });
 
-        ['grounds', 'test', '', null].forEach(function(repository) {
-            expectClientWithRepository(repository);
-        });
+        function setRepositoryTo(repository) {
+            envRepository = process.env.REPOSITORY;
 
-        function expectClientWithRepository(repo) {
-            context('with repository '+repo, function() {
-                beforeEach(function() {
-                    dockerClient = docker.getClient(endpointHTTP, null, repo);
-                });
+            process.env.REPOSITORY = repository;
+        }
 
-                it('returns a docker client using repository '+repo, function() {
-                    expect(dockerClient.repository).to.eq(repo);
-                });
-            });
+        function revertRepository() {
+            process.env.REPOSITORY = envRepository;
         }
     });
 });

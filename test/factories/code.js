@@ -26,7 +26,7 @@ FactoryGirl.define('tooLongCode', function() {
     this.language = 'ruby';
     this.code = '';
 
-    var maxSizeProgram = rewire('../../lib/handler/run').__get__('maxSizeProgram');
+    var maxSizeProgram = rewire('../../lib/handlers/run').__get__('MAX_SIZE_PROGRAM');
 
     for (var i = 0; i < maxSizeProgram + 1 ; ++i) {
         this.code = this.code + '.';
