@@ -9,8 +9,9 @@ server:
     - DOCKER_CERT_PATH=/home/.docker
     - DOCKER_HOST
     - DOCKER_TLS_VERIFY
-    - DOCKER_RUNNERS_URL
+    - DOCKER_HOST_RUNNERS
     - REPOSITORY
+    - TAG
     - TEST_OPTS
     - NEW_RELIC_LICENSE_KEY
     - NEW_RELIC_APP_NAME
