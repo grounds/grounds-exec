@@ -1,10 +1,11 @@
 machine:
+  pre:
+    - sudo pip install -U docker-compose
   services:
     - docker
 
 dependencies:
   override:
-    - sudo pip install -U docker-compose
     - docker-compose --version
 
 test:
