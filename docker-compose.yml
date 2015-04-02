@@ -5,6 +5,7 @@ server:
     - '8080:8080'
   volumes:
     - '$DOCKER_CERT_PATH:/home/.docker'
+    - '/var/run/docker.sock:/var/run/docker.sock'
   environment:
     - DOCKER_CERT_PATH=/home/.docker
     - DOCKER_HOST
