@@ -1,7 +1,7 @@
 {
   "name": "grounds-exec",
   "description": "Grounds code runner.",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "author": "Adrien Folie <folie.adrien@gmail.com>",
   "maintainers": [
     "foliea <folie.adrien@gmail.com>",
