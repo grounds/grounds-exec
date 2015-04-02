@@ -67,6 +67,7 @@ creates containers.
 
 If you want to use a different Docker host to creates code runners inside
 containers you can also specify `DOCKER_HOST_RUNNERS`.
+**Language stack images must be available on this host.**
 
 If you want to use SSL for both Docker hosts, they must share the same ssl
 certificates.
