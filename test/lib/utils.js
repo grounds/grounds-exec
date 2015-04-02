@@ -12,28 +12,39 @@ describe('Utils', function() {
         context('when a repository is specified', function() {
             beforeEach(function() {
                 language = 'ruby';
-                formated = utils.formatImage('grounds', language);
+                tag = 'latest';
+                formated = utils.formatImage('grounds', language, tag);
             });
 
             it('formats image name with repository prefix', function() {
-                expect(formated).to.equal('grounds/'+IMAGE_PREFIX+'-'+language);
+                var expected = 'grounds/'+IMAGE_PREFIX+'-'+language+':'+tag;
+
+                expect(formated).to.equal(expected);
             });
         });
 
         context('when no repository is specified', function() {
             beforeEach(function() {
                 language = 'java';
-                formated = utils.formatImage('', language);
+                tag      = '1.0.0';
+                formated = utils.formatImage('', language, tag);
             });
 
             it('formats image name without repository prefix', function() {
-                expect(formated).to.equal(IMAGE_PREFIX+'-'+language);
+                expect(formated).to.equal(IMAGE_PREFIX+'-'+language+':'+tag);
             });
         });
 
         context('when no language is specified', function() {
             beforeEach(function() {
-                formated = utils.formatImage('grounds', '');
+                formated = utils.formatImage('grounds', '', 'latest');
+            });
+            expectEmptyString();
+        });
+
+        context('when no tag is specified', function() {
+            beforeEach(function() {
+                formated = utils.formatImage('grounds', 'ruby', '');
             });
             expectEmptyString();
         });
