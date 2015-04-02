@@ -58,7 +58,7 @@ e.g. To pull latest Ruby image:
 recommend to use our official images with the latest tag incremental version.**
 
 > Warning: `latest` tag on the Docker hub matches the master branch of
-[grounds-images](http://github.com/grounds/grounds-image).
+[grounds-images](http://github.com/grounds/grounds-images).
 
 ### Docker configuration
 
