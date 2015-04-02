@@ -14,12 +14,8 @@ fi
 # This script purpose is to override invalid values set by
 # docker-compose in this case.
 
-# Remove tls verify if empty.
+# Remove tls env if tls not required.
 if [ ! $DOCKER_TLS_VERIFY ]; then
     unset $DOCKER_TLS_VERIFY
-fi
-
-# Remove docker cert path if empty.
-if [ ! $DOCKER_CERT_PATH ]; then
     unset $DOCKER_CERT_PATH
 fi
