@@ -53,9 +53,6 @@ Grounds [organization](https://registry.hub.docker.com/repos/grounds/).
 e.g. To pull latest Ruby image:
 
     docker pull grounds/exec-ruby:latest
-    
-**`REPOSITORY` and `TAG` can be changed for convenience, however we strongly
-recommend to use our official images with the latest tag incremental version.**
 
 > Warning: `latest` tag on the Docker hub matches the master branch of
 [grounds-images](http://github.com/grounds/grounds-images).
@@ -101,6 +98,9 @@ If you want the server to look for custom Docker images, you can specify in your
 
 * `TAG`: Image tag (**default**: latest).
 * `REPOSITORY`: Image repository (**default**: grounds).
+
+**`REPOSITORY` and `TAG` can be changed for convenience, however we strongly
+recommend to use our official images with the latest tag incremental version.**
 
 ### Connect to the server
 
