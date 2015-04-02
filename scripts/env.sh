@@ -15,7 +15,10 @@ fi
 # docker-compose in this case.
 
 # Remove tls env if tls not required.
+#
+# We also need to remove DOCKER_CERT_PATH, dockerode does not check
+# DOCKER_TLS_VERIFY and use DOCKER_CERT_PATH anyway.
 if [ ! $DOCKER_TLS_VERIFY ]; then
-    unset $DOCKER_TLS_VERIFY
-    unset $DOCKER_CERT_PATH
+    unset DOCKER_TLS_VERIFY
+    unset DOCKER_CERT_PATH
 fi
