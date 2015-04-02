@@ -22,7 +22,7 @@ RUN chown -R exec:exec $APP
 ENV PATH $PATH:$APP/bin
 
 # Set the final working dir to the app's location.
-WORKDIR /grounds-exec
+WORKDIR $APP
 
 # Switch to user exec.
 USER exec
