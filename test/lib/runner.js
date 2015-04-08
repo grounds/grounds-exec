@@ -263,6 +263,7 @@ describe('Runner', function() {
         it('gets an error', function(done) {
             run(defaultCode, function(err) {
                 expect(err).to.equal(error);
+                done();
             });
         });
     }
