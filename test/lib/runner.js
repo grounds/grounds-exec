@@ -174,8 +174,6 @@ describe('Runner', function() {
             beforeEach(function() {
                 fakeTimeout = 1;
                 revert = Runner.__set__('MAX_EXECUTION_TIME', fakeTimeout);
-
-                emited = attachRunnerEvents();
             });
 
             afterEach(function() {
@@ -189,7 +187,7 @@ describe('Runner', function() {
 
                 run(sleepCode, function(err) {
                     expect(timeout).to.equal(fakeTimeout);
-                    done(err);
+                    done();
                 });
             });
         });
