@@ -1,7 +1,7 @@
-var rewire = require('rewire');
+var rewire = require('rewire'),
+    runHandler = rewire('../../lib/handlers/run');
 
-var MAX_SIZE_PROGRAM = rewire('../../lib/handlers/run')
-    .__get__('MAX_SIZE_PROGRAM');
+var MAX_SIZE_PROGRAM = runHandler.__get__('MAX_SIZE_PROGRAM');
 
 module.exports.Default() = function() {
     this.stdout = 'hello world!\n';
@@ -28,9 +28,7 @@ module.exports.TooLong() = function() {
     this.language = 'ruby';
     this.code = '';
 
-    var maxSizeProgram = ;
-
-    for (var i = 0; i < maxSizeProgram + 1 ; ++i) {
+    for (var i = 0; i < MAX_SIZE_PROGRAM + 1 ; ++i) {
         this.code = this.code + '.';
     }
 }
