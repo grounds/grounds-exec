@@ -250,7 +250,7 @@ describe('Runner', function() {
     }
 
     function run(example, cb) {
-        return runner.run(sleepCode)
+        return runner.run(example)
         .then(function() {
             cb();
         })
