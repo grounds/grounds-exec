@@ -98,16 +98,7 @@ describe('Runner', function() {
                 revertContainerCreate();
             });
 
-            it('gets an error', function(done) {
-                return runner.run(defaultCode)
-                .then(function () {
-                    done('runner created a container but it should not');
-                })
-                .fail(function (err) {
-                    expect(err).to.equal(error);
-                    done();
-                });
-            });
+            expectError();
         });
 
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
@@ -135,16 +126,7 @@ describe('Runner', function() {
                     revertContainerCreate();
                 });
 
-                it('gets an error', function(done) {
-                    return runner.run(defaultCode)
-                    .then(function() {
-                        done('container '+action+' did not fail.');
-                    })
-                    .fail(function (err) {
-                        expect(err).to.equal(error);
-                        done();
-                    });
-                });
+                expectError();
             });
         });
 
@@ -156,13 +138,7 @@ describe('Runner', function() {
             beforeEach(function(done) {
                 emited = attachRunnerEvents();
 
-                return runner.run(defaultCode)
-                .then(function () {
-                    done();
-                })
-                .fail(function (err) {
-                    done(err);
-                });
+                run(defaultCode, done);
             });
 
             it('has emited container exit code', function() {
@@ -211,12 +187,8 @@ describe('Runner', function() {
                     timeout = executionTime;
                 });
 
-                return runner.run(defaultCode)
-                .then(function () {
+                run(sleepCode, function(err) {
                     expect(timeout).to.equal(fakeTimeout);
-                    done();
-                })
-                .fail(function (err) {
                     done(err);
                 });
             });
@@ -244,13 +216,7 @@ describe('Runner', function() {
 
                 emited = attachRunnerEvents();
 
-                return runner.run(sleepCode)
-                .then(function() {
-                    done();
-                })
-                .fail(function(err) {
-                    done(err);
-                })
+                run(sleepCode, done);
             });
 
             // We must verify that the container doesn't
@@ -285,6 +251,24 @@ describe('Runner', function() {
         return emited;
     }
 
+    function run(example, cb) {
+        return runner.run(sleepCode)
+        .then(function() {
+            cb();
+        })
+        .fail(function(err) {
+            cb(err);
+        });
+    }
+    
+    function expectError() {
+        it('gets an error', function(done) {
+            run(defaultCode, function(err) {
+                expect(err).to.equal(error);
+            });
+        });
+    }
+    
     function setFakeContainerCreate(err, container) {
         containerCreate = runner.client.createContainer;
 
