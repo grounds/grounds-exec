@@ -1,7 +1,7 @@
 var rewire  = require('rewire'),
     sinon = require('sinon'),
     expect = require('chai').expect,
-    Factory = require('../spec_helper').Factory,
+    example = require('../support/example'),
     utils = require('../../lib/utils'),
     docker = require('../../lib/docker'),
     Runner = rewire('../../lib/runner');
@@ -10,8 +10,8 @@ var MAX_MEMORY         = Runner.__get__('MAX_MEMORY'),
     MAX_EXECUTION_TIME = Runner.__get__('MAX_EXECUTION_TIME');
 
 describe('Runner', function() {
-    var sleepCode   = Factory.create('sleepCode'),
-        defaultCode = Factory.create('defaultCode');
+    var sleepCode   = new example.Sleep(),
+        defaultCode = new example.Default();
 
     it('has a max execution time of 10 seconds', function() {
         expect(MAX_EXECUTION_TIME / 1000).to.equal(10);
@@ -258,7 +258,7 @@ describe('Runner', function() {
             cb(err);
         });
     }
-    
+
     function expectError() {
         it('gets an error', function(done) {
             run(defaultCode, function(err) {
@@ -267,7 +267,7 @@ describe('Runner', function() {
             });
         });
     }
-    
+
     function setFakeContainerCreate(err, container) {
         containerCreate = runner.client.createContainer;
 

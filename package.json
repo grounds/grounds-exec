@@ -22,7 +22,6 @@
   "devDependencies": {
     "chai": "2.1.x",
     "codeclimate-test-reporter": "0.0.x",
-    "factory_girl": "0.2.x",
     "istanbul": "0.3.x",
     "mocha": "1.21.x",
     "q": "1.2.x",
