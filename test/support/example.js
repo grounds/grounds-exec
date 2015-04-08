@@ -3,7 +3,7 @@ var rewire = require('rewire'),
 
 var MAX_SIZE_PROGRAM = runHandler.__get__('MAX_SIZE_PROGRAM');
 
-module.exports.Default() = function() {
+module.exports.Default = function() {
     this.stdout = 'hello world!\n';
     this.stderr = 'hello stderr!\n';
     this.exitCode = 1;
@@ -13,7 +13,7 @@ module.exports.Default() = function() {
         'exit '+this.exitCode;
 }
 
-module.exports.Sleep() = function() {
+module.exports.Sleep = function() {
     this.stdout = 'hello world!\n';
     this.stderr = '';
     this.exitCode = 0;
@@ -21,7 +21,7 @@ module.exports.Sleep() = function() {
     this.code = '3.times { puts "'+this.stdout+'"; sleep 5 }';
 }
 
-module.exports.TooLong() = function() {
+module.exports.TooLong = function() {
     this.stdout = '';
     this.stderr = '';
     this.exitCode = null;
