@@ -10,11 +10,9 @@ var IMAGE_PREFIX = utils.__get__('IMAGE_PREFIX');
 describe('Utils', function() {
     describe('.formatImage()', function() {
         context('when a repository is specified', function() {
-            beforeEach(function() {
-                language = 'ruby';
-                tag = 'latest';
+            var language = 'ruby',
+                tag = 'latest',
                 formated = utils.formatImage('grounds', language, tag);
-            });
 
             it('formats image name with repository prefix', function() {
                 var expected = 'grounds/'+IMAGE_PREFIX+'-'+language+':'+tag;
@@ -24,11 +22,9 @@ describe('Utils', function() {
         });
 
         context('when no repository is specified', function() {
-            beforeEach(function() {
-                language = 'java';
-                tag      = '1.0.0';
+            var language = 'java',
+                tag      = '1.0.0',
                 formated = utils.formatImage('', language, tag);
-            });
 
             it('formats image name without repository prefix', function() {
                 expect(formated).to.equal(IMAGE_PREFIX+'-'+language+':'+tag);
@@ -36,24 +32,20 @@ describe('Utils', function() {
         });
 
         context('when no language is specified', function() {
-            beforeEach(function() {
-                formated = utils.formatImage('grounds', '', 'latest');
-            });
+            var formated = utils.formatImage('grounds', '', 'latest');
+
             expectEmptyString();
         });
 
         context('when no tag is specified', function() {
-            beforeEach(function() {
-                formated = utils.formatImage('grounds', 'ruby', '');
-            });
+            var formated = utils.formatImage('grounds', 'ruby', '');
+
             expectEmptyString();
         });
     });
 
     describe('.formatCmd()', function() {
-        beforeEach(function() {
-            formated = utils.formatCmd('puts "Hello world\\n\\r\\t"\r\n\t');
-        });
+        var formated = utils.formatCmd('puts "Hello world\\n\\r\\t"\r\n\t');
 
         it('returns an escaped string', function() {
             var escapedString = 'puts "Hello world\\\\n\\\\r\\\\t"\\r\\n\\t';
@@ -62,9 +54,8 @@ describe('Utils', function() {
         });
 
         context('when code is not specified', function() {
-            beforeEach(function() {
-                formated = utils.formatCmd();
-            });
+            var formated = utils.formatCmd();
+
             expectEmptyString();
         });
     });
