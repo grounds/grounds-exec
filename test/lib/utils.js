@@ -34,13 +34,13 @@ describe('Utils', function() {
         context('when no language is specified', function() {
             var formated = utils.formatImage('grounds', '', 'latest');
 
-            expectEmptyString();
+            expectEmptyString(formated);
         });
 
         context('when no tag is specified', function() {
             var formated = utils.formatImage('grounds', 'ruby', '');
 
-            expectEmptyString();
+            expectEmptyString(formated);
         });
     });
 
@@ -56,11 +56,11 @@ describe('Utils', function() {
         context('when code is not specified', function() {
             var formated = utils.formatCmd();
 
-            expectEmptyString();
+            expectEmptyString(formated);
         });
     });
 
-    function expectEmptyString() {
+    function expectEmptyString(formated) {
         it('returns an empty string', function() {
             expect(formated).to.equal('');
         });
