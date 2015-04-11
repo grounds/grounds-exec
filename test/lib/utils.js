@@ -60,15 +60,11 @@ describe('Utils', function() {
         context('when code is not specified', function() {
             var formated = utils.formatCmd();
 
-            expectEmptyString(formated);
+            it('returns an empty string', function() {
+                expect(formated).to.equal('');
+            });
         });
     });
-
-    function expectEmptyString(formated) {
-        it('returns an empty string', function() {
-            expect(formated).to.equal('');
-        });
-    }
 
     describe('.formatStatus()', function() {
         it('returns a signed integer (range -128 to 127)', function() {
