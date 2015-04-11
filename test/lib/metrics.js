@@ -86,13 +86,9 @@ describe('Metrics', function() {
         });
 
         context('without newrelic license key', function() {
-            var event = 'test',
-                callback, newCallback;
-
-            beforeEach(function() {
-                callback = function() {};
+            var event       = 'test',
+                callback    = function() {};
                 newCallback = metrics.add(event, callback);
-            });
 
             it('returns the original callback', function() {
                 expect(newCallback).to.equal(callback);
