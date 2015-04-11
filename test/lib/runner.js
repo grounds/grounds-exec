@@ -64,9 +64,10 @@ describe('Runner', function() {
             });
 
             it('creates a container with this language image', function(done) {
-                var dockerClient = docker.getClient()
+                var dockerClient = docker.getClient();
 
-                var image = utils.formatImage(dockerClient.repository,
+                var image = utils.formatImage(
+                    dockerClient.repository,
                     defaultCode.language,
                     dockerClient.tag
                 );
