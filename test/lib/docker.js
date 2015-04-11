@@ -9,7 +9,6 @@ var DEFAULT_REPOSITORY = docker.__get__('DEFAULT_REPOSITORY'),
 describe('Docker', function() {
 
     describe('.getClient', function() {
-        var env;
 
         // This test ensure we can speak with the Docker host
         // set in the environment. If another test fails to speak
@@ -23,7 +22,7 @@ describe('Docker', function() {
         });
 
         context('when repository is present in environment', function() {
-            var repository = 'test';
+            var repository = 'test', env;
 
             setEnv('REPOSITORY', repository);
 
@@ -37,6 +36,8 @@ describe('Docker', function() {
         });
 
         context('when repository is not present in environment', function() {
+            var env;
+
             setEnv('REPOSITORY', '');
 
             var client = docker.getClient();
@@ -49,7 +50,7 @@ describe('Docker', function() {
         });
 
         context('when tag is present in environment', function() {
-            var tag = '1.0.0';
+            var tag = '1.0.0', env;
 
             setEnv('TAG', tag);
 
@@ -63,6 +64,8 @@ describe('Docker', function() {
         });
 
         context('when tag is not present in environment', function() {
+            var env;
+
             setEnv('TAG', '');
 
             var client = docker.getClient();
