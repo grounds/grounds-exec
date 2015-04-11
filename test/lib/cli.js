@@ -10,6 +10,8 @@ chai.use(sinonChai);
 var error = cli.__get__('error');
 
 describe('CLI', function() {
+    var fakeExit, fakeConsole, fakeServer, revertConsole, revertServer;
+
     beforeEach(function() {
         fakeExit = sinon.stub();
         fakeConsole = { error: sinon.stub() };
