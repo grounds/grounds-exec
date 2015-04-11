@@ -9,6 +9,8 @@ var rewire = require('rewire'),
 chai.use(sinonChai);
 
 describe('Logger', function() {
+    var clock, date, fakeConsole, revert;
+
     before(function() {
         clock = sinon.useFakeTimers();
         date  = moment().format();
