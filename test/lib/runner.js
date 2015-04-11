@@ -48,7 +48,7 @@ describe('Runner', function() {
             });
 
             it('has a container', function() {
-                expect(runner.container).not.to.be.null;
+                expect(runner.container).to.exist;
             });
 
             it('creates a container with maxMemory set', function(done) {
@@ -155,13 +155,13 @@ describe('Runner', function() {
 
             it('has removed its container', function(done) {
                 emited.container.inspect(function(err, data) {
-                    expect(err).not.to.be.null;
+                    expect(err).to.exist;
                     done();
                 });
             });
 
             it('has no container', function() {
-                expect(runner.container).to.be.null;
+                expect(runner.container).not.to.exist;
             });
         });
 
@@ -224,17 +224,14 @@ describe('Runner', function() {
             });
 
             it("hasn't emited container exit code", function() {
-                expect(emited.exitCode).to.be.null;
+                expect(emited.exitCode).not.to.exist;
             });
         });
     });
 
     function attachRunnerEvents() {
-        var emited = {
+        var emited = { 
             output: { stdout: '', stderr: '' },
-            exitCode: null,
-            timeout: null,
-            container: null,
         }
 
         runner.on('output', function(data) {
