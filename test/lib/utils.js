@@ -30,6 +30,22 @@ describe('Utils', function() {
                 expect(formated).to.equal(IMAGE_PREFIX+'-'+language+':'+tag);
             });
         });
+
+        context('when no language is specified', function() {
+            it("doesn't fail" function() {
+                expect(function() {
+                    utils.formatImage('grounds');
+                }).not.to.throw(Error);
+            });
+        });
+
+        context('when no tag is specified', function() {
+            it("doesn't fail" function() {
+                expect(function() {
+                    utils.formatImage('grounds', 'ruby');
+                }).not.to.throw(Error);
+            });
+        });
     });
 
     describe('.formatCmd()', function() {
