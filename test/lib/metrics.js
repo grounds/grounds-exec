@@ -11,11 +11,11 @@ chai.use(sinonChai);
 describe('Metrics', function() {
     describe('.add()', function() {
         context('when newrelic license key is set', function() {
-            var event, callback, newCallback, revertFakeLicenseKey, revertNewRelic;
+            var event = 'run',
+                callback, newCallback, revertFakeLicenseKey, revertNewRelic;
 
             beforeEach(function() {
                 useFakeLicenseKey();
-                event = 'run';
                 callback = sinon.stub();
             });
 
@@ -24,7 +24,7 @@ describe('Metrics', function() {
             });
 
             it('returns a different callback than the original one', function() {
-                add();
+                newCallback = metrics.add(event, callback);
 
                 expect(newCallback).not.to.equal(callback);
             });
@@ -32,7 +32,7 @@ describe('Metrics', function() {
             it('returns a callback encapsulating the original one', function() {
                 var data = 'test';
 
-                add();
+                newCallback = metrics.add(event, callback);
 
                 // We must first verify that we are not getting the original one.
                 if (newCallback !== callback)
@@ -46,7 +46,7 @@ describe('Metrics', function() {
 
                 useFakeNewRelic();
 
-                add();
+                newCallback = metrics.add(event, callback);
 
                 expect(fakeNewRelic.createWebTransaction).to.have.been
                     .calledWith(event);
@@ -61,7 +61,7 @@ describe('Metrics', function() {
 
                 useFakeNewRelic();
 
-                add();
+                newCallback = metrics.add(event, callback);
 
                 expect(fakeNewRelic.endTransaction).to.have.been
                     .calledAfter(callback);
@@ -86,20 +86,17 @@ describe('Metrics', function() {
         });
 
         context('without newrelic license key', function() {
-            var callback, newCallback;
+            var event = 'test',
+                callback, newCallback;
 
             beforeEach(function() {
                 callback = function() {};
-                add();
+                newCallback = metrics.add(event, callback);
             });
 
             it('returns the original callback', function() {
                 expect(newCallback).to.equal(callback);
             });
         });
-
-        function add() {
-            newCallback = metrics.add(event, callback);
-        }
     });
 });
