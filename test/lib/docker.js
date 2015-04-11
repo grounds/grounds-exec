@@ -9,6 +9,8 @@ var DEFAULT_REPOSITORY = docker.__get__('DEFAULT_REPOSITORY'),
 describe('Docker', function() {
 
     describe('.getClient', function() {
+        var env;
+
         // This test ensure we can speak with the Docker host
         // set in the environment. If another test fails to speak
         // with the targeted Docker host, run this test suite first.
