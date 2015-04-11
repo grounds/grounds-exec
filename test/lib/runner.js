@@ -13,6 +13,8 @@ describe('Runner', function() {
     var sleepCode   = new example.Sleep(),
         defaultCode = new example.Default();
 
+    var runner, containerCreate;
+
     it('has a max execution time of 10 seconds', function() {
         expect(MAX_EXECUTION_TIME / 1000).to.equal(10);
     });
@@ -86,10 +88,10 @@ describe('Runner', function() {
         });
 
         context('when container creation failed', function(done) {
+            var error;
+
             beforeEach(function() {
                 error = new Error();
-
-                revert = runner.client.createContainer;
 
                 setFakeContainerCreate(error);
             });
@@ -104,6 +106,8 @@ describe('Runner', function() {
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
             function (action) {
             context('when docker fail to '+action+' this container', function() {
+                var error;
+    
                 beforeEach(function(done) {
                     error = new Error();
 
@@ -135,6 +139,8 @@ describe('Runner', function() {
         // stderr, returns an exit code of 1, with a
         // really short execution time.
         context('when container exits', function() {
+            var emited;
+
             beforeEach(function(done) {
                 emited = attachRunnerEvents();
 
@@ -171,8 +177,9 @@ describe('Runner', function() {
         // timeouts after maxExecutionTime and stop the
         // container, preventing these tests from timeouts.
         context('when execution is too long', function() {
+            var fakeTimeout = 1, revert;
+
             beforeEach(function() {
-                fakeTimeout = 1;
                 revert = Runner.__set__('MAX_EXECUTION_TIME', fakeTimeout);
             });
 
@@ -181,6 +188,8 @@ describe('Runner', function() {
             });
 
             it('emits a timeout and stops the container', function(done) {
+                var timeout;
+    
                 runner.on('timeout', function(executionTime) {
                     timeout = executionTime;
                 });
@@ -207,6 +216,8 @@ describe('Runner', function() {
         // default timeout, if stop fails, these tests
         // should timeout.
         context('when running', function() {
+            var emited;
+
             beforeEach(function(done) {
                 runner.on('start', function() {
                     runner.stop();
