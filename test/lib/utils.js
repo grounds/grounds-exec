@@ -30,18 +30,6 @@ describe('Utils', function() {
                 expect(formated).to.equal(IMAGE_PREFIX+'-'+language+':'+tag);
             });
         });
-
-        context('when no language is specified', function() {
-            var formated = utils.formatImage('grounds', '', 'latest');
-
-            expectEmptyString(formated);
-        });
-
-        context('when no tag is specified', function() {
-            var formated = utils.formatImage('grounds', 'ruby', '');
-
-            expectEmptyString(formated);
-        });
     });
 
     describe('.formatCmd()', function() {
