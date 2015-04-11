@@ -9,6 +9,8 @@ var rewire = require('rewire'),
 chai.use(sinonChai);
 
 describe('Server', function() {
+    var quietLogger, revertLogger, port, url;
+
     beforeEach(function(){
         quietLogger = { log: sinon.stub(), error: sinon.stub() };
         revertLogger = server.__set__('logger', quietLogger);
