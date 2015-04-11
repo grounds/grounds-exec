@@ -13,11 +13,11 @@ describe('Runner', function() {
     var sleepCode   = new example.Sleep(),
         defaultCode = new example.Default();
 
-    var runner, containerCreate;
-
     it('has a max execution time of 10 seconds', function() {
         expect(MAX_EXECUTION_TIME / 1000).to.equal(10);
     });
+
+    var runner;
 
     beforeEach(function() {
         runner = new Runner();
@@ -25,6 +25,8 @@ describe('Runner', function() {
 
     describe('#run()', function() {
         context('when container creation succeed', function(done) {
+            var containerCreate;
+
             beforeEach(function(done) {
                 // First we need to manually setup a container.
                 return runner._createContainer(defaultCode)
@@ -106,7 +108,7 @@ describe('Runner', function() {
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
             function (action) {
             context('when docker fail to '+action+' this container', function() {
-                var error;
+                var error, containerCreate;
     
                 beforeEach(function(done) {
                     error = new Error();
