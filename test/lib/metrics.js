@@ -10,6 +10,8 @@ chai.use(sinonChai);
 
 describe('Metrics', function() {
     describe('.add()', function() {
+        var event, callback, newCallback, revertFakeLicenseKey, revertNewRelic;
+
         context('when newrelic license key is set', function() {
             beforeEach(function() {
                 useFakeLicenseKey();
