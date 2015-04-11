@@ -90,11 +90,9 @@ describe('Runner', function() {
         });
 
         context('when container creation failed', function(done) {
-            var error;
+            var error = new Error('Create failed'), containerCreate;
 
             beforeEach(function() {
-                error = new Error();
-
                 setFakeContainerCreate(error);
             });
 
@@ -102,17 +100,15 @@ describe('Runner', function() {
                 revertContainerCreate();
             });
 
-            expectError();
+            expectError(error);
         });
 
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
             function (action) {
             context('when docker fail to '+action+' this container', function() {
-                var error, containerCreate;
-    
-                beforeEach(function(done) {
-                    error = new Error();
+                var error = new Error(action+' failed.'), containerCreate;
 
+                beforeEach(function(done) {
                     // First we need to manually setup a container.
                     return runner._createContainer(defaultCode)
                     .then(function(container) {
@@ -132,7 +128,7 @@ describe('Runner', function() {
                     revertContainerCreate();
                 });
 
-                expectError();
+                expectError(error);
             });
         });
 
@@ -191,7 +187,7 @@ describe('Runner', function() {
 
             it('emits a timeout and stops the container', function(done) {
                 var timeout;
-    
+
                 runner.on('timeout', function(executionTime) {
                     timeout = executionTime;
                 });
@@ -243,7 +239,7 @@ describe('Runner', function() {
     });
 
     function attachRunnerEvents() {
-        var emited = { 
+        var emited = {
             output: { stdout: '', stderr: '' },
         }
 
@@ -269,7 +265,7 @@ describe('Runner', function() {
         });
     }
 
-    function expectError() {
+    function expectError(error) {
         it('gets an error', function(done) {
             run(defaultCode, function(err) {
                 expect(err).to.equal(error);
