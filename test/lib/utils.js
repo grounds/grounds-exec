@@ -32,15 +32,19 @@ describe('Utils', function() {
         });
 
         context('when no language is specified', function() {
-            var formated = utils.formatImage('grounds', '', 'latest');
-
-            expectEmptyString(formated);
+            it("doesn't fail", function() {
+                expect(function() {
+                    utils.formatImage('grounds');
+                }).not.to.throw(Error);
+            });
         });
 
         context('when no tag is specified', function() {
-            var formated = utils.formatImage('grounds', 'ruby', '');
-
-            expectEmptyString(formated);
+            it("doesn't fail", function() {
+                expect(function() {
+                    utils.formatImage('grounds', 'ruby');
+                }).not.to.throw(Error);
+            });
         });
     });
 
@@ -56,15 +60,11 @@ describe('Utils', function() {
         context('when code is not specified', function() {
             var formated = utils.formatCmd();
 
-            expectEmptyString(formated);
+            it('returns an empty string', function() {
+                expect(formated).to.equal('');
+            });
         });
     });
-
-    function expectEmptyString(formated) {
-        it('returns an empty string', function() {
-            expect(formated).to.equal('');
-        });
-    }
 
     describe('.formatStatus()', function() {
         it('returns a signed integer (range -128 to 127)', function() {
