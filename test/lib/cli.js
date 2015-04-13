@@ -10,19 +10,20 @@ chai.use(sinonChai);
 var error = cli.__get__('error');
 
 describe('CLI', function() {
-    var fakeExit, fakeConsole, fakeServer, revertConsole, revertServer;
+    var fakeExit, fakeConsole, fakeServer, revertCli;
 
     beforeEach(function() {
         fakeExit = sinon.stub();
         fakeConsole = { error: sinon.stub() };
         fakeServer = { listen: sinon.stub() };
-        revertConsole = cli.__set__('console', fakeConsole);
-        revertServer = cli.__set__('server', fakeServer);
+        revertCli = cli.__set__({
+            console: fakeConsole,
+            server:  fakeServer,
+        });
     });
 
     afterEach(function() {
-        revertConsole();
-        revertServer();
+        revertCli();
     });
 
     context('when called with default arguments', function() {
