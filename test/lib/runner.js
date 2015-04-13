@@ -17,17 +17,12 @@ describe('Runner', function() {
         expect(MAX_EXECUTION_TIME / 1000).to.equal(10);
     });
 
-    var runner;
-
-    beforeEach(function() {
-        runner = new Runner();
-    });
-
     describe('#run()', function() {
         context('when container creation succeed', function(done) {
-            var containerCreate;
+            var runner = new Runner(),
+                containerCreate;
 
-            beforeEach(function(done) {
+            before(function(done) {
                 // First we need to manually setup a container.
                 return runner._createContainer(defaultCode)
                 .then(function(container) {
@@ -47,7 +42,7 @@ describe('Runner', function() {
                 });
             });
 
-            afterEach(function() {
+            after(function() {
                 revertContainerCreate();
             });
 
@@ -91,13 +86,15 @@ describe('Runner', function() {
         });
 
         context('when container creation failed', function(done) {
-            var error = new Error('Create failed'), containerCreate;
+            var runner = new Runner(),
+                error = new Error('Create failed'),
+                containerCreate;
 
-            beforeEach(function() {
+            before(function() {
                 setFakeContainerCreate(error);
             });
 
-            afterEach(function() {
+            after(function() {
                 revertContainerCreate();
             });
 
@@ -107,9 +104,11 @@ describe('Runner', function() {
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
             function (action) {
             context('when docker fail to '+action+' this container', function() {
-                var error = new Error(action+' failed.'), containerCreate;
+                var runner = new Runner(),
+                    error = new Error(action+' failed.'),
+                    containerCreate;
 
-                beforeEach(function(done) {
+                before(function(done) {
                     // First we need to manually setup a container.
                     return runner._createContainer(defaultCode)
                     .then(function(container) {
@@ -125,7 +124,7 @@ describe('Runner', function() {
                     });
                 });
 
-                afterEach(function() {
+                after(function() {
                     revertContainerCreate();
                 });
 
@@ -138,9 +137,10 @@ describe('Runner', function() {
         // stderr, returns an exit code of 1, with a
         // really short execution time.
         context('when container exits', function() {
-            var emited;
+            var runner = new Runner(),
+                emited;
 
-            beforeEach(function(done) {
+            before(function(done) {
                 emited = attachRunnerEvents();
 
                 run(defaultCode, done);
@@ -176,13 +176,14 @@ describe('Runner', function() {
         // timeouts after maxExecutionTime and stop the
         // container, preventing these tests from timeouts.
         context('when execution is too long', function() {
-            var fakeTimeout = 1, revert;
+            var fakeTimeout = 1, runner, revert;
 
-            beforeEach(function() {
+            before(function() {
                 revert = Runner.__set__('MAX_EXECUTION_TIME', fakeTimeout);
+                runner = new Runner();
             });
 
-            afterEach(function() {
+            after(function() {
                 revert();
             });
 
@@ -203,6 +204,8 @@ describe('Runner', function() {
 
     describe('#stop()', function() {
         context('when idle', function() {
+            var  runner = new Runner();
+
             it('does nothing', function() {
                 expect(function() {
                     runner.stop();
@@ -215,9 +218,10 @@ describe('Runner', function() {
         // default timeout, if stop fails, these tests
         // should timeout.
         context('when running', function() {
-            var emited;
+            var runner = new Runner(),
+                emited;
 
-            beforeEach(function(done) {
+            before(function(done) {
                 runner.on('start', function() {
                     runner.stop();
                 });
