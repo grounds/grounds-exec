@@ -44,10 +44,9 @@ describe('CLI', function() {
 
     context('when called with invalid port', function() {
         beforeEach(function() {
-            revertServer();
-
             cli.argv(['node', 'server', '-p', 'lol'], fakeExit);
         });
+
         expectToLogError(error.InvalidPort);
         expectProgramToFail();
     });
