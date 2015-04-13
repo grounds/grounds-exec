@@ -5,8 +5,10 @@ var rewire = require('rewire'),
 
 var quietLogger = { log: sinon.stub(), error: sinon.stub() };
 
-server.__set__('handlers', quietHandlers);
-server.__set__('logger', quietLogger);
+server.__set__({
+    handlers: quietHandlers,
+    logger:   quietLogger,
+});
 
 function Server() {
     this.port = 8080;
