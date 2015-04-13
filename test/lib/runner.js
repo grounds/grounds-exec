@@ -220,7 +220,7 @@ describe('Runner', function() {
             var runner = new Runner(),
                 emited;
 
-            beforeEach(function(done) {
+            before(function(done) {
                 runner.on('start', function() {
                     runner.stop();
                 });
