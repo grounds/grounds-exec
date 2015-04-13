@@ -24,6 +24,8 @@ describe('Run some code', function() {
         server.close();
     });
 
+    var client;
+
     beforeEach(function(done){
         client = io.connect(server.URL, server.options);
         client.on('connect', function() {
@@ -78,6 +80,8 @@ describe('Run some code', function() {
     });
 
     context('when previous run is still running', function() {
+        var clock;
+
         beforeEach(function() {
             clock = sinon.useFakeTimers();
         });
@@ -102,6 +106,8 @@ describe('Run some code', function() {
     });
 
     context('when run is too long', function() {
+        var clock;
+
         beforeEach(function() {
             clock = sinon.useFakeTimers();
         });
