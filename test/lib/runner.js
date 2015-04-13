@@ -83,8 +83,7 @@ describe('Runner', function() {
 
         context('when container creation failed', function(done) {
             var runner = new Runner(),
-                error = new Error('Create failed'),
-                containerCreate;
+                error = new Error('Create failed');
 
             before(function() {
                 runner.client.createContainer = sinon.stub().yields(error);
@@ -102,8 +101,7 @@ describe('Runner', function() {
             function (action) {
             context('when docker fail to '+action+' this container', function() {
                 var runner = new Runner(),
-                    error = new Error(action+' failed.'),
-                    containerCreate;
+                    error = new Error(action+' failed.');
 
                 before(function(done) {
                     // First we need to manually setup a container.
