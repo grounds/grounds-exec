@@ -30,7 +30,7 @@ describe('Runner', function() {
                     container.attach = sinon.stub().yields(new Error());
 
                     // We stub our runner client to yield this container.
-                    setFakeContainerCreate(null, container);
+                    runner.client.createContainer = sinon.stub().yields(null, container);
 
                     return runner.run(defaultCode);
                 })
@@ -40,10 +40,6 @@ describe('Runner', function() {
                 .fail(function() {
                     done();
                 });
-            });
-
-            after(function() {
-                revertContainerCreate();
             });
 
             it('has a container', function() {
@@ -91,14 +87,15 @@ describe('Runner', function() {
                 containerCreate;
 
             before(function() {
-                setFakeContainerCreate(error);
+                runner.client.createContainer = sinon.stub().yields(error);
             });
 
-            after(function() {
-                revertContainerCreate();
+            it('gets an error', function(done) {
+                run(runner, defaultCode, function(err) {
+                    expect(err).to.equal(error);
+                    done();
+                });
             });
-
-            expectError(error);
         });
 
         ['attach', 'start', 'wait', 'inspect', 'remove'].forEach(
@@ -115,7 +112,8 @@ describe('Runner', function() {
                         // We stub our container action to fail.
                         container[action] = sinon.stub().yields(error);
 
-                        setFakeContainerCreate(null, container);
+                        runner.client.createContainer = sinon
+                          .stub().yields(null, container);
 
                         done();
                     })
@@ -124,11 +122,12 @@ describe('Runner', function() {
                     });
                 });
 
-                after(function() {
-                    revertContainerCreate();
+                it('gets an error', function(done) {
+                    run(runner, defaultCode, function(err) {
+                        expect(err).to.equal(error);
+                        done();
+                    });
                 });
-
-                expectError(error);
             });
         });
 
@@ -141,9 +140,9 @@ describe('Runner', function() {
                 emited;
 
             before(function(done) {
-                emited = attachRunnerEvents();
+                emited = attachEvents(runner);
 
-                run(defaultCode, done);
+                run(runner, defaultCode, done);
             });
 
             it('has emited container exit code', function() {
@@ -194,7 +193,7 @@ describe('Runner', function() {
                     timeout = executionTime;
                 });
 
-                run(sleepCode, function(err) {
+                run(runner, sleepCode, function(err) {
                     expect(timeout).to.equal(fakeTimeout);
                     done();
                 });
@@ -221,14 +220,14 @@ describe('Runner', function() {
             var runner = new Runner(),
                 emited;
 
-            before(function(done) {
+            beforeEach(function(done) {
                 runner.on('start', function() {
                     runner.stop();
                 });
 
-                emited = attachRunnerEvents();
+                emited = attachEvents(runner);
 
-                run(sleepCode, done);
+                run(runner, sleepCode, done);
             });
 
             // We must verify that the container doesn't
@@ -243,7 +242,7 @@ describe('Runner', function() {
         });
     });
 
-    function attachRunnerEvents() {
+    function attachEvents(runner) {
         var emited = {
             output: { stdout: '', stderr: '' },
         }
@@ -260,7 +259,7 @@ describe('Runner', function() {
         return emited;
     }
 
-    function run(example, cb) {
+    function run(runner, example, cb) {
         return runner.run(example)
         .then(function() {
             cb();
@@ -268,27 +267,5 @@ describe('Runner', function() {
         .fail(function(err) {
             cb(err);
         });
-    }
-
-    function expectError(error) {
-        it('gets an error', function(done) {
-            run(defaultCode, function(err) {
-                expect(err).to.equal(error);
-                done();
-            });
-        });
-    }
-
-    function setFakeContainerCreate(err, container) {
-        containerCreate = runner.client.createContainer;
-
-        // We stub our runner client to yield this container.
-        runner.client.createContainer = sinon.stub().yields(err, container);
-    }
-
-    function revertContainerCreate() {
-        if (typeof(containerCreate) == 'undefined') return;
-
-        runner.client.createContainer = containerCreate;
     }
 });
