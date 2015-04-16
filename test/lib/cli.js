@@ -47,7 +47,7 @@ describe('CLI', function() {
             cli.argv(['node', 'server', '-p', 'lol'], fakeExit);
         });
 
-        expectToLogError(error.InvalidPort);
+        expectToLogError(error.invalidPort);
         expectProgramToFail();
     });
 
