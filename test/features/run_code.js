@@ -44,7 +44,7 @@ describe('Run some code', function() {
     context('when run request is empty', function() {
         it('responds with an error', function(done) {
             client.on('run', runHandler(done, function(response) {
-                expectErrorResponse(response, error.EmptyRequest);
+                expectErrorResponse(response, error.emptyRequest);
             }));
             client.emit('run');
         });
@@ -64,14 +64,14 @@ describe('Run some code', function() {
     });
 
     context('when run request code is too long', function() {
-        expectErrorResponse(tooLongCode, error.ProgramTooLong);
+        expectErrorResponse(tooLongCode, error.programTooLong);
     });
 
     it('prevents run request spam', function(done) {
         client.on('run', function(data) {
             if (data.stream !== 'error') return;
 
-            expect(data.chunk).to.equal(error.SpamPrevention.message);
+            expect(data.chunk).to.equal(error.spamPrevention.message);
 
             done();
         });
