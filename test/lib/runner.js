@@ -29,6 +29,8 @@ describe('Runner', function() {
                     // We stub our container attach to fail.
                     container.attach = sinon.stub().yields(new Error());
 
+                    containerCreate = runner.client.createContainer;
+
                     // We stub our runner client to yield this container.
                     runner.client.createContainer = sinon.stub().yields(null, container);
 
@@ -40,6 +42,10 @@ describe('Runner', function() {
                 .fail(function() {
                     done();
                 });
+            });
+            
+            after(function() {
+                runner.client.createContainer = containerCreate;
             });
 
             it('has a container', function() {
