@@ -89,10 +89,17 @@ describe('Runner', function() {
 
         context('when container creation failed', function(done) {
             var runner = new Runner(),
-                error = new Error('Create failed');
+                error = new Error('Create failed'),
+                containerCreate;
 
             before(function() {
+                containerCreate = runner.client.createContainer;
+
                 runner.client.createContainer = sinon.stub().yields(error);
+            });
+            
+            after(function() {
+                runner.client.createContainer = containerCreate;
             });
 
             it('gets an error', function(done) {
