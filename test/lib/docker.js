@@ -22,13 +22,17 @@ describe('Docker', function() {
         });
 
         context('when repository is present in environment', function() {
-            var repository = 'test', env;
+            var repository = 'test', client, env;
 
-            setEnv('REPOSITORY', repository);
+            beforeEach(function() {
+                setEnv('REPOSITORY', repository);
 
-            var client = docker.getClient();
+                client = docker.getClient();
+            });
 
-            revertEnv();
+            afterEach(function() {
+                revertEnv();
+            });
 
             it('returns a docker client using env repository', function() {
                 expect(client.repository).to.equal(repository);
@@ -36,13 +40,17 @@ describe('Docker', function() {
         });
 
         context('when repository is not present in environment', function() {
-            var env;
+            var client, env;
 
-            setEnv('REPOSITORY', '');
+            beforeEach(function() {
+                setEnv('REPOSITORY', '');
 
-            var client = docker.getClient();
+                client = docker.getClient();
+            });
 
-            revertEnv();
+            afterEach(function() {
+                revertEnv();
+            });
 
             it('returns a docker client using default repository', function() {
                 expect(client.repository).to.equal(DEFAULT_REPOSITORY);
@@ -50,13 +58,17 @@ describe('Docker', function() {
         });
 
         context('when tag is present in environment', function() {
-            var tag = '1.0.0', env;
+            var tag = '1.0.0', client, env;
 
-            setEnv('TAG', tag);
+            beforeEach(function() {
+                setEnv('TAG', tag);
 
-            var client = docker.getClient();
-            
-            revertEnv();
+                client = docker.getClient();
+            });
+
+            afterEach(function() {
+                revertEnv();
+            });
 
             it('returns a docker client using env tag', function() {
                 expect(client.tag).to.equal(tag);
@@ -64,13 +76,17 @@ describe('Docker', function() {
         });
 
         context('when tag is not present in environment', function() {
-            var env;
+             var client, env;
 
-            setEnv('TAG', '');
+            beforeEach(function() {
+                setEnv('TAG', '');
 
-            var client = docker.getClient();
+                client = docker.getClient();
+            });
 
-            revertEnv();
+            afterEach(function() {
+                revertEnv();
+            });
 
             it('returns a docker client using default tag', function() {
                 expect(client.tag).to.equal(DEFAULT_TAG);
