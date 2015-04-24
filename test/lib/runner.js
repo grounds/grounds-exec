@@ -29,6 +29,8 @@ describe('Runner', function() {
                     // We stub our container attach to fail.
                     container.attach = sinon.stub().yields(new Error());
 
+                    containerCreate = runner.client.createContainer;
+
                     // We stub our runner client to yield this container.
                     runner.client.createContainer = sinon.stub().yields(null, container);
 
@@ -40,6 +42,10 @@ describe('Runner', function() {
                 .fail(function() {
                     done();
                 });
+            });
+            
+            after(function() {
+                runner.client.createContainer = containerCreate;
             });
 
             it('has a container', function() {
@@ -83,10 +89,17 @@ describe('Runner', function() {
 
         context('when container creation failed', function(done) {
             var runner = new Runner(),
-                error = new Error('Create failed');
+                error = new Error('Create failed'),
+                containerCreate;
 
             before(function() {
+                containerCreate = runner.client.createContainer;
+
                 runner.client.createContainer = sinon.stub().yields(error);
+            });
+            
+            after(function() {
+                runner.client.createContainer = containerCreate;
             });
 
             it('gets an error', function(done) {
@@ -101,7 +114,8 @@ describe('Runner', function() {
             function (action) {
             context('when docker fail to '+action+' this container', function() {
                 var runner = new Runner(),
-                    error = new Error(action+' failed.');
+                    error = new Error(action+' failed.'),
+                    containerCreate;
 
                 before(function(done) {
                     // First we need to manually setup a container.
@@ -109,6 +123,8 @@ describe('Runner', function() {
                     .then(function(container) {
                         // We stub our container action to fail.
                         container[action] = sinon.stub().yields(error);
+
+                        containerCreate = runner.client.createContainer;
 
                         runner.client.createContainer = sinon
                           .stub().yields(null, container);
@@ -118,6 +134,10 @@ describe('Runner', function() {
                     .fail(function(err) {
                         done(err);
                     });
+                });
+                
+                after(function() {
+                    runner.client.createContainer = containerCreate;
                 });
 
                 it('gets an error', function(done) {
