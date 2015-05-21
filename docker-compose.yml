@@ -17,3 +17,4 @@ server:
     - NEW_RELIC_LICENSE_KEY
     - NEW_RELIC_APP_NAME
     - CODECLIMATE_REPO_TOKEN
+  user: root
