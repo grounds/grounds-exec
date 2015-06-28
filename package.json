@@ -16,6 +16,7 @@
     "dockerode": "2.0.x",
     "moment": "2.8.x",
     "newrelic": "1.16.x",
+    "q": "1.2.x",
     "socket.io": "1.1.x",
     "validator": "3.28.x"
   },
@@ -24,7 +25,6 @@
     "codeclimate-test-reporter": "0.0.x",
     "istanbul": "0.3.x",
     "mocha": "1.21.x",
-    "q": "1.2.x",
     "rewire": "2.1.x",
     "sinon": "1.10.x",
     "sinon-chai": "2.7.x",
